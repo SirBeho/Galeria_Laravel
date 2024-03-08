@@ -9,10 +9,15 @@ import { format,parseISO } from 'date-fns';
 
 
 
-export default function Panel({ pedidos ,pedidos2, user }) {
+export default function Panel({ pedidos , user }) {
 
 
+  window.addEventListener('popstate', function (event) {
+    // El evento popstate se dispara cuando se utiliza el botón de retroceso en el navegador
+    console.log('Botón de retroceso utilizado');
   
+    console.log(pedidos)
+  });
 
 
   pedidos.forEach(function(objeto) {
@@ -68,7 +73,10 @@ export default function Panel({ pedidos ,pedidos2, user }) {
 
   };
 
-
+  useEffect(() => {
+    console.log("Actualizando pedidos");
+    console.log(pedidos);
+  }, [pedidos]);
 
 
 
