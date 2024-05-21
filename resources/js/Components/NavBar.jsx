@@ -7,10 +7,12 @@ import Loading from "./Loading";
 import CarritoComponente from "./CarritoComponente";
 import { FaWhatsapp } from 'react-icons/fa';
 import Dropdown from "./Dropdown";
-import { Link } from "@inertiajs/react";
+import { Link, useForm  } from "@inertiajs/react";
 
 
-export default function NavBar({ carrito = {}, setNewCarrito, user }) {
+
+
+export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mostrardo = () => { } }) {
 
 
   const enviarWhatapp = () => {
@@ -19,6 +21,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
     setEnviado(true);
   }
 
+  
   const [enviado, setEnviado] = useState(false);
 
   const [pedidoCreado, setPedidoCreado] = useState(null);
@@ -29,11 +32,12 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
 
     axios.post(route("pedido.sent", { id: pedidoCreado.pedido.id }))
 
-    setNewCarrito([]),
+        setNewCarrito([]),
       setPedidoCreado(null),
       setEnviado(false)
   }
 
+  
   
   return (
     <>
@@ -44,8 +48,6 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
             <img src="favico.png" className="h-full w-auto" alt="" />
             <a className="text-white text-xl" href="./">Mundo del Cumpleaños</a>
           </div>
-
-
 
           <div className="flex ">
 
@@ -61,6 +63,13 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
             )}
           {user ? (
               <div className=" sm:flex sm:items-center ">
+                  {carrito.length > 0 && (
+                        <label class="inline-flex items-center cursor-pointer gap-2 me-2">
+                          <span class="ms-3 text-sm font-medium ">{eliminar ? "Mostrar eliminar" : "Sin eliminar"}</span>
+                          <input type="checkbox" checked={eliminar}  onChange={(e)=>mostrardo(e.target.checked)} value="" class="sr-only peer"/>
+                          <div class="relative w-11 h-6 bg-gray-200  rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label> )}
+
                 <div className=" relative">
                   <Dropdown>
                     <Dropdown.Trigger>
@@ -88,13 +97,18 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
                     </Dropdown.Trigger>
 
                     <Dropdown.Content>
-                    <Dropdown.Link href={route('panel')} method="get" as="button">
-                        Panel
-                      </Dropdown.Link>
-                      <Dropdown.Link href={route('logout')} method="post" as="button">
-                        Log Out
+                      <Dropdown.Link href={route('panel')} method="get" as="button">
+                        Pedidos
                       </Dropdown.Link>
                       
+                      <Dropdown.Link href={route('subir')} method="get" as="button">
+                        Subir Imagenes
+                      </Dropdown.Link>
+                     
+                      {/* <Dropdown.Link href={route('logout')} method="post" as="button">
+                        Log Outaa
+                      </Dropdown.Link> */}
+                    
                     </Dropdown.Content>
                   </Dropdown>
                 </div>
@@ -121,19 +135,40 @@ export default function NavBar({ carrito = {}, setNewCarrito, user }) {
         <div className='flex flex-col justify-center items-center text-center'>
           <div className='py-8 text-2xl'>Su pedido se ha creado exitosamente <br /> Pedido no: {pedidoCreado?.pedido.numero_pedido}</div>
 
-          {enviado ? (
+           {pedidoCreado?.whatsapp_response?.messages?.[0]?.message_status == 'accepted' ?(
+            <>
             <div className='flex flex-col justify-center items-center text-center'>
-              <span className='text-sm'>Si su pedido aun no se ah enviado, intentelo nueva mente</span>
+              <span className='text-base'>Su Pedido ah sido enviado</span>
             </div>
-          ) : (
-            <span className='text-sm'>Haga clic aquí para enviarlo a WhatsApp</span>
-          )}
 
+              <button type='button' onClick={() => pedido_enviado()} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>Finalizar!!</button>
+              </>
+              )
+           
+            : (<>
+            {enviado ? (
+              <div className='flex flex-col justify-center items-center text-center'>
+                <span className='text-sm'>Si su pedido aun no se ah enviado, intentelo nueva mente</span>
+              </div>
+            ) : (
+              <span className='text-sm'>Haga clic aquí para enviarlo a WhatsApp</span>
+            )}
+            <FaWhatsapp onClick={() => enviarWhatapp()} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500" />
+            {enviado && (
+              <button type='button' onClick={() => pedido_enviado()} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
+            )}
+            
+              </>
 
-          <FaWhatsapp onClick={() => enviarWhatapp()} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500" />
-          {enviado && (
-            <button type='button' onClick={() => pedido_enviado()} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
-          )}
+          )
+            
+              
+
+            }
+
+             
+
+          
         </div>
 
 

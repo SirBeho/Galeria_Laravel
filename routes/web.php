@@ -29,7 +29,7 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+//5NG7RN5Q761CQ2Y5CCWKSXSJ
 Route::get('/login', [AuthenticatedSessionController::class, 'create']);
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
@@ -48,7 +48,6 @@ Route::get('/', function () {
             'user' => auth()->user() ?? false,
         ]);
 })->name('home');
-
 
 Route::get('/pedido', function (Request $request) {
 
@@ -70,6 +69,14 @@ Route::get('/pedido', function (Request $request) {
 })->name('pedido.view');
 
 
+   
+
+    
+
+
+
+Route::post('/notificacion', [PedidoController::class, 'notificacion_whatsapp'])->name('notificacion');
+
 Route::post('/add', [PedidoController::class, 'add'])->name('pedido.add');
 Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
@@ -85,6 +92,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'user' => auth()->user() ?? [],
         ]);
     })->name('panel');
+
+    Route::get('/subir', [FileController::class, 'index'])->name('subir');
+    Route::post('/eliminar', [FileController::class, 'eliminar'])->name('eliminar.imagen');
+    Route::post('/subir', [FileController::class, 'uploadImages'])->name('subir.imagen');
 
 });
 

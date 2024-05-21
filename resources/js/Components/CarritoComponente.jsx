@@ -49,6 +49,7 @@ const CarritoComponente = ({ carrito, setNewCarrito, close ,setPedidoCreado }) =
        
         alert(response.data.message);
         console.log(response.data)
+        console.log(response.data.whatsapp_response)
         setPedidoCreado(response.data);
         //setNewCarrito([]);
         close();
