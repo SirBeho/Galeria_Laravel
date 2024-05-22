@@ -21,7 +21,6 @@ export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mo
     setEnviado(true);
   }
 
-  
   const [enviado, setEnviado] = useState(false);
 
   const [pedidoCreado, setPedidoCreado] = useState(null);
@@ -40,7 +39,8 @@ export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mo
   
   
   return (
-    <>
+    <>  
+    
       <nav className=" text-white bg-nav fixed top-0 w-full z-20 p-2">
         <div className="flex justify-between items-center   min-[900px]:px-52 h-10">
 

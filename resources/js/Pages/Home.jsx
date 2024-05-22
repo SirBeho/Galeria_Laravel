@@ -214,14 +214,20 @@ export default function Dashboard({ nombres, user }) {
                 >
                     x
                 </button>
-                <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                <h1>{images[index]}</h1>
-                <div className="border overflow-hidden">
-                    <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                            <div className="w-full h-full">
+                <h1 className="absolute left-9 top-16  text-white" style={{
+                    filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                }}>{images[index]}</h1>
+
+                <h5 className="text-xl font-bold text-center pb-2">
+                    Detalle del Artículo
+                </h5>
+
+                <div className="overflow-hidden rounded-3xl shadow-xl">
+                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                        <div className="block min-w-full w-full overflow-hidden">
+                            <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
-                                    className="h-full object-contain w-full"
+                                    className="h-full object-cover w-full"
                                     src={`/images/${images[index]}`}
                                     alt="Descripción"
                                 />
@@ -231,15 +237,12 @@ export default function Dashboard({ nombres, user }) {
                 </div>
                
             </div>
-            <div
-               
-                className={`${maxWidthClass}   bg-white opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}
-            >
+            <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
                 
                 <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                <h1>{images[index]}</h1>
-                <div className="border overflow-hidden">
-                    <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
+                
+                <div className="overflow-hidden">
+                    <div className="flex h-full bg-white w-full transition ease-out duration-40">
                         <div className="block min-w-full w-full rounded-3xl overflow-hidden">
                             <div className="w-full h-full">
                                 <img
@@ -251,7 +254,6 @@ export default function Dashboard({ nombres, user }) {
                         </div>
                     </div>
                 </div>
-               
             </div>
             </div>
         );
@@ -268,14 +270,21 @@ export default function Dashboard({ nombres, user }) {
                 >
                     x
                 </button>
-                <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                <h1>{images[index]}</h1>
-                <div className="border overflow-hidden">
-                    <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                            <div className="w-full h-full">
+
+                <h1 className="absolute left-9 top-16  text-white" style={{
+                    filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                }}>{images[index]}</h1>
+
+                <h5 className="text-xl font-bold text-center pb-2">
+                    Detalle del Artículo
+                </h5>
+
+                <div className="overflow-hidden rounded-3xl shadow-xl">
+                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                        <div className="block min-w-full w-full overflow-hidden">
+                            <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
-                                    className="h-full object-contain w-full"
+                                    className="h-full object-cover w-full"
                                     src={`/images/${images[index]}`}
                                     alt="Descripción"
                                 />
@@ -283,20 +292,14 @@ export default function Dashboard({ nombres, user }) {
                         </div>
                     </div>
                 </div>
+
             </div>
-            <div
-                className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}
-            >
-                <button
-                    onClick={close}
-                    className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
-                >
-                    x
-                </button>
+            <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
+                
                 <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                <h1>{images[index]}</h1>
-                <div className="border overflow-hidden">
-                    <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
+                
+                <div className="overflow-hidden">
+                    <div className="flex h-full bg-white w-full transition ease-out duration-40">
                         <div className="block min-w-full w-full rounded-3xl overflow-hidden">
                             <div className="w-full h-full">
                                 <img
@@ -476,6 +479,9 @@ export default function Dashboard({ nombres, user }) {
                                         className="h-20 w-20  fill-white"
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 320 512"
+                                        style={{
+                                            filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3))",
+                                        }}
                                     >
                                         <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
                                     </svg>
@@ -488,6 +494,9 @@ export default function Dashboard({ nombres, user }) {
                                         className="h-20 w-20  fill-white"
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 320 512"
+                                        style={{
+                                            filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3))",
+                                        }}
                                     >
                                         <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z" />
                                     </svg>
@@ -497,25 +506,27 @@ export default function Dashboard({ nombres, user }) {
                                   <div ref={Padre} onClick={(e) => e.stopPropagation()}  className={`relative -mt-20 h-full   w-full ${maxWidthClass}`}>
                                     <div id={current} >
                                         <div className={`${maxWidthClass} z-10 h-full bg-white absolute right-1/2 translate-x-1/2  p-6   rounded-lg shadow-xl transform transition-all duration-1000 w-full mx-auto `}>
-                                                                                <button
+                                            <button
                                               onClick={close}
                                               className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
                                           >
                                               x
                                           </button>
 
+                                          <h1 className="absolute left-9 top-16  text-white" style={{
+                                            filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                                        }}>{images[current]}</h1>
+
                                           <h5 className="text-xl font-bold text-center pb-2">
                                               Detalle del Artículo
                                           </h5>
 
-                                          <h1>{images[current]}</h1>
-
-                                          <div className=" overflow-hidden">
-                                            <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
-                                                <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                                                    <div className="w-full h-full">
+                                          <div className="overflow-hidden rounded-3xl shadow-md">
+                                            <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                                                <div className="block min-w-full w-full overflow-hidden">
+                                                    <div className="w-full h-full rounded-sm overflow-hidden ">
                                                         <img
-                                                            className="h-full object-contain w-full"
+                                                            className="h-full object-cover w-full"
                                                             src={`/images/${images[current]}`}
                                                             alt="Descripción"
                                                         />
@@ -532,10 +543,8 @@ export default function Dashboard({ nombres, user }) {
                                               Detalle del Artículo
                                           </h5>
 
-                                          <h1>{images[current]}</h1>
-
-                                          <div className="border overflow-hidden">
-                                            <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
+                                          <div className=" overflow-hidden">
+                                            <div className="flex  h-full bg-white w-full transition ease-out duration-40">
                                                 <div className="block min-w-full w-full rounded-3xl overflow-hidden">
                                                     <div className="w-full h-full">
                                                         <img

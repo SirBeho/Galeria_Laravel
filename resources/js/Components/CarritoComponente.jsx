@@ -5,12 +5,14 @@ import React, { useEffect, useState } from 'react';
 import Modal from '@/Components/Modal';
 import { set } from 'date-fns';
 import PhoneInput from 'react-phone-number-input/input'
+import Loading from './Loading';
 
 const CarritoComponente = ({ carrito, setNewCarrito, close ,setPedidoCreado }) => {
 
 
   const [response, setResponse] = useState([]);
   const [value, setValue] = useState()
+  const [loading, setLoading] = useState(false);
 
   const { data, setData, post, reset } = useForm({
     nombre: "",
@@ -44,6 +46,7 @@ const CarritoComponente = ({ carrito, setNewCarrito, close ,setPedidoCreado }) =
 
     
     e.preventDefault();
+    setLoading(true);
     axios.post(route("pedido.add", { ...data, carrito }))
       .then((response) => {
        
@@ -53,6 +56,7 @@ const CarritoComponente = ({ carrito, setNewCarrito, close ,setPedidoCreado }) =
         setPedidoCreado(response.data);
         //setNewCarrito([]);
         close();
+        setLoading(false);
 
       })
       .catch((error) => {
@@ -75,7 +79,7 @@ const CarritoComponente = ({ carrito, setNewCarrito, close ,setPedidoCreado }) =
   return (
 
 <>
-
+    <Loading show={loading}  />
     <form onSubmit={enviarPedido} className="flex flex-col items-center   overflow-x-auto shadow-md sm:rounded-lg border">
       <div className="flex justify-start flex-wrap min-[500px]:flex-nowrap  gap-2 w-full p-2  ">
 
