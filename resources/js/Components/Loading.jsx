@@ -1,10 +1,50 @@
 import React from 'react'
+import { Fragment, useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 
-export default function Loading() {
+export default function Loading({children,galeria = false,show = false,maxWidth = "2xl",closeable = true,close = () => {}}) {
+   
+    const [isClosing, setIsClosing] = useState(false);
+
+    const maxWidthClass = {
+        sm: "sm:max-w-sm",
+        md: "sm:max-w-md",
+        lg: "sm:max-w-lg",
+        xl: "sm:max-w-xl",
+        "2xl": "sm:max-w-2xl",
+    }[maxWidth];
+
     return (
+        <Transition show={show} as={Fragment} leave="duration-100" >
+            <Dialog
+                
+                as="div"
+                id="modal"
+                className={`${
+                    show ? "" : "hidden"
+                } fixed  inset-0 flex overflow-y-auto px-4 py-6 sm:px-0 items-center bg-blue-300/50 justify-center transform transition-all z-50`}
+                onClose={(e) => { console.log("click1")}}
+               
+            >
+                
 
-
-        <div className="text-center">
+                <Transition.Child
+               
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    enterTo="opacity-100 translate-y-0 sm:scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                    leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                >
+                    <Dialog.Panel onClick={(e) => {e.stopPropagation()}} className={` w-full  ${isClosing ? "modal-close" : "modal-open"}`}>
+                        
+                    
+                        
+                        <div className={`relative ${maxWidthClass} bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
+                            
+                             <div className="text-center">
             <div role="status" className='flex flex-col items-center'>
                 <svg aria-hidden="true" className="inline w-12 h-12 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
@@ -13,7 +53,13 @@ export default function Loading() {
                 <span className="mt-2">Cargando...</span>
             </div>
         </div>
+                        </div>
 
-
-    )
+                      
+       
+                    </Dialog.Panel>
+                </Transition.Child>
+            </Dialog>
+        </Transition>
+    );
 }

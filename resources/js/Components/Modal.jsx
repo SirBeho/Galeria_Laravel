@@ -1,10 +1,10 @@
 import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
-export default function Modal({children,galeria = false,show = false,maxWidth = "2xl",closeable = true,close_x = true,header = false,onClose = () => {},}) {
+export default function Modal({children,galeria = false,show = false,maxWidth = "2xl", loading=false,closeable = true,close_x = true,header = false,onClose = () => {},}) {
     const close = () => {
         
-        if (closeable) {
+        if (closeable && !loading) {
             setIsClosing(true);
             setTimeout(() => {
                 onClose();

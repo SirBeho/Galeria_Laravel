@@ -5,6 +5,23 @@
 
 
 
+/* tailwind.css */
+@layer utilities {
+  .animate-slide-out-left {
+    @apply transition-transform duration-1000 transform -translate-x-full;
+  }
+  .animate-slide-out-right {
+    @apply transition-transform duration-1000 transform translate-x-full;
+  }
+  .animate-slide-in-left {
+    @apply transition-transform duration-1000 transform translate-x-0;
+  }
+  .animate-slide-in-right {
+    @apply transition-transform duration-1000 transform translate-x-0;
+  }
+}
+
+
 
 @keyframes show {
     100% {
