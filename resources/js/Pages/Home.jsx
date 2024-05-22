@@ -510,7 +510,7 @@ export default function Dashboard({ nombres, user }) {
 
                                           <h1>{images[current]}</h1>
 
-                                          <div className="border overflow-hidden">
+                                          <div className=" overflow-hidden">
                                             <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
                                                 <div className="block min-w-full w-full rounded-3xl overflow-hidden">
                                                     <div className="w-full h-full">

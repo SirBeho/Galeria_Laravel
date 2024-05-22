@@ -42,7 +42,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mo
   return (
     <>
       <nav className=" text-white bg-nav fixed top-0 w-full z-20 p-2">
-        <div className="flex justify-between items-center md:px-52 h-10">
+        <div className="flex justify-between items-center   min-[900px]:px-52 h-10">
 
           <div className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 px-4 rounded-md">
             <img src="favico.png" className="h-full w-auto" alt="" />
@@ -63,12 +63,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mo
             )}
           {user ? (
               <div className=" sm:flex sm:items-center ">
-                  {carrito.length > 0 && (
-                        <label class="inline-flex items-center cursor-pointer gap-2 me-2">
-                          <span class="ms-3 text-sm font-medium ">{eliminar ? "Mostrar eliminar" : "Sin eliminar"}</span>
-                          <input type="checkbox" checked={eliminar}  onChange={(e)=>mostrardo(e.target.checked)} value="" class="sr-only peer"/>
-                          <div class="relative w-11 h-6 bg-gray-200  rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        </label> )}
+                  
 
                 <div className=" relative">
                   <Dropdown>
@@ -105,8 +100,18 @@ export default function NavBar({ carrito = {}, setNewCarrito, user ,eliminar, mo
                         Subir Imagenes
                       </Dropdown.Link>
                      
+                      <Dropdown >
+                        <div className='bg-nav block w-full px-4 py-2 text-left text-sm leading-5 text-gray-300  focus:outline-none hover:text-slate-400 transition duration-150 ease-in-out '> 
+                        <label class="inline-flex items-center cursor-pointer gap-2 ">
+                          <span class=" text-sm  ">{eliminar ? "Mostrar eliminar" : "Sin eliminar"}</span>
+                          <input type="checkbox" checked={eliminar}  onChange={(e)=>mostrardo(e.target.checked)} value="" class="sr-only peer"/>
+                          <div class="relative w-11 h-6 bg-gray-200  rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                        </div>
+                      </Dropdown>
+                     
                      <Dropdown.Link href={route('logout')} method="post" as="button">
-                        Log Outaa
+                        Log Out
                       </Dropdown.Link> 
                     
                     </Dropdown.Content>

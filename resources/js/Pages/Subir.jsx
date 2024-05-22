@@ -3,11 +3,14 @@ import Layout from "@/Layouts/Layout";
 import { Head, useForm } from "@inertiajs/react";
 import { format, parseISO } from "date-fns";
 import Modal from '@/Components/Modal';
+import Loading from "@/Components/Loading";
+
 
 
 export default function Subir({ user ,mensaje }) {
    
     const { data, setData, post, processing, errors, reset } = useForm([]);
+    const [loading, setLoading] = useState(false);
 
     const [images, setImages] = useState([]);
 
@@ -41,11 +44,13 @@ export default function Subir({ user ,mensaje }) {
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
+        setLoading(true);
         post(route('subir.imagen'), {
             onSuccess: () => {
                 reset();
                 setData([]);
                 setImages([]);
+                setLoading(false);
             },
         });
 
@@ -57,6 +62,8 @@ export default function Subir({ user ,mensaje }) {
     return (
         <Layout carrito={{}} setNewCarrito={null} user={user}>
             <Head title="Pedido" />
+
+            <Loading show={loading} />
 
             <Modal show={msj != null} onClose={() => setMsj(null)} header={"Producto Agregado"} close_x={true}>
        {msj?.success  && <div className="text-center text-green-600 text-xl" >

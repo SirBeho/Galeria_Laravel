@@ -58,7 +58,7 @@ export default function Modal({children,galeria = false,show = false,maxWidth = 
                         
                       {galeria && (galeria) }
                         
-                        <div className={`relative ${maxWidthClass} bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
+                        <div onClick={(e)=> e.stopPropagation()} className={`relative ${maxWidthClass} o bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
                             {close_x && (
                                 <button onClick={close} className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2" >
                                     x
