@@ -37,14 +37,27 @@ Route::get('/', function () {
         $folderPath = dirname(__DIR__) . '/public/images';
         $fileNames = scandir($folderPath);
 
-        $filteredFileNames = array_filter($fileNames, function($fileName) {
+        $filteredFileNameshome = array_filter($fileNames, function($fileName) {
+            return $fileName !== '.' && $fileName !== '..'  && $fileName !== 'juegos';
+        });
+
+        $folderPath2 = dirname(__DIR__) . '/public/images/juegos';
+        $fileNames2 = scandir($folderPath2);
+
+        $filteredFileNamesJuegos = array_filter($fileNames2, function($fileName) {
             return $fileName !== '.' && $fileName !== '..';
         });
+
+        $filteredFileNamesJuegos = array_map(function($fileName) {
+            // Retorna la ruta completa y sobrescribe el valor
+            return 'juegos/' . $fileName;
+        }, $filteredFileNamesJuegos);
 
       
 
         return Inertia::render('Home', [
-            'nombres' => array_reverse($filteredFileNames),
+            'imgHome' => array_reverse($filteredFileNameshome),
+            'imgJuegos' => array_reverse($filteredFileNamesJuegos),
             'user' => auth()->user() ?? false,
         ]);
 })->name('home');

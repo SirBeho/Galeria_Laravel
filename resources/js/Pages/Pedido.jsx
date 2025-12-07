@@ -74,9 +74,9 @@ export default function Pedido({ pedido , user }) {
               <th scope="col" className="sm:px-6 py-3">
                 Imagen
               </th>
-              <th scope="col" className="sm:px-6 py-3">
+           {/*    <th scope="col" className="sm:px-6 py-3">
                 Código
-              </th>
+              </th> */}
               <th scope="col" className="sm:px-6 py-3">
                 Cantidad
               </th>
@@ -94,10 +94,10 @@ export default function Pedido({ pedido , user }) {
                   <td onClick={()=> setModalImg(item.codigo)}>
                     <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`/images/${item.codigo}`} alt="foto" />
                   </td>
-                  <td className="sm:px-6 py-4">
+                  {/* <td className="sm:px-6 py-4">
                     {item.codigo}
-                  </td>
-                  <td className="sm:px-6 py-4">
+                  </td> */}
+                  <td className="sm:px-6 py-4 text-center   ">
                     {item.cantidad}
                   </td>
                   <td className="sm:px-6 py-4">

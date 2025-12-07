@@ -1,9 +1,9 @@
 import { Img } from "react-image";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm } from "@inertiajs/react";
-import LazyLoad from "react-lazyload";
 import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
+import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { set } from "date-fns";
 import React, {
     Children,
@@ -17,19 +17,45 @@ import ReactDOM from "react-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { chip } from "@material-tailwind/react";
 
-export default function Dashboard({ nombres, user }) {
-    const [images, setImageNames] = useState(Object.values(nombres));
+
+
+export default function Dashboard({ imgHome, imgJuegos,  user  }) {
+    const [images, setImageNames] = useState(Object.values(imgHome));
+    const [home, sethomeNames] = useState(Object.values(imgHome));
+    const [juegos, setJuegosNames] = useState(Object.values(imgJuegos));
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
     const [agregado, setAgregado] = useState(false);
     const [showEliminar, setShowEliminar] = useState(false);
     const [eliminarConfirmar, setEliminarConfirmar] = useState("");
     const [openProdut, setOpenProdut] = useState([]);
+    const [verJuegos, setverJuegos] = useState(true);
     const [carrito, setCarrito] = useState([]);
     const [current, setCurrent] = useState(0);
     const [isClosing, setIsClosing] = useState(false);
+    const [estadoVisual, setEstadoVisual] = useState(0);
+    
+   
     const Padre = useRef(null);
     const imageRefs = useRef([]);
+
+    const AltVerJuegos = () => {
+       
+        if (verJuegos) {
+            setImageNames(juegos);
+            setverJuegos(false);
+            setCurrent(0);
+        } else {
+            setImageNames(home);
+            setverJuegos(true);
+            setCurrent(0);
+        }
+    };
+
+    const AltGrande = () => {
+        setEstadoVisual(prev => (prev + 1) % 3);
+    };
+
 
     const {
       data: producto,
@@ -142,6 +168,7 @@ export default function Dashboard({ nombres, user }) {
         setCarrito(nuevoCarrito);
     };
 
+    
 
     const { data, setData, post, reset: restt } = useForm({});
 
@@ -318,6 +345,10 @@ export default function Dashboard({ nombres, user }) {
 
     return (
         <Layout
+            verJuegos={verJuegos}
+            AltVerJuegos={AltVerJuegos} 
+            estadoVisual={estadoVisual}
+            AltGrande={AltGrande}
             carrito={carrito}
             user={user}
             setNewCarrito={setNewCarrito}
@@ -379,7 +410,7 @@ export default function Dashboard({ nombres, user }) {
             </Modal>
 
             <div>
-                <h1 className="my-4 font-bold text-4xl">GALERIA PRINCIPAL</h1>
+                <h1 className="my-6 font-bold text-4xl text-center">{verJuegos ? "GALERIA PRINCIPAL" : "JUGUETES"}</h1>
 
                
 
@@ -394,9 +425,10 @@ export default function Dashboard({ nombres, user }) {
                                     boxShadow:
                                         "5px 5px 10px rgba(0, 0, 0, 0.5)",
                                 }}
-                                className="  flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]  flex cursor-pointer  max-h-80 h-80  relative mb-4 rounded-md overflow-hidden"
-                            >
-                                <LazyLoad
+                                className={`${estadoVisual == 0 ? "flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]" 
+                                            : estadoVisual == 1 ? "flex-[1_0_48%] " : "flex-[1_0_100%] "}
+                                             flex cursor-pointer  max-h-80 h-80  relative mb-4 rounded-md overflow-hidden`}>
+                               {/*  <LazyLoad
                                     className="w-full h-full"
                                     offset={200}
                                 >
@@ -405,7 +437,8 @@ export default function Dashboard({ nombres, user }) {
                                         src={`/images/${file}`}
                                         alt="Descripción"
                                     />
-                                </LazyLoad>
+                                </LazyLoad> */}
+                                <LazyLoadedImage file={file} />
                                 <img
                                     className="w-32 absolute bottom-0 left-0"
                                     src="logo.png"
