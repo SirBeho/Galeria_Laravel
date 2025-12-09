@@ -19,7 +19,7 @@ import { chip } from "@material-tailwind/react";
 
 
 
-export default function Dashboard({ imgHome, imgJuegos,  user  }) {
+export default function Dashboard({ imgHome, imgJuegos, user }) {
     const [images, setImageNames] = useState(Object.values(imgHome));
     const [home, sethomeNames] = useState(Object.values(imgHome));
     const [juegos, setJuegosNames] = useState(Object.values(imgJuegos));
@@ -27,57 +27,62 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
     const [loading, setLoading] = useState(false);
     const [agregado, setAgregado] = useState(false);
     const [showEliminar, setShowEliminar] = useState(false);
-    const [eliminarConfirmar, setEliminarConfirmar] = useState("");
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [openProdut, setOpenProdut] = useState([]);
     const [verJuegos, setverJuegos] = useState(true);
     const [carrito, setCarrito] = useState([]);
     const [current, setCurrent] = useState(0);
     const [isClosing, setIsClosing] = useState(false);
-    const [estadoVisual, setEstadoVisual] = useState(0);
-    
-   
+
+    //cargar del local storage
+    const [estadoVisual, setEstadoVisual] = useState(parseInt(localStorage.getItem("estadoVisual")) || 0);
+
+
     const Padre = useRef(null);
     const imageRefs = useRef([]);
 
     const AltVerJuegos = () => {
-       
+
         if (verJuegos) {
             setImageNames(juegos);
-            setverJuegos(false);
-            setCurrent(0);
         } else {
             setImageNames(home);
-            setverJuegos(true);
-            setCurrent(0);
         }
+
+        setverJuegos(prev => !prev);
+        setCurrent(0);
     };
 
     const AltGrande = () => {
         setEstadoVisual(prev => (prev + 1) % 3);
     };
 
+    useEffect(() => {
+        localStorage.setItem("estadoVisual", estadoVisual.toString());
+    }, [estadoVisual]);
 
-    const {
-      data: producto,
-      setData: setProducto,
-      reset,
-  } = useForm({
-      nombre: "",
-      codigo: "",
-      cantidad: "",
-      comentario: "",
-  });
+
+    const { data: producto,
+        setData: setProducto,
+        reset,
+    } = useForm({
+        nombre: "",
+        codigo: "",
+        cantidad: "",
+        comentario: "",
+    });
 
     const close = () => {
         console.log('pre Cerrando')
-        if (!loading){
+        if (!loading) {
             console.log('Cerrando')
             if (imageRefs.current[current]) {
                 imageRefs.current[current].scrollIntoView({
-                  behavior: 'smooth',
-                  block: 'start',
+                    behavior: 'smooth',
+                    block: 'start',
                 });
-              }
+            }
             setIsClosing(true);
             setTimeout(() => {
                 setOpenProdutM(false);
@@ -132,7 +137,7 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
             const tempContainer = document.createElement("div");
             ReactDOM.render(Siguiente(current + 1), tempContainer);
             const newDiv = tempContainer.firstChild;
-            
+
             newDiv.firstChild.querySelector("button").addEventListener("click", close);
             Padre.current.appendChild(newDiv);
 
@@ -144,20 +149,20 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
             }, 10);
 
             setTimeout(() => {
-                 if (Padre?.current?.children?.length > 1) {
+                if (Padre?.current?.children?.length > 1) {
                     Padre.current.children[0].remove();
-                } 
+                }
             }, 500);
         }
     };
 
     useEffect(() => {
-        
+
         setOpenProdut(images[current]);
     }, [current]);
 
     const open = (file, index) => {
-        
+
         setCurrent(index);
         setOpenProdutM(true);
         setOpenProdut(file);
@@ -168,22 +173,51 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
         setCarrito(nuevoCarrito);
     };
 
-    
-
     const { data, setData, post, reset: restt } = useForm({});
 
-    //post para eliminar una foto
+    const toggleDeleteMode = () => {
+        setShowEliminar(prev => {
+            // Si vamos a desactivar el modo, limpia las selecciones
+            if (prev === true) {
+                setSelectedFiles([]);
+            }
+            return !prev;
+        });
+    };
 
-    const eliminar = (e, codigo) => {
+    const toggleSelection = (e, filename) => {
+        e.stopPropagation();
+        if (selectedFiles.includes(filename)) {
+            setSelectedFiles(selectedFiles.filter(name => name !== filename));
+        } else {
+            setSelectedFiles([...selectedFiles, filename]);
+        }
+    };
+
+    //post para eliminar una foto
+    const handleDeleteSelected = (e) => {
         e.preventDefault();
+        if (selectedFiles.length === 0) return;
+
         setLoading(true);
-        post(route("eliminar.imagen", { codigo: codigo }), {
-            onSuccess: () => {
-                if (images.includes(codigo)) {
-                    setImageNames(images.filter((item) => item != codigo));
-                    setEliminarConfirmar(null);
-                    setLoading(false);
-                }
+        setShowConfirmModal(false);
+      
+
+        post(route("eliminar.imagen", { codigos: selectedFiles }), {
+            onSuccess: (response) => {
+               console.log(response);
+                const updatedImages = images.filter(file => !selectedFiles.includes(file));
+                setImageNames(updatedImages);
+
+                // Limpiar estados
+                setSelectedFiles([]);
+                setLoading(false);
+                setShowEliminar(false); // Sale del modo eliminación
+
+            },
+            onError: (errors) => {
+                console.log(errors);
+                setLoading(false);
             },
         });
     };
@@ -226,119 +260,117 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
         });
     };
 
-   
-
     const Siguiente = (index) => {
-      
+
         return (
             <div id={index}>
-            <div
-                className={`${maxWidthClass} bg-white absolute z-10 top-0 right-1/2 translate-x-full scale-75 opacity-0 p-6 rounded-lg shadow-xl transform transition-all duration-300 w-full mx-auto`}
-            >
-                <button
-                    onClick={() => close()}
-                    className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
+                <div
+                    className={`${maxWidthClass} bg-white absolute z-10 top-0 right-1/2 translate-x-full scale-75 opacity-0 p-6 rounded-lg shadow-xl transform transition-all duration-300 w-full mx-auto`}
                 >
-                    x
-                </button>
-                <h1 className="absolute left-9 top-16  text-white" style={{
-                    filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                }}>{images[index]}</h1>
+                    <button
+                        onClick={() => close()}
+                        className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
+                    >
+                        x
+                    </button>
+                    <h1 className="absolute left-9 top-16  text-white" style={{
+                        filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                    }}>{images[index]}</h1>
 
-                <h5 className="text-xl font-bold text-center pb-2">
-                    Detalle del Artículo
-                </h5>
+                    <h5 className="text-xl font-bold text-center pb-2">
+                        Detalle del Artículo
+                    </h5>
 
-                <div className="overflow-hidden rounded-3xl shadow-xl">
-                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full overflow-hidden">
-                            <div className="w-full h-full rounded-sm overflow-hidden ">
-                                <img
-                                    className="h-full object-cover w-full"
-                                    src={`/images/${images[index]}`}
-                                    alt="Descripción"
-                                />
+                    <div className="overflow-hidden rounded-3xl shadow-xl">
+                        <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                            <div className="block min-w-full w-full overflow-hidden">
+                                <div className="w-full h-full rounded-sm overflow-hidden ">
+                                    <img
+                                        className="h-full object-cover w-full"
+                                        src={`/images/${images[index]}`}
+                                        alt="Descripción"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
+
+                    <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
+
+                    <div className="overflow-hidden">
+                        <div className="flex h-full bg-white w-full transition ease-out duration-40">
+                            <div className="block min-w-full w-full rounded-3xl overflow-hidden">
+                                <div className="w-full h-full">
+                                    <img
+                                        className="h-full object-contain w-full"
+                                        src={`/images/${images[index]}`}
+                                        alt="Descripción"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-               
-            </div>
-            <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
-                
-                <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                
-                <div className="overflow-hidden">
-                    <div className="flex h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                            <div className="w-full h-full">
-                                <img
-                                    className="h-full object-contain w-full"
-                                    src={`/images/${images[index]}`}
-                                    alt="Descripción"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
         );
     };
     const Anterior = (index) => {
         return (
             <div id={index}>
-            <div
-                className={`${maxWidthClass} bg-white absolute right-1/2  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 w-full mx-auto`}
-            >
-                <button
-                    onClick={close}
-                    className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
+                <div
+                    className={`${maxWidthClass} bg-white absolute right-1/2  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 w-full mx-auto`}
                 >
-                    x
-                </button>
+                    <button
+                        onClick={close}
+                        className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
+                    >
+                        x
+                    </button>
 
-                <h1 className="absolute left-9 top-16  text-white" style={{
-                    filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                }}>{images[index]}</h1>
+                    <h1 className="absolute left-9 top-16  text-white" style={{
+                        filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                    }}>{images[index]}</h1>
 
-                <h5 className="text-xl font-bold text-center pb-2">
-                    Detalle del Artículo
-                </h5>
+                    <h5 className="text-xl font-bold text-center pb-2">
+                        Detalle del Artículo
+                    </h5>
 
-                <div className="overflow-hidden rounded-3xl shadow-xl">
-                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full overflow-hidden">
-                            <div className="w-full h-full rounded-sm overflow-hidden ">
-                                <img
-                                    className="h-full object-cover w-full"
-                                    src={`/images/${images[index]}`}
-                                    alt="Descripción"
-                                />
+                    <div className="overflow-hidden rounded-3xl shadow-xl">
+                        <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                            <div className="block min-w-full w-full overflow-hidden">
+                                <div className="w-full h-full rounded-sm overflow-hidden ">
+                                    <img
+                                        className="h-full object-cover w-full"
+                                        src={`/images/${images[index]}`}
+                                        alt="Descripción"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
+
+                    <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
+
+                    <div className="overflow-hidden">
+                        <div className="flex h-full bg-white w-full transition ease-out duration-40">
+                            <div className="block min-w-full w-full rounded-3xl overflow-hidden">
+                                <div className="w-full h-full">
+                                    <img
+                                        className="h-full object-contain w-full"
+                                        src={`/images/${images[index]}`}
+                                        alt="Descripción"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            </div>
-            <div className={`${maxWidthClass} bg-white  scale-75 opacity-0 p-6  rounded-lg shadow-xl transform transition-all duration-300 sm:w-full sm:mx-auto`}>
-                
-                <h5 className="text-xl font-bold text-center pb-2">Detalle del Artículo</h5>
-                
-                <div className="overflow-hidden">
-                    <div className="flex h-full bg-white w-full transition ease-out duration-40">
-                        <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                            <div className="w-full h-full">
-                                <img
-                                    className="h-full object-contain w-full"
-                                    src={`/images/${images[index]}`}
-                                    alt="Descripción"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
         );
     };
@@ -346,14 +378,14 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
     return (
         <Layout
             verJuegos={verJuegos}
-            AltVerJuegos={AltVerJuegos} 
+            AltVerJuegos={AltVerJuegos}
             estadoVisual={estadoVisual}
             AltGrande={AltGrande}
             carrito={carrito}
             user={user}
             setNewCarrito={setNewCarrito}
             eliminar={showEliminar}
-            mostrar={() => setShowEliminar(!showEliminar)}
+            mostrar={toggleDeleteMode}
         >
             <Head title="Catalogo" />
 
@@ -378,33 +410,79 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                 </div>
             </Modal>
 
+
+
+            {showEliminar && selectedFiles.length > 0 && (
+                <div className="fixed bottom-4 left-1/2 z-40">
+                    <button onClick={() => setShowConfirmModal(true)} type="button" className="flex  text-xl items-center justify-center px-2 h-16 bg-red-600 rounded-full text-white shadow-xl hover:bg-red-700 transition transform hover:scale-105">
+
+                        <span >Eliminar </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="fill-transparent   text-white h-8 w-8 " id="delete" style={{ filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3))", }} >
+                            <path className="" strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-blue-500 rounded-full">{selectedFiles.length}</span>
+                    </button>
+                </div>
+            )}
+
             <Modal
-                 loading={loading}
-                show={eliminarConfirmar != null && eliminarConfirmar != ""}
-                onClose={() => setEliminarConfirmar(null)}
-                header={"Eliminar Agregado"}
+                loading={loading}
+                // 🟢 Muestra si hay archivos seleccionados, asumiendo que el botón flotante activa showConfirmModal
+                show={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                // 🟢 Header dinámico con el contador
+                header={`Confirmar Eliminación (${selectedFiles.length} archivos)`}
                 close_x={true}
             >
-                <div className="py-8 text-2xl flex gap-4 ">
-                    <div className="w-36 h-36 overflow-hidden rounded-md">
-                        <img
-                            className="h-full object-cover w-full"
-                            src={`/images/${eliminarConfirmar}`}
-                            alt="prudcto"
-                        />
+                <div className="py-4 flex flex-col items-center">
+                    <h3 className="text-xl mb-4 font-semibold text-center">
+                        Esta seguro que desea eliminar las siguientes imágenes
+                    </h3>
+
+                    {/* 🟢 CONTENEDOR DE IMÁGENES SELECCIONADAS */}
+                    <div className="
+            flex flex-wrap 
+            justify-center 
+            gap-2 p-3 
+            bg-gray-100 
+            max-h-60 
+            overflow-y-auto 
+            rounded-md 
+            w-full
+        ">
+                        {selectedFiles.map((filename) => (
+                            // Tarjeta miniatura para cada archivo seleccionado
+                            <div key={filename} className="w-20 h-20 overflow-hidden rounded-md shadow-md border border-gray-300 relative">
+                                <img
+                                    className="h-full object-cover w-full"
+                                    src={`/images/${filename}`}
+                                    alt={filename}
+                                />
+                                {/* Opcional: Badge con el nombre del archivo */}
+                                <span className="absolute bottom-0 w-full bg-black/50 text-white text-xs text-center truncate">
+                                    {filename}
+                                </span>
+                            </div>
+                        ))}
                     </div>
-                    <span className="content-center">
-                        {" "}
-                        Seguro que quieres eliminar {eliminarConfirmar}
-                    </span>
+                    {/* FIN CONTENEDOR DE IMÁGENES */}
+
                 </div>
-                <div className="flex justify-center mt-2">
+
+                <div className="flex justify-center mt-4 gap-4">
                     <button
-                        onClick={(e) => eliminar(e, eliminarConfirmar)}
+                        onClick={() => setShowConfirmModal(false)}
+                        type="button"
+                        className="bg-gray-400 rounded-md p-2 px-3 text-white hover:bg-gray-500"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        onClick={handleDeleteSelected} // Llama a la función de eliminación masiva
                         type="button"
                         className="bg-red-500 rounded-md p-2 px-3 text-white hover:bg-red-700"
                     >
-                        Eliminar
+                        Eliminar ({selectedFiles.length})
                     </button>
                 </div>
             </Modal>
@@ -412,23 +490,22 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
             <div>
                 <h1 className="my-6 font-bold text-4xl text-center">{verJuegos ? "GALERIA PRINCIPAL" : "JUGUETES"}</h1>
 
-               
-
                 <div className="flex gap-4 flex-wrap justify-around">
                     {images.map((file, index) => {
                         return (
                             <div
                                 ref={(element) => (imageRefs.current[index] = element)}
                                 key={index}
-                                onClick={() => open(file, index)}
+                                onClick={showEliminar ? (e) => toggleSelection(e, file) : () => open(file, index)}
                                 style={{
                                     boxShadow:
                                         "5px 5px 10px rgba(0, 0, 0, 0.5)",
                                 }}
-                                className={`${estadoVisual == 0 ? "flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]" 
-                                            : estadoVisual == 1 ? "flex-[1_0_48%] " : "flex-[1_0_100%] "}
+                                className={`${estadoVisual == 0 ? "flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]"
+                                    : estadoVisual == 1 ? "flex-[1_0_48%] " : "flex-[1_0_100%] "}
+                                                  ${selectedFiles.includes(file) ? 'ring-4 ring-blue-500 ring-offset-2' : ''}
                                              flex cursor-pointer  max-h-80 h-80  relative mb-4 rounded-md overflow-hidden`}>
-                               {/*  <LazyLoad
+                                {/*  <LazyLoad
                                     className="w-full h-full"
                                     offset={200}
                                 >
@@ -447,28 +524,23 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                                     {"--"}
                                 </span>
                                 {showEliminar && (
-                                    <svg
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setEliminarConfirmar(file);
-                                        }}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                        stroke="currentColor"
-                                        className="z-10 fill-blue-600 absolute top-2 right-3 text-white h-10 w-10 hover:fill-red-600 rounded-md hover:scale-110"
-                                        id="delete"
-                                        style={{
-                                            filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3))",
-                                        }}
+                                    <div
+                                        onClick={(e) => toggleSelection(e, file)} // Usa el handler de toggle aquí también
+                                        className="absolute top-2 right-2 cursor-pointer p-1 bg-white rounded-full shadow-lg"
                                     >
-                                        <path
-                                            className=""
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                                        />
-                                    </svg>
+                                        {/* Si está seleccionado, muestra el check; si no, muestra el círculo vacío */}
+                                        {selectedFiles.includes(file) ? (
+                                            // Icono de Check
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-blue-500">
+                                                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.882l-3.484 4.148-1.88-1.88a.75.75 0 1 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.25Z" clipRule="evenodd" />
+                                            </svg>
+                                        ) : (
+                                            // Icono de Círculo vacío
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-gray-500">
+                                                <circle cx="12" cy="12" r="10" />
+                                            </svg>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         );
@@ -479,14 +551,13 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                     show={openProdutM}
                     as={Fragment}
                     leave="duration-100"
-                   
+
                 >
                     <Dialog
                         as="div"
                         id="modal"
-                        className={`${
-                            openProdutM ? "" : "hidden"
-                        } fixed bg-black/50 inset-0 flex overflow-y-auto px-4 py-6 sm:px-0 items-start justify-center z-30 transform transition-all`}
+                        className={`${openProdutM ? "" : "hidden"
+                            } fixed bg-black/50 inset-0 flex overflow-y-auto px-4 py-6 sm:px-0 items-start justify-center z-30 transform transition-all`}
                         onClose={close}
                     >
                         <Transition.Child
@@ -499,10 +570,9 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel
-                            onClick={close}
-                                className={` w-full h-fit  ${
-                                    isClosing ? "modal-close" : "modal-open"
-                                }`}
+                                onClick={close}
+                                className={` w-full h-fit  ${isClosing ? "modal-close" : "modal-open"
+                                    }`}
                             >
                                 <button
                                     onClick={(e) => previousSlide(e)}
@@ -534,69 +604,69 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                                         <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z" />
                                     </svg>
                                 </button>
-                               <div className="flex flex-col gap-2 place-items-center ">
+                                <div className="flex flex-col gap-2 place-items-center ">
 
-                                  <div ref={Padre} onClick={(e) => e.stopPropagation()}  className={`relative -mt-20 h-full   w-full ${maxWidthClass}`}>
-                                    <div id={current} >
-                                        <div className={`${maxWidthClass} z-10 h-full bg-white absolute right-1/2 translate-x-1/2  p-6   rounded-lg shadow-xl transform transition-all duration-1000 w-full mx-auto `}>
-                                            <button
-                                              onClick={close}
-                                              className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
-                                          >
-                                              x
-                                          </button>
+                                    <div ref={Padre} onClick={(e) => e.stopPropagation()} className={`relative -mt-20 h-full   w-full ${maxWidthClass}`}>
+                                        <div id={current} >
+                                            <div className={`${maxWidthClass} z-10 h-full bg-white absolute right-1/2 translate-x-1/2  p-6   rounded-lg shadow-xl transform transition-all duration-1000 w-full mx-auto `}>
+                                                <button
+                                                    onClick={close}
+                                                    className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2"
+                                                >
+                                                    x
+                                                </button>
 
-                                          <h1 className="absolute left-9 top-16  text-white" style={{
-                                            filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                                        }}>{images[current]}</h1>
+                                                <h1 className="absolute left-9 top-16  text-white" style={{
+                                                    filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
+                                                }}>{images[current]}</h1>
 
-                                          <h5 className="text-xl font-bold text-center pb-2">
-                                              Detalle del Artículo
-                                          </h5>
+                                                <h5 className="text-xl font-bold text-center pb-2">
+                                                    Detalle del Artículo2
+                                                </h5>
 
-                                          <div className="overflow-hidden rounded-3xl shadow-md">
-                                            <div className="flex  h-full bg-white w-full transition ease-out duration-40">
-                                                <div className="block min-w-full w-full overflow-hidden">
-                                                    <div className="w-full h-full rounded-sm overflow-hidden ">
-                                                        <img
-                                                            className="h-full object-cover w-full"
-                                                            src={`/images/${images[current]}`}
-                                                            alt="Descripción"
-                                                        />
+                                                <div className="overflow-hidden rounded-3xl shadow-md">
+                                                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                                                        <div className="block min-w-full w-full overflow-hidden">
+                                                            <div className="w-full h-full rounded-sm overflow-hidden ">
+                                                                <img
+                                                                    className="h-full object-cover w-full"
+                                                                    src={`/images/${images[current]}`}
+                                                                    alt="Descripción"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        </div>
 
-                                        <div className={`${maxWidthClass} z-0  h-full bg-white opacity-0  p-6   rounded-lg shadow-xl transform transition-all duration-1000 sm:w-full sm:mx-auto `}>
-                                                                                
+                                            <div className={`${maxWidthClass} z-0  h-full bg-white opacity-0  p-6   rounded-lg shadow-xl transform transition-all duration-1000 sm:w-full sm:mx-auto `}>
 
-                                          <h5 className="text-xl font-bold text-center pb-2">
-                                              Detalle del Artículo
-                                          </h5>
 
-                                          <div className=" overflow-hidden">
-                                            <div className="flex  h-full bg-white w-full transition ease-out duration-40">
-                                                <div className="block min-w-full w-full rounded-3xl overflow-hidden">
-                                                    <div className="w-full h-full">
-                                                        <img
-                                                            className="h-full object-contain w-full"
-                                                            src={`/images/${images[current]}`}
-                                                            alt="Descripción"
-                                                        />
+                                                <h5 className="text-xl font-bold text-center pb-2">
+                                                    Detalle del Artículo
+                                                </h5>
+
+                                                <div className=" overflow-hidden">
+                                                    <div className="flex  h-full bg-white w-full transition ease-out duration-40">
+                                                        <div className="block min-w-full w-full rounded-3xl overflow-hidden">
+                                                            <div className="w-full h-full">
+                                                                <img
+                                                                    className="h-full object-contain w-full"
+                                                                    src={`/images/${images[current]}`}
+                                                                    alt="Descripción"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+
                                         </div>
 
                                     </div>
-                                     
-                                  </div>
 
-                                  <div onClick={(e) => e.stopPropagation()}  className={`w-full ${maxWidthClass} bg-white p-3 border-black rounded-md`}>
-                                
+                                    <div onClick={(e) => e.stopPropagation()} className={`w-full ${maxWidthClass} bg-white p-3 border-black rounded-md`}>
+
                                         <form
                                             onSubmit={agregarAlCarrito}
                                             className="flex gap-4 mt-4   justify-between "
@@ -678,14 +748,14 @@ export default function Dashboard({ imgHome, imgJuegos,  user  }) {
                                             </button>
                                         </div>
                                     </div>
-                                  </div>
+                                </div>
                             </Dialog.Panel>
                         </Transition.Child>
                     </Dialog>
                 </Transition>
 
-                <Loading  maxWidth='sm' show={loading} />
-               
+                <Loading maxWidth='sm' show={loading} />
+
                 <div
                     className="bg-nav fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer"
                     onClick={subir}

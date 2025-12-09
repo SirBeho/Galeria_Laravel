@@ -11,6 +11,7 @@ use function Laravel\Prompts\error;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log; // Importar para logging profesional
 
 
 class FileController extends Controller
@@ -79,19 +80,48 @@ class FileController extends Controller
     }
     
        
-
     public function eliminar(Request $request)
     {
-        try {
-            $file = $request->codigo;
-            // Definiendo la ruta completa del archivo
-            $path = public_path('images\\' . $file);
+        $request->validate([
+            'codigos' => 'required|array',
+            'codigos.*' => 'string', 
+        ]);
         
-            // Verificando si el archivo existe
-            if (File::exists($path)) {
-                File::delete($path);
+        $files = $request->input('codigos'); 
+
+        $deletionSuccessful = 0;
+        try {
+            foreach ($files as $file) {
+                // Definir la subcarpeta donde están las imágenes
+                $path = public_path('images/' . $file);
+                
+                // 3. Verificar y Eliminar
+                if (file_exists($path)) {
+                    unlink($path);
+                    Log::info("Archivo eliminado: " . $path); // Logging profesional
+                    $deletionSuccessful++;
+                } else {
+                    // Registrar si el archivo ya no existe, pero no detener el proceso
+                    Log::warning("Intento de eliminar archivo inexistente: " . $path);
+                  
+                    // Opcional: Podrías marcar $deletionSuccessful como false si deseas que falle
+                }
             }
+
+            return redirect()->back()->with('msj', [
+                'message' => $deletionSuccessful . ' archivos eliminados correctamente.',
+                'status' => 'success'
+            ]);
+          
         } catch (\Throwable $th) {
+            // 5. Manejo de Errores
+            Log::error('Error al eliminar archivos: ' . $th->getMessage());
+            
+            return redirect()->back()->with('msj', [
+                'message' => 'Error al eliminar archivos: ' . $th->getMessage(),
+                'status' => 'error'
+            ]);
         }
     }
 }
+    

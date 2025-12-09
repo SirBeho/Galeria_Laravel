@@ -21,14 +21,14 @@ const handlePrevious = (e) => {
     newDiv.className = `${maxWidthClass} bg-white absolute right-1/2 translate-x-full scale-75 opacity-0 p-6 mb-6 rounded-lg shadow-xl transform transition-all duration-1000 sm:w-full sm:mx-auto`;
 
     newDiv.innerHTML = `
-      <button onClick=${close} class="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2">x</button>
-      <h5 class="text-xl font-bold text-center pb-2">${header}</h5>
+      <button onClick=${close} className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2">x</button>
+      <h5 className="text-xl font-bold text-center pb-2">${header}</h5>
       <h1>${images[index]}</h1>
-      <div class="border overflow-hidden">
-        <div class="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
-          <div class="block min-w-full w-full rounded-3xl overflow-hidden">
-            <div class="w-full h-full">
-              <img class="h-full object-contain w-full" src="/images/${images[index]}" alt="Descripción" />
+      <div className="border overflow-hidden">
+        <div className="flex max-h-screen h-full bg-white w-full transition ease-out duration-40">
+          <div className="block min-w-full w-full rounded-3xl overflow-hidden">
+            <div className="w-full h-full">
+              <img className="h-full object-contain w-full" src="/images/${images[index]}" alt="Descripción" />
             </div>
           </div>
         </div>

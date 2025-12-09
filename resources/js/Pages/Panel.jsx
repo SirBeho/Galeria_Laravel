@@ -12,11 +12,11 @@ import { format,parseISO } from 'date-fns';
 export default function Panel({ pedidos , user }) {
 
 
-  window.addEventListener('popstate', function (event) {
+/*   window.addEventListener('popstate', function (event) {
     // El evento popstate se dispara cuando se utiliza el botón de retroceso en el navegador
     console.log('Botón de retroceso utilizado');
 
-  });
+  }); */
 
 
   pedidos.forEach(function(objeto) {
