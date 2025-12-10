@@ -16,7 +16,7 @@ import React, {
 import ReactDOM from "react-dom";
 import { Dialog, Transition } from "@headlessui/react";
 import { chip } from "@material-tailwind/react";
-import { ProductDetailModal}  from '@/Components/ProductDetailModal';
+
 
 
 export default function Dashboard({ imgHome, imgJuegos, user }) {
@@ -73,19 +73,16 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
         comentario: "",
     });
 
-    const StrollTo = () => {
-        if (imageRefs.current[current]) {
-            imageRefs.current[current].scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-            });
-        }
-    };
-
     const close = () => {
         console.log('pre Cerrando')
         if (!loading) {
-            StrollTo()
+            console.log('Cerrando')
+            if (imageRefs.current[current]) {
+                imageRefs.current[current].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+            }
             setIsClosing(true);
             setTimeout(() => {
                 setOpenProdutM(false);
@@ -157,7 +154,7 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
                 }
             }, 500);
         }
-    }; 
+    };
 
     useEffect(() => {
 
@@ -166,9 +163,7 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
 
     const open = (file, index) => {
 
-        console.log('abr',file, index);
         setCurrent(index);
-
         setOpenProdutM(true);
         setOpenProdut(file);
         setProducto({ ...producto, codigo: file });
@@ -206,11 +201,11 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
 
         setLoading(true);
         setShowConfirmModal(false);
-
+      
 
         post(route("eliminar.imagen", { codigos: selectedFiles }), {
             onSuccess: (response) => {
-                console.log(response);
+               console.log(response);
                 const updatedImages = images.filter(file => !selectedFiles.includes(file));
                 setImageNames(updatedImages);
 
@@ -243,8 +238,6 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
     }, [carrito]);
 
     const agregarAlCarrito = (e) => {
-        StrollTo();
-        console.log("Agregando al carrito:", producto);
         e.preventDefault();
         // setLoading(true);
         setAgregado(true);
@@ -382,10 +375,6 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
         );
     };
 
-
-
-    
-
     return (
         <Layout
             verJuegos={verJuegos}
@@ -420,6 +409,8 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
                     </button>
                 </div>
             </Modal>
+
+
 
             {showEliminar && selectedFiles.length > 0 && (
                 <div className="fixed bottom-4 left-1/2 z-40">
@@ -497,13 +488,7 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
             </Modal>
 
             <div>
-
-
-
                 <h1 className="my-6 font-bold text-4xl text-center">{verJuegos ? "GALERIA PRINCIPAL" : "JUGUETES"}</h1>
-                
-
-
 
                 <div className="flex gap-4 flex-wrap justify-around">
                     {images.map((file, index) => {
@@ -562,7 +547,7 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
                     })}
                 </div>
 
-        {/*   <Transition
+                <Transition
                     show={openProdutM}
                     as={Fragment}
                     leave="duration-100"
@@ -767,20 +752,8 @@ export default function Dashboard({ imgHome, imgJuegos, user }) {
                             </Dialog.Panel>
                         </Transition.Child>
                     </Dialog>
-                </Transition> */}
-    
-        <ProductDetailModal
-            isOpen={ openProdutM}          // Estado para abrir/cerrar el modal
-            close={close}                  // Tu función para cerrar
-            images={images}                // Tu array de imágenes
-            current={current}              // Tu estado del índice actual
-            setCurrent={(index) => {setCurrent(index) ,setProducto({ ...producto, codigo: images[index] ,cantidad:1 , comentario:"" })}} // Función para actualizar el índice actual
-            producto={producto}            // Tu estado del formulario
-            setProducto={setProducto}      // Tu función para actualizar el formulario
-            agregarAlCarrito={agregarAlCarrito} // Tu función de envío
-        /> 
-        
-                
+                </Transition>
+
                 <Loading maxWidth='sm' show={loading} />
 
                 <div
