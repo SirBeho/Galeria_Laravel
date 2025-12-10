@@ -31,11 +31,11 @@ Almacena la información de los productos, usuarios administradores y registros 
 
 | Galería Principal (Grid) | Detalle de Producto (Modal) |
 | :---: | :---: |
-| ![Home View](ruta/a/tu/imagen_home.png) | ![Modal View](ruta/a/tu/imagen_modal.png) |
+| ![Home View](./public/Info/home.png) | ![Modal View](./public/Info/modal_tablet.png) | 
 
-| Carrito de Compras | Vista Móvil |
+| Carrito de Pedidos | Vista Móvil |
 | :---: | :---: |
-| ![Cart View](ruta/a/tu/imagen_cart.png) | ![Mobile View](ruta/a/tu/imagen_mobile.png) |
+| ![Cart View](./public/Info/carrito.png) |![Mobile View](./public/Info/home_tablet.png) | 
 ---
 
 ## 🎯 Funcionalidades Clave
