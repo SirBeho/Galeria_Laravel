@@ -1,4 +1,4 @@
-# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos [![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml)
+# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos [![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/laravel.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/laravel.yml)
 
 <img src="https://simpleskill.icons.workers.dev/svg?i=laravel,react,tailwindcss,mysql,vite,php" height="40">
 
@@ -27,6 +27,15 @@ Actúa como el núcleo robusto del sistema, gestionando el sistema de archivos (
 > **Base de Datos (MySQL)**
 Almacena la información de los productos, usuarios administradores y registros de pedidos para un control eficiente del inventario y ventas.
 
+## 📸 Capturas de Pantalla
+
+| Galería Principal (Grid) | Detalle de Producto (Modal) |
+| :---: | :---: |
+| ![Home View](./public/Info/home.png) | ![Modal View](./public/Info/modal_tablet.png) | 
+
+| Carrito de Pedidos | Vista Móvil |
+| :---: | :---: |
+| ![Cart View](./public/Info/carrito.png) |![Mobile View](./public/Info/home_tablet.png) | 
 ---
 
 ## 🎯 Funcionalidades Clave
