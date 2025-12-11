@@ -29,7 +29,7 @@ Almacena la información de los productos, usuarios administradores y registros 
 
 ## 📸 Capturas de Pantalla
 
-| Galería Principal (Grid) | Detalle de Producto (Modal) |
+| Galería Principal  | Detalle de Producto (Modal) |
 | :---: | :---: |
 | ![Home View](./public/Info/home.png) | ![Modal View](./public/Info/modal_tablet.png) | 
 
