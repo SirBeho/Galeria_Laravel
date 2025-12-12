@@ -22,10 +22,7 @@ export function ProductDetailModal({
     setOpenProdut(file);
     setProducto({ ...producto, codigo: file });
  */
-    useEffect(() => {
-        console.log(producto);
 
-    }, [producto]);
 
     const nextSlide = (e) => {
         e?.stopPropagation();

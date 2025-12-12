@@ -1,164 +1,234 @@
 // CarritoComponente.js
 import axios from 'axios';
-import { useForm } from '@inertiajs/inertia-react';
-import React, { useEffect, useState } from 'react';
-import Modal from '@/Components/Modal';
-import { set } from 'date-fns';
+import { useForm } from '@inertiajs/react';
+import React, { use, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-number-input/input'
 import Loading from './Loading';
 
-const CarritoComponente = ({ carrito, setNewCarrito, close, setPedidoCreado }) => {
+// Eliminamos Modal y set, ya que no se usan en este componente
+// import Modal from '@/Components/Modal'; 
+// import { set } from 'date-fns';
 
+const CarritoComponente = ({ carrito, setCarrito, close, setPedidoCreado }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const { data, setData, post, reset } = useForm({
+  const { data, setData, post, transform, processing, errors } = useForm({
     nombre: "",
     telefono: "",
-
   });
 
   useEffect(() => {
-    const DatosGuardados = JSON.parse(localStorage.getItem('perdatos')) || [];
-    setData(DatosGuardados);
+    console.log('Carrito en componente:', carrito);
+}, [carrito]);
+
+
+  // Cargar datos de contacto (nombre/telefono) desde localStorage
+  useEffect(() => {
+    try {
+      const guardado = JSON.parse(localStorage.getItem('perdatos'));
+      if (guardado) {
+        setData({
+          nombre: guardado.nombre || "",
+          telefono: guardado.telefono || ""
+        });
+      }
+    } catch (e) {
+      console.error("Error al cargar datos locales", e);
+    }
   }, []);
 
+  // Guardar datos de contacto al cambiar
   useEffect(() => {
-    localStorage.setItem('perdatos', JSON.stringify(data));
+    if (data.nombre || data.telefono) {
+      localStorage.setItem('perdatos', JSON.stringify(data));
+    }
   }, [data]);
 
-
   useEffect(() => {
-    setNewCarrito(carrito);
+      console.log('Carrito actualizado:');
+              localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
-
   const eliminarDelCarrito = (indice) => {
-    const nuevoCarrito = [...carrito];
-    nuevoCarrito.splice(indice, 1);
-    setNewCarrito(nuevoCarrito);
+    const nuevoCarrito = carrito.filter((_, i) => i !== indice);
+    setCarrito(nuevoCarrito);
+  };
+
+  const Limpiar = () => {
+    setCarrito([]);
+    localStorage.removeItem('carrito');
   };
 
   const enviarPedido = (e) => {
 
     e.preventDefault();
-    setLoading(true);
-    axios.post(route("pedido.add", { ...data, carrito }))
-      .then((response) => {
 
+    // Validación básica de campos
+    if (carrito.length === 0) {
+      // Mantenemos este check porque Inertia no valida si el carrito está vacío
+      alert("El carrito está vacío. Agregue artículos para continuar.");
+      return;
+    }
+
+    transform((currentData) => ({
+      ...currentData,               
+       carrito
+    }));
+
+    post(route("pedido.add"), {
+      data: { ...data, nombre: 'Joselito' },
+      onStart: () => setLoading(true),
+      onFinish: () => setLoading(false),
+      onSuccess: (response) => {
+        // Asumiendo que Laravel devuelve un mensaje de éxito en la respuesta
+        // (Si tu endpoint devuelve una redirección, onSuccess se maneja automáticamente)
+        // Usaremos tu lógica anterior para el mensaje de éxito:
         alert(response.data.message);
-        setLoading(false);
-        setPedidoCreado(response.data);
+        setPedidoCreado(response.data); // Ajusta esto según lo que Inertia devuelva
         close();
-
-      })
-      .catch((error) => {
-        console.log(error.response?.data?.error)
-        alert(error.response.data?.error);
-      });
+        Limpiar();
+      },
+      onError: (errors) => {
+  
+        console.error("Errores de validación:", errors);
+        alert(error.response?.data?.error || "Ocurrió un error al procesar el pedido.");
+        // Los mensajes de error se mostrarán debajo de los inputs.
+      }
+    });
   }
 
 
 
-  const Limpiar = () => {
-    setNewCarrito([]);
 
-    localStorage.removeItem('carrito');
-  };
-  function isValidPhoneNumber(phoneNumber) {
-    return /^\(\d{3}\) \d{3}-\d{4}$/.test(phoneNumber);
-  }
+  
+
+  // Función de validación ya no es necesaria si PhoneInput se encarga del patrón
+  // function isValidPhoneNumber(phoneNumber) {
+  //     return /^\(\d{3}\) \d{3}-\d{4}$/.test(phoneNumber);
+  // }
+
 
   return (
+    <div className="flex flex-col h-full bg-white relative">
+      <Loading show={processing} />
 
-    <>
-      <Loading show={loading} />
-      <form onSubmit={enviarPedido} className="flex flex-col items-center   overflow-x-auto shadow-md sm:rounded-lg border">
-        <div className="flex justify-start flex-wrap min-[500px]:flex-nowrap  gap-2 w-full p-2  ">
 
-          <label className="flex  w-full gap-1">
-            <span>Nombre:</span>
-            <input placeholder="Ingrese su nombre" required={true} value={data?.nombre} onChange={(e) => { setData({ ...data, nombre: e.target.value }) }} type="text" className="w-full border rounded-md  border-none focus:outline-blue-300 p-0 px-2" />
-          </label>
+      <form onSubmit={enviarPedido} className="flex flex-col h-full">
+        {/* 1. SECCIÓN DE CONTACTO */}
+        <div className="p-2 border-b bg-gray-50">
+          <h3 className="text-base font-bold text-gray-800 mb-1">Información de Contacto</h3>
+          {/* INPUT NOMBRE */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <label className="flex flex-col w-full text-sm font-medium text-gray-600">
+              Nombre:
+              <input
+                placeholder="Ingrese su nombre"
+                required={true}
+                value={data.nombre}
+                onChange={(e) => { setData("nombre", e.target.value) }}
+                type="text"
+                className="w-full border border-gray-300 rounded-lg p-1 mt-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+              {errors.nombre && <p className="text-xs text-red-500 mt-1">{errors.nombre}</p>}
+            </label>
 
-          <label className="flex w-full gap-1">
-
-            <span>Telefono:</span>
-
-            <PhoneInput
-              country='DO'
-              value={data?.telefono}
-              onChange={(e) => setData({ ...data, telefono: e })}
-              className="w-full  border-none  rounded-md outline-none  focus:outline-blue-300 p-0 px-2"
-              placeholder="Ingrese su telefono"
-              pattern="^\(\d{3}\) \d{3}-\d{4}$"
-              required={true}
-            />
-
-          </label>
-
+            {/* INPUT TELÉFONO */}
+            <label className="flex flex-col w-full text-sm font-medium text-gray-600">
+              Teléfono:
+              <PhoneInput
+                country='DO'
+                value={data.telefono}
+                onChange={(e) => setData("telefono", e)}
+                className="w-full border border-gray-300 rounded-lg p-1 mt-1 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="(000) 000-0000"
+                pattern="^\(\d{3}\) \d{3}-\d{4}$"
+                required={true}
+              />
+              {errors.telefono && <p className="text-xs text-red-500 mt-1">{errors.telefono}</p>}
+            </label>
+          </div>
         </div>
 
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="sm:px-6 py-3">
-                Imagen
-              </th>
-              <th scope="col" className="sm:px-6 py-3">
-                Código
-              </th>
-              <th scope="col" className="sm:px-6 py-3">
-                Cantidad
-              </th>
-              <th scope="col" className="sm:px-6 py-3">
-                Comentario
-              </th>
-              <th scope="col" className="sm:px-6 py-3">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+        {/* 2. SECCIÓN DE ARTÍCULOS (SCROLLABLE) */}
+        <div className="flex-1 overflow-y-auto p-1">
+          <h3 className="text-lg font-bold text-gray-800 mb-1 flex justify-between items-center">
+            Artículos ({carrito?.length || 0})
+            {carrito?.length > 0 && (
+              <button
+                onClick={Limpiar}
+                type='button'
+                className='text-xs font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors'
+              >
+                Vaciar Carrito
+              </button>
+            )}
+          </h3>
 
-            {carrito?.map((item, index) => {
-              return (
-                <tr key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  <td>
-                    <img className="h-16 object-cover w-16" src={`/images/${item.codigo}`} alt="foto" />
-                  </td>
-                  <td className="sm:px-6 py-4">
-                    {item.codigo}
-                  </td>
-                  <td className="sm:px-6 py-4">
-                    {item.cantidad}
-                  </td>
-                  <td className="sm:px-6 py-4">
-                    {item.comentario}
-                  </td>
+          {carrito.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">El carrito está vacío. Agregue artículos para continuar.</p>
+          ) : (
+            <div className="space-y-2">
+              {carrito?.map((item, index) => (
+                <div key={index} className="flex bg-white border border-gray-200 rounded-lg shadow-sm p-3 items-center">
+                  {/* Imagen */}
+                  <img
+                    className="h-16 w-16 object-cover rounded-md flex-shrink-0 mr-4"
+                    src={`/images/${item.codigo}`}
+                    alt={`Artículo ${item.codigo}`}
+                  />
 
-                  <td className="sm:px-6 py-4">
-                    <button type='button' className='bg-red-500 rounded-md hover:bg-red-400 text-white p-1 ' onClick={() => eliminarDelCarrito(index)}>Eliminar</button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+                  {/* Detalles */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {item.codigo}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Cant: <span className="font-bold">{item.cantidad}</span>
+                    </p>
+                    {item.comentario && (
+                      <p className="text-xs text-blue-600 italic mt-1">
+                        "{item.comentario}"
+                      </p>
+                    )}
+                  </div>
 
+                  {/* Acciones */}
+                  <button
+                    type='button'
+                    className='text-gray-400 hover:text-red-500 p-2 transition-colors'
+                    onClick={() => eliminarDelCarrito(index)}
+                    title="Eliminar"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-        <button type='submit' className='bg-green-500 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>Enviar Pedido</button>
+        {/* 3. FOOTER DE ENVÍO (STICKY/FIJO) */}
+        <div className="p-4 border-t bg-white shadow-lg sticky bottom-0">
 
-        <button onClick={Limpiar} type='button' className='absolute bottom-6 right-8 text-xs bg-red-500 my-2 w-fit px-2 rounded-md hover:bg-black text-white p-1'>Borrar todo</button>
-
+          <button
+            type='submit'
+            disabled={carrito.length === 0 || processing}
+            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white font-bold text-lg transition-colors transform active:scale-[0.99] shadow-md
+                        ${carrito.length === 0 || processing ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
+              <path fillRule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 003 3h15a3 3 0 003-3v-7.5zm-18 3.75a.75.75 0 01.75-.75h.008v.008H5.25v-.008zM12 13.5a.75.75 0 00-.75.75v.008h.008V13.5H12z" clipRule="evenodd" />
+            </svg>
+            {processing ? 'Enviando...' : 'Confirmar y Enviar Pedido'}
+          </button>
+        </div>
       </form>
-
-
-
-
-    </>
-  )
-
+    </div >
+  );
 };
 
 export default CarritoComponente;

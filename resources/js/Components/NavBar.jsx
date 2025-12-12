@@ -1,50 +1,72 @@
-import React, { use, useEffect, useState } from "react";
-import Modal from "@/Components/Modal";
-import Loading from "./Loading";
-import CarritoComponente from "./CarritoComponente";
-import UserDropdown from "./UserDropdown";
+import React, { useEffect, useState } from "react";
+import { Link, usePage } from "@inertiajs/react";
 import { FaWhatsapp } from 'react-icons/fa';
 
-import { Link, useForm, usePage } from "@inertiajs/react";
+// Componentes y Contextos
+import Modal from "@/Components/Modal";
+import CarritoComponente from "./CarritoComponente"; // Asegúrate de que CarritoComponente use useCarrito()
+import UserDropdown from "./UserDropdown";
+import { useCarrito } from '@/Contexts/CarritoContext'; // 🟢 Contexto Carrito
+import { useVisual } from '@/Contexts/VisualContext';   // 🟢 Contexto Visual
 
-export default function NavBar({ carrito = {}, setNewCarrito, AltVerJuegos, verJuegos, estadoVisual, AltGrande, user, eliminar, mostrardo = () => { } }) {
+// NOTA: Debes importar axios en el componente si lo usas en handleOrderSent
+import axios from 'axios'; 
 
-  const { url } = usePage();
-  const isHome = url === '/'; // 🟢 Nueva constante para legibilidad
 
-  const [enviado, setEnviado] = useState(false);
-  const [pedidoCreado, setPedidoCreado] = useState(null);
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false); // Renombrado de 'edit'
+export default function NavBar({ user }) {
+    
+    // --- CONSUMO DE CONTEXTOS ---
+    // Carrito: Para el contador, el estado activo y el setter del modal.
+    const { carrito, setCarrito, isActive: isCarritoActive } = useCarrito();
+    
+    // Visual: Para los botones de vista y el modo eliminar.
+    const { 
+        verJuegos, 
+        toggleVerJuegos, 
+        estadoVisual, 
+        cycleEstadoVisual, 
+        showEliminar, 
+        toggleDeleteMode,
+        isActive: isVisualActive // Usamos esta bandera si solo quieres mostrar estos botones en páginas con Provider
+    } = useVisual();
 
-  // Lógica de WhatsApp consolidada
-  const handleSendOrder = () => {
-    // 1. Envía el pedido si el link existe
-    if (pedidoCreado?.whatsappLink) {
-      window.open(pedidoCreado.whatsappLink, '_blank');
-      setEnviado(true);
+    // --- ESTADOS LOCALES ---
+    const [enviado, setEnviado] = useState(false);
+    const [pedidoCreado, setPedidoCreado] = useState(null);
+    const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+    
+    // --- LÓGICA DE NAVEGACIÓN ---
+    const { url } = usePage();
+    const isHome = url === '/';
+
+    // Se ejecuta al cerrar el modal de pedido
+    useEffect(() => {
+        // console.log('Carrito en Nav:', carrito);
+        // Si el CarritoComponente usa useCarrito(), este useEffect es redundante
+    }, [carrito]); 
+
+    // Lógica de WhatsApp consolidada
+    const handleSendOrder = () => {
+        if (pedidoCreado?.whatsappLink) {
+            window.open(pedidoCreado.whatsappLink, '_blank');
+            setEnviado(true);
+        }
     }
-  }
 
-  // Finalización del pedido
-  const handleOrderSent = () => {
-    if (pedidoCreado?.pedido?.id) {
-      // Axios no está importado en tu código, asegúrate de importarlo (import axios from 'axios';)
-      axios.post(route("pedido.sent", { id: pedidoCreado.pedido.id }))
-        .then(() => {
-          setNewCarrito([]);
-          setPedidoCreado(null);
-          setEnviado(false);
-        })
-        .catch(error => {
-          console.error("Error al marcar pedido como enviado:", error);
-        });
+    // Finalización del pedido (se llama después de confirmar en WhatsApp)
+    const handleOrderSent = () => {
+        if (pedidoCreado?.pedido?.id) {
+            axios.post(route("pedido.sent", { id: pedidoCreado.pedido.id }))
+                .then(() => {
+                    setCarrito([]); // 🟢 Usa setCarrito del Contexto
+                    setPedidoCreado(null);
+                    setEnviado(false);
+                })
+                .catch(error => {
+                    console.error("Error al marcar pedido como enviado:", error);
+                });
+        }
     }
-  }
-
-  useEffect(() => {
-    console.log("Pedido Creado:", pedidoCreado);
-   
-  }, [pedidoCreado]);
 
   return (
     <>
@@ -60,7 +82,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, AltVerJuegos, verJ
             </div>
             {/* Toggle JUGUETES/TODOS (Solo en Home) */}
             {isHome && (
-                <button onClick={AltVerJuegos}
+                <button onClick={toggleVerJuegos}
                     // Tamaño y margen ajustados para ser menos invasivos en móvil
                     className="text-white text-sm md:text-base font-bold rounded-lg hover:scale-110 hover:cursor-pointer hover:text-blue-500 hover:fill-blue-500">
                     {verJuegos ? '🧸 JUGUETES' : '🎉 TODOS'}
@@ -84,7 +106,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, AltVerJuegos, verJ
             )}
             {user ?
               (
-                <UserDropdown user={user} eliminar={eliminar} mostrardo={mostrardo} />
+                <UserDropdown user={user} eliminar={showEliminar} mostrardo={toggleDeleteMode} />
               )
               :
               (
@@ -93,7 +115,7 @@ export default function NavBar({ carrito = {}, setNewCarrito, AltVerJuegos, verJ
                 </Link>
               )}
             {isHome && (
-              <div className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={AltGrande}>
+              <div className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
                 {estadoVisual === 0 && <img src="tres.svg" alt="grande" />}
                 {estadoVisual === 1 && <img src="dos.svg" alt="mediano" />}
                 {estadoVisual === 2 && <img src="uno.svg" alt="pequeño"  />}
@@ -130,8 +152,8 @@ export default function NavBar({ carrito = {}, setNewCarrito, AltVerJuegos, verJ
         </div>
       </Modal>
 
-      <Modal show={isCartModalOpen} close_x={true} header={"Datos del Carrito"} onClose={() => { setIsCartModalOpen(false) }}>
-        <CarritoComponente carrito={carrito} setNewCarrito={setNewCarrito} setPedidoCreado={setPedidoCreado} close={() => { setEdit(false) }} />
+      <Modal show={isCartModalOpen} close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
+        <CarritoComponente carrito={carrito} setCarrito={setCarrito} setPedidoCreado={setPedidoCreado} close={() => { setEdit(false) }} />
       </Modal>
     </>
   );
