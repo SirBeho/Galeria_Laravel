@@ -12,22 +12,33 @@ class PedidoController extends Controller
     
     public function add(Request $request)
     {
-        
+
+        $request->validate([
+            'nombre' => 'required|string',
+            'telefono' => 'required|string',
+            'carrito' => 'array|min:1|required', 
+            'carrito.*.codigo' => 'required|string',
+            'carrito.*.cantidad' => 'required|integer|min:1',
+            'carrito.*.comentario' => 'nullable|string',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'carrito.min' => 'El carrito debe contener al menos un artículo.',
+            'carrito.required' => 'El carrito no puede estar vacío.',
+        ]);
+       
         try {
-            if ($request->carrito == null) {
-                throw new \Exception('El carrito no puede estar vacío');
-            }
+            
+           
 
-            $request->validate([
-                'nombre' => 'required',
-                'telefono' => 'required',
-            ]);
-
+            
             $pedido = Pedido::create([
                 'nombre' => $request->nombre,
                 'telefono' => $request->telefono,
                 'key' => bin2hex(random_bytes(10)),
             ]);
+
+           
 
             $carrito = $request->carrito;
             foreach ($carrito as $item) {
@@ -40,6 +51,9 @@ class PedidoController extends Controller
                 ]);
             }
 
+          
+
+            
             $host = $_SERVER['HTTP_HOST'];
             $dir = dirname($_SERVER['REQUEST_URI']);
             $url = "http://" . $host . $dir . "pedido?p=$pedido->numero_pedido&key=$pedido->key";
@@ -47,20 +61,30 @@ class PedidoController extends Controller
             $whatsappLink = 'https://wa.me/18094624721/?text=' . urlencode(str_replace('\\', '/', $whatsappMessage));
 
            
-           
-            
+            session()->flash('pedido_status', [
+                'message' => 'Pedido creado correctamente',
+                'pedido' => $pedido,
+                'whatsappLink' => $whatsappLink,
+                'whatsapp_response' => 'Not attempted',
+               // 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
+            ]);
+    
+            return redirect()->back()->with('success', 'Pedido creado Correctamente.');
             //añadir respuesta de whatsapp
            
-            return response()->json([
+            /* return response()->json([
                 'message' => 'Pedido creado correctamente',
                 'pedido' => $pedido,
                 'whatsappLink' => $whatsappLink,
                 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
-            ]);
-            
-        } catch (\Throwable $th) {
+            ]); */
+        }  catch (\Throwable $th) {
+            Log::error("Fallo al crear pedido: " . $th->getMessage()); // 🟢 Registrar error
+    
+            // Devolver una respuesta JSON clara
             return response()->json([
-                'error' => $th->getMessage(),
+                'error' => 'Ocurrió un error interno al procesar el pedido.',
+                'details' => $th->getMessage(),
             ], 500);
         }
     }

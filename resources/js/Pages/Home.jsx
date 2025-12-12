@@ -13,13 +13,14 @@ import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
 import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { ProductDetailModal } from '@/Components/ProductDetailModal';
+import { set } from "date-fns";
 
 export default function Home({ imgHome, imgJuegos, user }) {
     
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
     // 🟢 Obtenemos el modo eliminar del contexto visual
-    const { verJuegos, estadoVisual, showEliminar, setShowEliminar } = useVisual();
+    const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
     
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos) : Object.values(imgHome);
@@ -28,6 +29,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
     const [agregado, setAgregado] = useState(false);
+    const [msj, setMsj] = useState(null);
     
     // 🟢 Estado local para la SELECCIÓN de archivos (esto vive solo en Home)
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -102,11 +104,11 @@ export default function Home({ imgHome, imgJuegos, user }) {
         setShowConfirmModal(false);
 
         postDelete(route("eliminar.imagen", { codigos: selectedFiles }), {
-            onSuccess: () => {
-                // Inertia recargará las props (imgHome/imgJuegos) automáticamente
+            onSuccess: (response) => {
+                setMsj(response.props.mensaje);
                 setSelectedFiles([]);
                 setLoading(false);
-                setShowEliminar(false); // 🟢 Salimos del modo eliminar al terminar con éxito
+                toggleDeleteMode(); 
             },
             onError: (err) => {
                 console.error(err);
@@ -147,6 +149,22 @@ export default function Home({ imgHome, imgJuegos, user }) {
                 <div className="flex justify-center mt-4 gap-4">
                     <button onClick={() => setShowConfirmModal(false)} className="bg-gray-400 rounded-md px-3 py-2 text-white hover:bg-gray-500">Cancelar</button>
                     <button onClick={handleDeleteSelected} className="bg-red-500 rounded-md px-3 py-2 text-white hover:bg-red-700">Eliminar ({selectedFiles.length})</button>
+                </div>
+            </Modal>
+
+            <Modal show={msj != null} onClose={() => setMsj(null)} header={"Productos Eliminados"} close_x={true}>
+                {msj?.success && <div className="text-center text-green-600 text-xl" >
+                    <p>{msj.message}</p>
+                </div>}
+
+                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+                    {msj.errors.map((error, index) => (
+                        <span className="block" key={index}>{error}</span>
+                    ))}
+                </div>}
+
+                <div className="flex justify-center mt-2" >
+                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
                 </div>
             </Modal>
 

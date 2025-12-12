@@ -19,51 +19,46 @@ class FileController extends Controller
          
     public function index(Request $request)
     {
-        $mensaje = session('msj');
-            if ($mensaje) {
-                Session::forget('msj');
-            }
-
-
         return Inertia::render('Subir',[
             'pedidos'=> Pedido::all()->sortBy('id')->load('detalle'),
-            'user' => auth()->user() ?? [],
-            'mensaje' => $mensaje
+            'user' => auth()->user() ?? []
         ]);
         
     }
 
-
-
     public function uploadImages(Request $request)
     {
-
-    
         $mensajesExitosos = 0;
         $mensajesErrores = [];
-         
-        $fileNames = scandir('../public/images');
+
+        $disk = Storage::disk('gallery');
+        $fileNames = $disk->files();
+        
         $numbers = array_map(function($file) {
-            preg_match('/(\d+)\.jpg$/', $file, $matches);
-            return isset($matches[1]) ? (int)$matches[1] : 0;
+            if (preg_match('/(\d+)\.jpg$/', $file, $matches)) {
+                return (int)$matches[1];
+            }
+            return 0;
         }, $fileNames);
            
         // Obtener el número más alto
         $maxNumber = max($numbers);
         
         foreach ($request->all() as $index => $file) {
-            if ($file->isValid()) {
+            if (is_a($file, \Illuminate\Http\UploadedFile::class) && $file->isValid()) {
                 $maxNumber++;
                 $name = $maxNumber . ".jpg";
                 
                 try {
-                    $file->move(public_path('images'), $name);
+                    $disk->putFileAs('/', $file, $name);
+                    
                     $mensajesExitosos ++;
                 } catch (\Exception $e) {
-                    $mensajesErrores[] = "Error al subir el archivo: " . $file->getClientOriginalName();
+                    $mensajesErrores[] = "Error al subir el archivo: " . $file->getClientOriginalName() . " - " . $e->getMessage();
+                    Log::error("Error al subir imagen: " . $e->getMessage());
                 }
             } else {
-                $mensajesErrores[] = "Error: El archivo no es válido.";
+                $mensajesErrores[] = "Error: El archivo no es válido o no es un archivo subido.";
             }
         }
         
@@ -74,8 +69,7 @@ class FileController extends Controller
         }
 
 
-       
-        return redirect()->route('subir')->with('msj', ['success' => $mensaje, 'errors' => $mensajesErrores]);
+        return redirect()->back()->with('msj', ['success' => $mensaje, 'errors' => $mensajesErrores]);
 
     }
     
@@ -87,30 +81,34 @@ class FileController extends Controller
             'codigos.*' => 'string', 
         ]);
         
-        $files = $request->input('codigos'); 
 
+        $files = $request->input('codigos'); 
+        $disk = Storage::disk('gallery'); // 🟢 Usar el disco
         $deletionSuccessful = 0;
+
         try {
-            foreach ($files as $file) {
-                // Definir la subcarpeta donde están las imágenes
-                $path = public_path('images/' . $file);
-                
+            foreach ($files as $fileName) {
                 // 3. Verificar y Eliminar
-                if (file_exists($path)) {
-                    unlink($path);
-                    Log::info("Archivo eliminado: " . $path); // Logging profesional
-                    $deletionSuccessful++;
-                } else {
-                    // Registrar si el archivo ya no existe, pero no detener el proceso
-                    Log::warning("Intento de eliminar archivo inexistente: " . $path);
-                  
-                    // Opcional: Podrías marcar $deletionSuccessful como false si deseas que falle
-                }
+                
+                if ($disk->exists($fileName)) { 
+                
+                    // 2. Intentar Eliminar (Si existe, debería funcionar)
+                    if ($disk->delete($fileName)) { 
+                        //Log::info("Archivo eliminado: " . $fileName);
+                        $deletionSuccessful++;
+                    } else {
+                        // Fallo de eliminación por permisos, etc.
+                        Log::error("Fallo grave al eliminar archivo existente: " . $fileName);
+                    }
+                    
+                } 
+                
             }
 
             return redirect()->back()->with('msj', [
+                'success' => true,
                 'message' => $deletionSuccessful . ' archivos eliminados correctamente.',
-                'status' => 'success'
+                'errors' => []
             ]);
           
         } catch (\Throwable $th) {
@@ -119,7 +117,7 @@ class FileController extends Controller
             
             return redirect()->back()->with('msj', [
                 'message' => 'Error al eliminar archivos: ' . $th->getMessage(),
-                'status' => 'error'
+                'errors' => ['error']
             ]);
         }
     }

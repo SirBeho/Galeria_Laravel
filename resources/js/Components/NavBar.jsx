@@ -34,6 +34,8 @@ export default function NavBar({ user }) {
     const [enviado, setEnviado] = useState(false);
     const [pedidoCreado, setPedidoCreado] = useState(null);
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+
+    const [msj, setMsj] = useState(null);
     
     // --- LÓGICA DE NAVEGACIÓN ---
     const { url } = usePage();
@@ -143,7 +145,7 @@ export default function NavBar({ user }) {
               ) : (
                 <span className='text-sm'>Haga clic aquí para enviarlo a WhatsApp</span>
               )}
-              <FaWhatsapp onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500" />
+              <FaWhatsapp onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500 animate-sheke2" />
               {enviado && (
                 <button type='button' onClick={handleOrderSent} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
               )}
@@ -152,8 +154,24 @@ export default function NavBar({ user }) {
         </div>
       </Modal>
 
+      <Modal show={msj != null} onClose={() => setMsj(null)} header={msj?.success ? "Éxito" : "Errores en el Pedido"}>
+                {msj?.success && <div className="text-center text-green-600 text-xl" >
+                    <p>{msj.success}</p>
+                </div>}
+
+                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+                    {msj.errors.map((error, index) => (
+                        <span className="block" key={index}>{error}</span>
+                    ))}
+                </div>}
+
+                <div className="flex justify-center mt-2" >
+                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
+                </div>
+            </Modal>
+
       <Modal show={isCartModalOpen} close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
-        <CarritoComponente setPedidoCreado={setPedidoCreado} />
+        <CarritoComponente setPedidoCreado={setPedidoCreado} setMsj={setMsj}/>
       </Modal>
     </>
   );

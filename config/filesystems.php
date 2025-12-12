@@ -60,6 +60,14 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/uploads'),
         ],
+        
+        'gallery' => [
+            'driver' => 'local',
+            'root' => public_path('images'), 
+            'visibility' => 'public',
+        ],
+
+
     ],
 
    

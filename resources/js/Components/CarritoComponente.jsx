@@ -5,12 +5,17 @@ import React, { use, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-number-input/input'
 import Loading from './Loading';
 import { useCarrito } from '@/Contexts/CarritoContext';
+import { usePage } from '@inertiajs/react';
+
+// ...
 
 // Eliminamos Modal y set, ya que no se usan en este componente
 // import Modal from '@/Components/Modal'; 
 // import { set } from 'date-fns';
 
-const CarritoComponente = ({  setPedidoCreado }) => {
+const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
+
+  
 
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +25,6 @@ const CarritoComponente = ({  setPedidoCreado }) => {
     nombre: "",
     telefono: "",
   });
-
-  useEffect(() => {
-    console.log('Carrito en componente:', carrito);
-}, [carrito]);
 
 
   // Cargar datos de contacto (nombre/telefono) desde localStorage
@@ -49,8 +50,7 @@ const CarritoComponente = ({  setPedidoCreado }) => {
   }, [data]);
 
   useEffect(() => {
-      console.log('Carrito actualizado:');
-              localStorage.setItem("carrito", JSON.stringify(carrito));
+    localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
   const eliminarDelCarrito = (indice) => {
@@ -75,28 +75,25 @@ const CarritoComponente = ({  setPedidoCreado }) => {
     }
 
     transform((currentData) => ({
-      ...currentData,               
-       carrito
+      ...currentData,     
+       carrito 
     }));
 
     post(route("pedido.add"), {
-      data: { ...data, nombre: 'Joselito' },
       onStart: () => setLoading(true),
       onFinish: () => setLoading(false),
       onSuccess: (response) => {
-        // Asumiendo que Laravel devuelve un mensaje de éxito en la respuesta
-        // (Si tu endpoint devuelve una redirección, onSuccess se maneja automáticamente)
-        // Usaremos tu lógica anterior para el mensaje de éxito:
-        alert(response.data.message);
-        setPedidoCreado(response.data); // Ajusta esto según lo que Inertia devuelva
-        close();
-        Limpiar();
+          console.log('success response:', response);
+          alert(response.props.flash.success);
+          setPedidoCreado(response.props.flash.pedido_status); 
+          Limpiar(); 
       },
       onError: (errors) => {
-  
+        setMsj({
+          errors: Object.values(errors),
+          success: false 
+      })
         console.error("Errores de validación:", errors);
-        alert(error.response?.data?.error || "Ocurrió un error al procesar el pedido.");
-        // Los mensajes de error se mostrarán debajo de los inputs.
       }
     });
   }

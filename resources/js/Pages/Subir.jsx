@@ -7,24 +7,14 @@ import Loading from "@/Components/Loading";
 
 
 
-export default function Subir({ user ,mensaje }) {
-   
+export default function Subir({ user }) {
+
     const { data, setData, post, processing, errors, reset } = useForm([]);
     const [loading, setLoading] = useState(false);
 
     const [images, setImages] = useState([]);
 
-    const [msj, setMsj] = useState(mensaje);
-
-    useEffect(() => {   
-        setMsj(mensaje);
-
-
-    }, [mensaje]);
-
-   
-     
-
+    const [msj, setMsj] = useState(null);
 
     const handleImageChange = (e) => {
         // Obtener los archivos seleccionados
@@ -32,21 +22,22 @@ export default function Subir({ user ,mensaje }) {
         // Filtrar los archivos seleccionados para excluir los duplicados
         const uniqueFiles = files.filter(file => !data.some(image => image.name === file.name));
         // Actualizar el estado con las nuevas imágenes
-        setData([...data,...uniqueFiles]);
+        setData([...data, ...uniqueFiles]);
 
         const imageList = uniqueFiles.map((file) => ({
             file,
             previewURL: URL.createObjectURL(file),
-          }));
-          setImages([ ...images,...imageList]);
-      };
-      
+        }));
+        setImages([...images, ...imageList]);
+    };
+
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
         post(route('subir.imagen'), {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                setMsj(response.props.mensaje);
                 reset();
                 setData([]);
                 setImages([]);
@@ -54,7 +45,7 @@ export default function Subir({ user ,mensaje }) {
             },
         });
 
-        
+
     };
 
     // Resto de tu código aquí...
@@ -66,43 +57,43 @@ export default function Subir({ user ,mensaje }) {
             <Loading show={loading} />
 
             <Modal show={msj != null} onClose={() => setMsj(null)} header={"Producto Agregado"} close_x={true}>
-       {msj?.success  && <div className="text-center text-green-600 text-xl" >
-          <p>{msj.success }</p>
-        </div>}
+                {msj?.success && <div className="text-center text-green-600 text-xl" >
+                    <p>{msj.success}</p>
+                </div>}
 
-        {msj?.errors  && <div className="text-center text-red-500 mt-4 text-sm">
-            {msj.errors.map((error, index) => (
-                <span className="block" key={index}>{error}</span>
-            ))}
-        </div>}
+                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+                    {msj.errors.map((error, index) => (
+                        <span className="block" key={index}>{error}</span>
+                    ))}
+                </div>}
 
-        <div className="flex justify-center mt-2" >
-          <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
-        </div>
-      </Modal>
+                <div className="flex justify-center mt-2" >
+                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
+                </div>
+            </Modal>
 
 
             <h1 className="pt-4 my-4 font-bold text-4xl">Subir Imagenes</h1>
 
             <div className="p-2 pt-8">
-         <div className="flex gap-4  ">
-                <label
-                    htmlFor="fileInput"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                >
-                    Cargar Imagenes
-                </label>
-                <input
-                    type="file"
-                    id="fileInput"
-                    className="hidden"
-                    multiple
-                    accept="image/*"
-                     
-                    onChange={handleImageChange}
-                />
+                <div className="flex gap-4  ">
+                    <label
+                        htmlFor="fileInput"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                    >
+                        Cargar Imagenes
+                    </label>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        className="hidden"
+                        multiple
+                        accept="image/*"
 
-                <span className="content-center">{data.length} archivos pre cargados</span>
+                        onChange={handleImageChange}
+                    />
+
+                    <span className="content-center">{data.length} archivos pre cargados</span>
                 </div>
                 <div className="flex flex-wrap mt-4 gap-3">
                     {images?.map((image, index) => (
@@ -147,14 +138,14 @@ export default function Subir({ user ,mensaje }) {
                         </div>
                     ))}
                 </div>
-                {data.length != 0&&
-                <div className="flex justify-center">
-                <button
-                    onClick={handleFormSubmit}
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mt-4"
-                >
-                    Guardar Imágenes
-                </button> </div>}
+                {data.length != 0 &&
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleFormSubmit}
+                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mt-4"
+                        >
+                            Guardar Imágenes
+                        </button> </div>}
 
             </div>
 
