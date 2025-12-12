@@ -14,7 +14,7 @@ class PedidoController extends Controller
     {
         
 
-       dd($request->all());
+       
         try {
             if ($request->carrito == null) {
                 throw new \Exception('El carrito no puede estar vacío');
@@ -50,15 +50,25 @@ class PedidoController extends Controller
 
            
            
-            
-            //añadir respuesta de whatsapp
-           
-            return response()->json([
+            session()->flash('pedido_status', [
                 'message' => 'Pedido creado correctamente',
                 'pedido' => $pedido,
                 'whatsappLink' => $whatsappLink,
                 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
             ]);
+    
+            // 🟢 FORZAR UNA REDIRECCIÓN A LA MISMA PÁGINA (o a donde sea)
+            // Inertia ve el 302 y detiene la renderización.
+            // La sesión 'pedido_status' estará disponible en la próxima página (Home).
+            return redirect()->back()->with('success', 'Pedido creado Correctamente.');
+            //añadir respuesta de whatsapp
+           
+            /* return response()->json([
+                'message' => 'Pedido creado correctamente',
+                'pedido' => $pedido,
+                'whatsappLink' => $whatsappLink,
+                'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
+            ]); */
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => $th->getMessage(),
