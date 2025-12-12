@@ -13,8 +13,6 @@ class PedidoController extends Controller
     public function add(Request $request)
     {
         
-
-       dd($request->all());
         try {
             if ($request->carrito == null) {
                 throw new \Exception('El carrito no puede estar vacío');
@@ -59,6 +57,7 @@ class PedidoController extends Controller
                 'whatsappLink' => $whatsappLink,
                 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
             ]);
+            
         } catch (\Throwable $th) {
             return response()->json([
                 'error' => $th->getMessage(),
