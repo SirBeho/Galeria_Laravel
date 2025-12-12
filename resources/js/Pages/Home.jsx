@@ -1,7 +1,7 @@
 import { Img } from "react-image";
 import Layout from "@/Layouts/Layout";
 import { Head, useForm } from "@inertiajs/react";
-import LazyLoad from "react-lazyload";
+import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
 import { set } from "date-fns";
@@ -396,16 +396,7 @@ export default function Dashboard({ nombres, user }) {
                                 }}
                                 className="  flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]  flex cursor-pointer  max-h-80 h-80  relative mb-4 rounded-md overflow-hidden"
                             >
-                                <LazyLoad
-                                    className="w-full h-full"
-                                    offset={200}
-                                >
-                                    <img
-                                        className="h-full object-cover w-full"
-                                        src={`/images/${file}`}
-                                        alt="Descripción"
-                                    />
-                                </LazyLoad>
+                                <LazyLoadedImage file={file} />
                                 <img
                                     className="w-32 absolute bottom-0 left-0"
                                     src="logo.png"
