@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Dropdown from "./Dropdown";
 
-const UserDropdown = ({user, eliminar, mostrardo}) => {
+const UserDropdown = ({user, showEliminar, toggleDeleteMode}) => {
        return (
         <div className=" sm:flex sm:items-center ">
                   <div className=" relative">
@@ -42,8 +42,8 @@ const UserDropdown = ({user, eliminar, mostrardo}) => {
                         <Dropdown >
                           <div className='bg-nav block w-full px-4 py-2 text-left text-sm leading-5 text-gray-300  focus:outline-none hover:text-slate-400 transition duration-150 ease-in-out '>
                             <label className="inline-flex items-center cursor-pointer gap-2 ">
-                              <span className=" text-sm  ">{eliminar ? "Mostrar eliminar" : "Sin eliminar"}</span>
-                              <input type="checkbox" checked={eliminar} onChange={(e) => mostrardo(e.target.checked)} value="" className="sr-only peer" />
+                              <span className=" text-sm  ">{showEliminar ? "Mostrar eliminar" : "Sin eliminar"}</span>
+                              <input type="checkbox" checked={showEliminar} onChange={toggleDeleteMode} value="" className="sr-only peer" />
                               <div className="relative w-11 h-6 bg-gray-200  rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                             </label>
                           </div>

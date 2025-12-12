@@ -4,14 +4,17 @@ import { useForm } from '@inertiajs/react';
 import React, { use, useEffect, useState } from 'react';
 import PhoneInput from 'react-phone-number-input/input'
 import Loading from './Loading';
+import { useCarrito } from '@/Contexts/CarritoContext';
 
 // Eliminamos Modal y set, ya que no se usan en este componente
 // import Modal from '@/Components/Modal'; 
 // import { set } from 'date-fns';
 
-const CarritoComponente = ({ carrito, setCarrito, close, setPedidoCreado }) => {
+const CarritoComponente = ({  setPedidoCreado }) => {
 
   const [loading, setLoading] = useState(false);
+
+  const { carrito, setCarrito } = useCarrito();
 
   const { data, setData, post, transform, processing, errors } = useForm({
     nombre: "",

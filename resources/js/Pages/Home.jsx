@@ -130,25 +130,28 @@ export default function Home({ imgHome, imgJuegos, user }) {
             </Modal>
 
             {/* 🟢 Modal Confirmar Eliminación */}
-            <Modal loading={loading} show={showConfirmModal} onClose={() => setShowConfirmModal(false)} header={`Confirmar Eliminación (${selectedFiles.length})`} close_x={true}>
+            <Modal loading={loading} show={showConfirmModal} onClose={() => setShowConfirmModal(false)} header={`Confirmar Eliminación (${selectedFiles.length} Archivos)`} close_x={true}>
                  <div className="py-4 flex flex-col items-center">
                     <h3 className="text-xl mb-4 font-semibold text-center">¿Seguro que desea eliminar estas imágenes?</h3>
                     <div className="flex flex-wrap justify-center gap-2 p-3 bg-gray-100 max-h-60 overflow-y-auto rounded-md w-full">
                         {selectedFiles.map((f) => (
                             <div key={f} className="w-20 h-20 overflow-hidden rounded-md shadow-md border relative">
                                 <img className="h-full object-cover w-full" src={`/images/${f}`} alt={f} />
+                                {/* <span className="absolute bottom-0 w-full bg-black/50 text-white text-xs text-center truncate">
+                                    {f}
+                                </span> */}
                             </div>
                         ))}
                     </div>
                 </div>
                 <div className="flex justify-center mt-4 gap-4">
                     <button onClick={() => setShowConfirmModal(false)} className="bg-gray-400 rounded-md px-3 py-2 text-white hover:bg-gray-500">Cancelar</button>
-                    <button onClick={handleDeleteSelected} className="bg-red-500 rounded-md px-3 py-2 text-white hover:bg-red-700">Eliminar</button>
+                    <button onClick={handleDeleteSelected} className="bg-red-500 rounded-md px-3 py-2 text-white hover:bg-red-700">Eliminar ({selectedFiles.length})</button>
                 </div>
             </Modal>
 
             {/* 🟢 Botón Flotante Eliminar (Solo visible si hay seleccionados) */}
-            {showEliminar && selectedFiles.length > 0 && (
+            {showEliminar && !showConfirmModal && selectedFiles.length > 0 && (
                 <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
                     <button onClick={() => setShowConfirmModal(true)} className="flex items-center px-4 h-14 bg-red-600 rounded-full text-white shadow-xl hover:bg-red-700 hover:scale-105 transition">
                         <span>Eliminar</span>
