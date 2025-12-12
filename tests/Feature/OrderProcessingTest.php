@@ -141,16 +141,10 @@ public function it_returns_validation_error_and_302__if_carrito_is_null()
 }
 
  /** @test */
- public function it_can_update_a_pedido_status_successfully()
+ public function it_updates_pedido_status_via_status_endpoint()
  {
      // ARRANGE: Crear un pedido con estado inicial 1
-     $pedido = Pedido::create([
-         'nombre' => 'Initial User',
-         'telefono' => '999',
-         'key' => 'initial_key',
-         'status' => 1, 
-         'numero_pedido' => 100 // Necesario si usas un campo 'numero_pedido'
-     ]);
+     $pedido = Pedido::factory()->create(['status' => 1]);
  
      $newStatus = 2; // El nuevo estado a asignar
  
@@ -171,4 +165,47 @@ public function it_returns_validation_error_and_302__if_carrito_is_null()
          'status' => $newStatus,
      ]);
  }
+
+  /** @test */
+ public function it_updates_pedido_status_to_sent_via_sent_endpoint()
+{
+    // ARRANGE: Crear un pedido con estado 1 (pendiente)
+    $pedido = Pedido::factory()->create(['status' => 1]);
+
+    // ACT: Llamar al endpoint 'sent' (debería cambiar el estado a 2)
+    // Asumimos que la ruta 'pedido.sent' llama a PedidoController::sent
+    $response = $this->post(route('pedido.sent'), [
+        'id' => $pedido->id,
+    ]);
+
+    // ASSERT: El endpoint 'sent' no devuelve contenido (200 OK o 204 No Content)
+    $response->assertStatus(200); 
+
+    // Verifica que la base de datos se actualizó
+    $this->assertDatabaseHas('pedido', [
+        'id' => $pedido->id,
+        'status' => 2, // Asumiendo que 2 es el estado 'enviado'
+    ]);
+}
+
+/** @test */
+public function status_endpoint_fails_validation_on_missing_or_invalid_data()
+{
+    // Caso 1: Falta 'status'
+    $response1 = $this->post(route('pedido.status'), ['id' => 1]);
+    $response1->assertStatus(302)
+              ->assertSessionHasErrors(['status']);
+
+    // Caso 2: 'status' no es numérico
+    $response2 = $this->post(route('pedido.status'), ['id' => 1, 'status' => 'ABC']);
+    $response2->assertStatus(302)
+              ->assertSessionHasErrors(['status']);
+
+    // Caso 3: 'id' es inválido (ej. null, si la validación es robusta)
+    // (Asumimos que el controlador valida 'id' como required)
+    $response3 = $this->post(route('pedido.status'), ['id' => null, 'status' => 3]);
+    $response3->assertStatus(302)
+              ->assertSessionHasErrors(['id']);
+}
+
 }

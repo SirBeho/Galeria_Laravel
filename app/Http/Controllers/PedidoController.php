@@ -47,7 +47,6 @@ class PedidoController extends Controller
                     'codigo' => $item['codigo'],
                     'cantidad' => $item['cantidad'],
                     'comentario' => $item['comentario'],
-                   
                 ]);
             }
 
@@ -157,11 +156,14 @@ class PedidoController extends Controller
 
 
     public function sent(Request $request)
+    
     {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
         try {
-            $request->validate([
-                'id' => 'required',
-            ]);
+           
 
             $pedido = Pedido::find($request->id);
             $pedido->update([
@@ -173,11 +175,12 @@ class PedidoController extends Controller
 
     public function status(Request $request)
     {
+        $request->validate([
+            'id' => 'required',
+            'status' => 'required|numeric',
+        ]);
         try {
-            $request->validate([
-                'id' => 'required',
-                'status' => 'required|numeric',
-            ]);
+            
             
             if ($request->id == null || $request->status == null) {
                 $request->merge(['id' => $request->input('id'), 'status' => $request->input('status')]);
