@@ -1,10 +1,15 @@
 import { useState, createContext, useContext, Fragment } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
 const DropDownContext = createContext();
 
+
+
 const Dropdown = ({ children }) => {
+
+
+
     const [open, setOpen] = useState(false);
 
     const toggleOpen = () => {
@@ -30,8 +35,12 @@ const Trigger = ({ children }) => {
     );
 };
 
-const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-nav', children }) => {
+const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-nav ', children }) => {
     const { open, setOpen } = useContext(DropDownContext);
+
+    const {
+        primaryColor,
+    } = usePage().props.designSettings;
 
     let alignmentClasses = 'origin-top';
 
@@ -60,10 +69,11 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-nav'
                 leaveTo="opacity-0 scale-95"
             >
                 <div
+                    style={{ backgroundColor: primaryColor }} 
                     className={`bg-nav absolute z-50 mt-4 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
                     onClick={() => setOpen(false)}
                 >
-                    <div className={`bg-nav rounded-md ring-1 ring-black ring-opacity-5 ` + contentClasses}>{children}</div>
+                    <div style={{ backgroundColor: primaryColor }}   className={`rounded-md ring-1 ring-black ring-opacity-5 ` + contentClasses}>{children}</div>
                 </div>
             </Transition>
         </>
@@ -71,13 +81,18 @@ const Content = ({ align = 'right', width = '48', contentClasses = 'py-1 bg-nav'
 };
 
 const DropdownLink = ({ className = '', children, ...props }) => {
+    const {
+        primaryColor,
+    } = usePage().props.designSettings;
     return (
         <Link
             {...props}
             className={
                 'bg-nav block w-full px-4 py-2 text-left text-sm leading-5 text-gray-300  focus:outline-none hover:text-slate-400 transition duration-150 ease-in-out ' +
                 className
+                
             }
+            style={{ backgroundColor: primaryColor }} 
         >
             {children}
         </Link>

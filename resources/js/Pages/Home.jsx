@@ -1,6 +1,6 @@
 import { Img } from "react-image";
 import Layout from "@/Layouts/Layout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm,usePage } from "@inertiajs/react";
 import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
@@ -12,6 +12,7 @@ import React, {
     useEffect,
     useRef,
     useState,
+    
 } from "react";
 import ReactDOM from "react-dom";
 import { Dialog, Transition } from "@headlessui/react";
@@ -30,6 +31,10 @@ export default function Dashboard({ nombres, user }) {
     const [isClosing, setIsClosing] = useState(false);
     const Padre = useRef(null);
     const imageRefs = useRef([]);
+
+    const { 
+        primaryColor, 
+    } = usePage().props.designSettings;
 
     const {
       data: producto,
@@ -327,6 +332,7 @@ export default function Dashboard({ nombres, user }) {
             <Head title="Catalogo" />
 
             <Modal
+                autoclose={3000}
                 loading={loading}
                 show={agregado}
                 onClose={() => setAgregado(false)}
@@ -645,7 +651,8 @@ export default function Dashboard({ nombres, user }) {
                 <Loading  maxWidth='sm' show={loading} />
                
                 <div
-                    className="bg-nav fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer"
+                    className="fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer"
+                    style={{ backgroundColor: primaryColor }}
                     onClick={subir}
                 >
                     <svg

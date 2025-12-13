@@ -1,0 +1,72 @@
+name: Deploy Produccion Optimizada
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Código Fuente
+      uses: actions/checkout@v4
+
+    # -----------------------------------------------
+    # 1. PREPARACIÓN DEL BACKEND
+    # -----------------------------------------------
+    - name: Configurar PHP (8.0)
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0' # Asegúrate que esta es la versión de tu hosting
+        extensions: pdo_mysql, dom, curl, mbstring, zip
+        tools: composer
+        
+    - name: Instalar Dependencias de Composer (Solo Prod)
+      run: composer install --prefer-dist --no-dev --optimize-autoloader
+      # ^ CLAVE: Ignora las dependencias de desarrollo (--no-dev) para un paquete más ligero.
+      
+    - name: Copiar .env de Producción
+      # Se asume que has guardado el contenido de tu .env de producción como un secreto
+      run: echo "${{ secrets.ENV_FILE }}" > .env
+      
+    - name: Optimizar Configuración y Rutas
+      run: |
+        php artisan key:generate
+        php artisan config:cache # Cachea la configuración para lectura más rápida
+        php artisan route:cache  # Cachea las rutas, esencial para velocidad
+        
+    # -----------------------------------------------
+    # 2. PREPARACIÓN DEL FRONTEND
+    # -----------------------------------------------
+    - name: Instalar Dependencias de NPM
+      run: npm install
+
+    - name: Compilar Assets con Vite (Producción)
+      run: npm run build
+      # ^ CLAVE: Genera los archivos minificados y optimizados en public/build.
+      
+    # -----------------------------------------------
+    # 3. DESPLIEGUE FINAL (FTP)
+    # -----------------------------------------------
+    - name: Deploy vía FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        # Excluye archivos que solo son necesarios en desarrollo o CI
+        exclude: |
+          .git*
+          .env.example
+          .env.testing
+          .env.local
+          .env.production
+          .env.cypress
+          .github
+          node_modules
+          tests
+          storage/framework/cache/data/*
+          # Mantenemos storage/app y storage/framework/sessions

@@ -35,9 +35,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
 
-       
-
-        
 
         return [
             ...parent::share($request),
@@ -49,6 +46,11 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'designSettings' => [
+            'logoUrl' => env('IMAGEN_PRINCIPAL_CODE', 'favico.png'),
+            'primaryColor' => env('COLOR_PRIMARIO', '#343a40'),
+            'secondaryColor' => env('COLOR_SECUNDARIO', '#2563EB'),
+        ],
         ];
     }
 }
