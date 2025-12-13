@@ -98,10 +98,11 @@ export default function NavBar({ user }) {
             {/* Botón Carrito */}
             {carrito.length > 0 && (
               <div
+                data-cy="cart-button"
                 className="bg-blue-600 rounded-md p-1 scale-75 md:scale-100 flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-700"
                 onClick={() => setIsCartModalOpen(true)}>
                 <img src="carrito.svg" alt="Carrito" className="w-5 h-5" />
-                <span className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
+                <span data-cy="cart-count-badge" className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
                   {carrito.length}
                 </span>
               </div>
@@ -117,17 +118,18 @@ export default function NavBar({ user }) {
                 </Link>
               )}
             {isHome && (
-              <div className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
+              <div  data-cy="toggle-view-btn"
+               className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
                 {estadoVisual === 0 && <img src="tres.svg" alt="grande" />}
                 {estadoVisual === 1 && <img src="dos.svg" alt="mediano" />}
-                {estadoVisual === 2 && <img src="uno.svg" alt="pequeño"  />}
+                {estadoVisual === 2 && <img src="uno.svg" alt="pequeno"  />}
               </div>)}
           </div>
         </div>
       </nav>
 
-      <Modal show={pedidoCreado != null} closeable={false} header={"Enviando a WhatsApp"} close_x={false}>
-        <div className='flex flex-col justify-center items-center text-center'>
+      <Modal  show={pedidoCreado != null} closeable={false} header={"Enviando a WhatsApp"} close_x={false}>
+        <div data-cy="success-message-pedido" className='flex flex-col justify-center items-center text-center'>
           <div className='py-8 text-2xl'>Su pedido se ha creado exitosamente <br /> Pedido no: {pedidoCreado?.pedido.numero_pedido}</div>
           {pedidoCreado?.whatsapp_response?.messages?.[0]?.message_status == 'accepted' ? (
             <>
@@ -145,16 +147,16 @@ export default function NavBar({ user }) {
               ) : (
                 <span className='text-sm'>Haga clic aquí para enviarlo a WhatsApp</span>
               )}
-              <FaWhatsapp onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500 animate-sheke2" />
+              <FaWhatsapp data-cy="whatsapp-send-icon"  onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500 animate-sheke2" />
               {enviado && (
-                <button type='button' onClick={handleOrderSent} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
+                <button type='button' data-cy="btn-get-send-whatsapp" onClick={handleOrderSent} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
               )}
             </>
             )}
         </div>
       </Modal>
 
-      <Modal show={msj != null} onClose={() => setMsj(null)} header={msj?.success ? "Éxito" : "Errores en el Pedido"}>
+      <Modal data-cy="validation-error" show={msj != null} onClose={() => setMsj(null)} header={msj?.success ? "Éxito" : "Errores en el Pedido"}>
                 {msj?.success && <div className="text-center text-green-600 text-xl" >
                     <p>{msj.success}</p>
                 </div>}
@@ -170,7 +172,7 @@ export default function NavBar({ user }) {
                 </div>
             </Modal>
 
-      <Modal show={isCartModalOpen} close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
+      <Modal show={isCartModalOpen}  close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
         <CarritoComponente setPedidoCreado={setPedidoCreado} setMsj={setMsj}/>
       </Modal>
     </>

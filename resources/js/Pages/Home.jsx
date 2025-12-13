@@ -124,10 +124,10 @@ export default function Home({ imgHome, imgJuegos, user }) {
             <Head title="Home" />
             
             {/* --- MODALES --- */}
-            <Modal show={agregado} onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
+            <Modal show={agregado}     onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
                 <div className="py-8 text-xl text-center">El producto se agregó correctamente</div>
                 <div className="flex justify-center mt-2">
-                    <button onClick={() => setAgregado(false)} className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
+                    <button onClick={() => setAgregado(false)} data-cy="modal-added-close-btn" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
                 </div>
             </Modal>
 
@@ -189,6 +189,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
                         <div
                             ref={(el) => (imageRefs.current[index] = el)}
                             key={index}
+                            data-cy={`gallery-item`}
                             // 🟢 Condicional de click: Si showEliminar es true, selecciona. Si no, abre modal.
                             onClick={showEliminar ? (e) => toggleSelection(e, file) : () => open(file, index)}
                             style={{ boxShadow: "5px 5px 10px rgba(0,0,0,0.5)" }}

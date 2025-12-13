@@ -95,7 +95,7 @@ export function ProductDetailModal({
                                     <div className="flex-1 ">
 
                                         {/* Encabezado del Formulario */}
-                                        <form id="order-form" onSubmit={agregarAlCarrito} className="flex flex-col md:gap-8  p-6 py-2 ">
+                                        <form id="order-form"  onSubmit={agregarAlCarrito} className="flex flex-col md:gap-8  p-6 py-2 ">
                                             <div className='flex md:flex-col md:gap-8 justify-between border-b md:border-b-0 pb-2  '>
                                                 <div className=" flex justify-between items-center bg-white w-fit md:w-full md:border-b md:pb-1">
                                                     <div>
@@ -121,6 +121,7 @@ export function ProductDetailModal({
                                                             className="flex-1 w-16 p-0  text-center border-none text-lg font-bold text-gray-800 focus:ring-0"
                                                         />
                                                         <button type="button"
+                                                            data-cy="increment-cantidad-btn"
                                                             className="w-14  bg-gray-50 h-full hover:bg-gray-100 text-xl font-bold text-gray-600 border-l transition-colors"
                                                             onClick={() => setProducto({ ...producto, cantidad: parseInt(producto.cantidad) + 1 || 1 })}
                                                         >+</button>
@@ -131,6 +132,7 @@ export function ProductDetailModal({
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">Comentario / Nota</label>
                                                 <textarea
+                                                    data-cy="input-comentario"
                                                     rows=""
                                                     className="w-full h-11 md:h-24 focus:h-20 rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none bg-gray-50"
                                                     placeholder="Ej: Quiero una docena de este color..."
@@ -144,6 +146,7 @@ export function ProductDetailModal({
                                     {/* Footer con Botón de Acción */}
                                     <div className="p-6 py-2 border-t bg-gray-50">
                                         <button
+                                            data-cy="add-to-cart-btn"
                                             form="order-form"
                                             type="submit"
                                             className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-transform active:scale-95 text-lg"
