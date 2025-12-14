@@ -16,10 +16,10 @@ jobs:
     # -----------------------------------------------
     # 1. PREPARACIÓN DEL BACKEND
     # -----------------------------------------------
-    - name: Configurar PHP (8.0)
+    - name: Configurar PHP (8.2)
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.0' # Asegúrate que esta es la versión de tu hosting
+        php-version: '8.2' # Asegúrate que esta es la versión de tu hosting
         extensions: pdo_mysql, dom, curl, mbstring, zip
         tools: composer
         
