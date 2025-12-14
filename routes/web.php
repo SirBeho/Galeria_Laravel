@@ -82,7 +82,8 @@ Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
 
 Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
-    
+    try {
+
     // 1. Verifica el Token de Seguridad
     // Obtén el token de tu .env, que debe ser un string largo y único
     if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
@@ -97,19 +98,26 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
         
         // Opcional: Eliminar el ZIP para limpiar el servidor
         File::delete($zipPath);
+        Log::info("Despliegue ejecutado y Archivo ZIP eliminado:  " . $output);
+    }else{
+        abort(404, 'Archivo ZIP no encontrado.');
     }
-
     // 2. Ejecuta los Comandos de Limpieza
-    try {
+   
         Artisan::call('optimize:clear');
         
-        // Opcional: Ejecutar otros comandos (como migración si es necesario)
-        // Artisan::call('migrate --force'); 
-
-        return response('Cache y Optimizaciones limpiadas con éxito.', 200);
+        // Retorna JSON para indicar éxito
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Despliegue completado, vendor descomprimido y caché limpiada.',
+        ], 200);
 
     } catch (\Exception $e) {
-        return response('Error durante la limpieza: ' . $e->getMessage(), 500);
+        // Retorna JSON para indicar error
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error durante la limpieza: ' . $e->getMessage(),
+        ], 500);
     }
 })->name('deploy.clean');
 
