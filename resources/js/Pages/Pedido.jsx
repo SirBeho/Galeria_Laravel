@@ -53,7 +53,7 @@ export default function Pedido({ pedido , user }) {
             <span className='font-bold'>Estado:</span>
             <select
               className="w-full border min-w-56 rounded-md border-none focus:outline-blue-300 p-0 px-2 whitespace-nowrap"
-              defaultValue={pedido.status}
+              value={pedido.status}
               onChange={(e) => {
                 setEstado(e.target.value);
                 post(route('pedido.status',{id:pedido.id,status:e.target.value}));

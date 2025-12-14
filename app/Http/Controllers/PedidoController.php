@@ -45,8 +45,14 @@ class PedidoController extends Controller
             $whatsappMessage = "Este es mi pedido No. $pedido->numero_pedido \n Puedes acceder aqui --> $url";
             $whatsappLink = 'https://wa.me/18094624721/?text=' . urlencode(str_replace('\\', '/', $whatsappMessage));
 
-           
-           
+            session()->flash('pedido_status', [
+                'message' => 'Pedido creado correctamente',
+                'pedido' => $pedido,
+                'whatsappLink' => $whatsappLink,
+                'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
+            ]);
+            
+            return redirect()->back()->with('success', 'Pedido creado, revisa WhatsApp.');
             
             //añadir respuesta de whatsapp
            

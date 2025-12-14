@@ -97,6 +97,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eliminar', [FileController::class, 'eliminar'])->name('eliminar.imagen');
     Route::post('/subir', [FileController::class, 'uploadImages'])->name('subir.imagen');
 
+    Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
+    
+        // 1. Verifica el Token de Seguridad
+        // Obtén el token de tu .env, que debe ser un string largo y único
+        if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
+            abort(403, 'Acceso Denegado. Token de limpieza inválido.');
+        }
+    
+        // 2. Ejecuta los Comandos de Limpieza
+        try {
+            Artisan::call('optimize:clear');
+            
+            // Opcional: Ejecutar otros comandos (como migración si es necesario)
+            // Artisan::call('migrate --force'); 
+    
+            return response('Cache y Optimizaciones limpiadas con éxito.', 200);
+    
+        } catch (\Exception $e) {
+            return response('Error durante la limpieza: ' . $e->getMessage(), 500);
+        }
+    })->name('deploy.clean');
+
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])

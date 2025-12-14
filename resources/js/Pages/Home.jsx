@@ -1,7 +1,7 @@
 import { Img } from "react-image";
 import Layout from "@/Layouts/Layout";
-import { Head, useForm } from "@inertiajs/react";
-import LazyLoad from "react-lazyload";
+import { Head, useForm,usePage } from "@inertiajs/react";
+import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
 import { set } from "date-fns";
@@ -12,6 +12,7 @@ import React, {
     useEffect,
     useRef,
     useState,
+    
 } from "react";
 import ReactDOM from "react-dom";
 import { Dialog, Transition } from "@headlessui/react";
@@ -30,6 +31,10 @@ export default function Dashboard({ nombres, user }) {
     const [isClosing, setIsClosing] = useState(false);
     const Padre = useRef(null);
     const imageRefs = useRef([]);
+
+    const { 
+        primaryColor, 
+    } = usePage().props.designSettings;
 
     const {
       data: producto,
@@ -327,6 +332,7 @@ export default function Dashboard({ nombres, user }) {
             <Head title="Catalogo" />
 
             <Modal
+                autoclose={3000}
                 loading={loading}
                 show={agregado}
                 onClose={() => setAgregado(false)}
@@ -396,16 +402,7 @@ export default function Dashboard({ nombres, user }) {
                                 }}
                                 className="  flex-[1_0_100%] min-[580px]:flex-[1_0_48%]  min-[900px]:flex-[1_0_30%]  flex cursor-pointer  max-h-80 h-80  relative mb-4 rounded-md overflow-hidden"
                             >
-                                <LazyLoad
-                                    className="w-full h-full"
-                                    offset={200}
-                                >
-                                    <img
-                                        className="h-full object-cover w-full"
-                                        src={`/images/${file}`}
-                                        alt="Descripción"
-                                    />
-                                </LazyLoad>
+                                <LazyLoadedImage file={file} />
                                 <img
                                     className="w-32 absolute bottom-0 left-0"
                                     src="logo.png"
@@ -654,7 +651,8 @@ export default function Dashboard({ nombres, user }) {
                 <Loading  maxWidth='sm' show={loading} />
                
                 <div
-                    className="bg-nav fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer"
+                    className="fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer"
+                    style={{ backgroundColor: primaryColor }}
                     onClick={subir}
                 >
                     <svg
