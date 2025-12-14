@@ -69,4 +69,26 @@ jobs:
           node_modules
           tests
           storage/framework/cache/data/*
+          public/images
           # Mantenemos storage/app y storage/framework/sessions
+    
+    # -----------------------------------------------
+    # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Nueva Etapa)
+    # -----------------------------------------------
+    - name: 🧹 Limpieza de Caché del Servidor Remoto
+    # Asegúrate de usar la APP_URL de tu .env (que debe ser https://xn--mundodelcumpleao-lub.com/)
+      run: |
+        DEPLOY_TOKEN="${{ secrets.DEPLOY_CLEAN_TOKEN }}"
+        DEPLOY_URL="${{ secrets.FTP_HOST }}" # Usamos FTP_HOST o creamos un nuevo secreto APP_URL_PROD
+        
+        # Opcional: Reemplaza FTP_HOST con tu URL real si tienes un secreto para ella
+        # En este ejemplo, asumiremos que tienes un secreto llamado APP_URL_PROD
+
+        CLEAN_URL="https://${{ secrets.APP_URL_PROD }}/limpiar-deploy-secreto/${DEPLOY_TOKEN}"
+        
+        echo "Activando limpieza de caché en el servidor..."
+        # El comando 'curl' realiza la solicitud HTTP a la ruta secreta
+        curl -fsSL -X GET "$CLEAN_URL"
+      env:
+        # Asegúrate de definir el secreto APP_URL_PROD en GitHub
+        APP_URL_PROD: xn--mundodelcumpleao-lub.com
