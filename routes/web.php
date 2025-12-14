@@ -107,6 +107,11 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
            
     }
     // 2. Ejecuta los Comandos de Limpieza
+
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear'); // Limpia la caché de configuración (donde está la ruta incorrecta)
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
    
         Artisan::call('optimize:clear');
         

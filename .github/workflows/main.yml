@@ -105,6 +105,7 @@ jobs:
           public/images 
           storage/framework/sessions/*
           storage/framework/cache/data/*
+          bootstrap/cache/services.php
           
           # Redundancia: Estos ya se borraron arriba, pero es buena práctica
           node_modules
