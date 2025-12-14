@@ -122,8 +122,8 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftp
         # El destino es la subcarpeta que el mundo ve
-        local-dir: public/ 
-        server-dir: public_html/
+        local-dir: ./public/ 
+        server-dir: ./public_html/
         
         # Excluir archivos grandes o innecesarios en public_html
         exclude: |
