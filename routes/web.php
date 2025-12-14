@@ -93,12 +93,26 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
     $zipPath = base_path('vendor.zip');
 
     if (File::exists($zipPath)) {
-        // Ejecuta el comando 'unzip' para extraer en el directorio raíz
-        $output = shell_exec("unzip -o {$zipPath} -d " . base_path());
+
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipPath) === TRUE) {
         
-        // Opcional: Eliminar el ZIP para limpiar el servidor
-        File::delete($zipPath);
-        Log::info("Despliegue ejecutado y Archivo ZIP eliminado:  " . $output);
+            // Extraer todo el contenido al directorio base (base_path())
+            $zip->extractTo(base_path());
+            $zip->close();
+            
+            // Opcional: Eliminar el ZIP para limpiar el servidor
+            File::delete($zipPath);
+            
+            Log::info("Vendor descomprimido usando ZipArchive.");
+            
+        } else {
+            // Falló al abrir el archivo ZIP (quizás corrupto o no es un ZIP)
+            throw new \Exception('No se pudo abrir el archivo vendor.zip para descompresión.');
+        }
+        // Ejecuta el comando 'unzip' para extraer en el directorio raíz
+        
     }else{
         return response()->json([
             'status' => 'success',
