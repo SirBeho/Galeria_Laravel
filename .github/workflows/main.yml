@@ -11,6 +11,7 @@ jobs:
     # Define la URL de producción como una variable de entorno para el Job
     env:
       APP_URL_PROD: xn--mundodelcumpleao-lub.com
+      DEPLOY_CLEAN_TOKEN: ${{ secrets.DEPLOY_CLEAN_TOKEN }}
 
     steps:
     - name: Checkout Código Fuente
@@ -100,7 +101,7 @@ jobs:
           # Archivos persistentes del servidor (PROTEGER DE BORRADO)
           storage/logs/
           storage/app/public/ 
-          public/images    
+          public/images 
           storage/framework/sessions/*
           
           # Redundancia: Estos ya se borraron arriba, pero es buena práctica
@@ -114,9 +115,8 @@ jobs:
     - name: 🧹 Descompresión y Limpieza de Caché del Servidor Remoto
       # Este paso se ejecuta después de que el FTP haya subido el código y el vendor.zip (si aplica)
       run: |
-        DEPLOY_TOKEN="${{ secrets.DEPLOY_CLEAN_TOKEN }}"
         # Construye la URL usando la variable de entorno del Job
-        CLEAN_URL="https://${{ env.APP_URL_PROD }}/limpiar-deploy-secreto/${DEPLOY_TOKEN}"
+        CLEAN_URL="https://${{ env.APP_URL_PROD }}/limpiar-deploy-secreto/${{ env.DEPLOY_CLEAN_TOKEN }}"
         
         echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
         # La opción -f failes silently on server errors (4xx/5xx)

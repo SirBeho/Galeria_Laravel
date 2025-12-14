@@ -81,6 +81,38 @@ Route::post('/add', [PedidoController::class, 'add'])->name('pedido.add');
 Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
 
+Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
+    
+    // 1. Verifica el Token de Seguridad
+    // Obtén el token de tu .env, que debe ser un string largo y único
+    if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
+        abort(403, 'Acceso Denegado. Token de limpieza inválido.');
+    }
+
+    $zipPath = base_path('vendor.zip');
+
+    if (File::exists($zipPath)) {
+        // Ejecuta el comando 'unzip' para extraer en el directorio raíz
+        $output = shell_exec("unzip -o {$zipPath} -d " . base_path());
+        
+        // Opcional: Eliminar el ZIP para limpiar el servidor
+        File::delete($zipPath);
+    }
+
+    // 2. Ejecuta los Comandos de Limpieza
+    try {
+        Artisan::call('optimize:clear');
+        
+        // Opcional: Ejecutar otros comandos (como migración si es necesario)
+        // Artisan::call('migrate --force'); 
+
+        return response('Cache y Optimizaciones limpiadas con éxito.', 200);
+
+    } catch (\Exception $e) {
+        return response('Error durante la limpieza: ' . $e->getMessage(), 500);
+    }
+})->name('deploy.clean');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -97,37 +129,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eliminar', [FileController::class, 'eliminar'])->name('eliminar.imagen');
     Route::post('/subir', [FileController::class, 'uploadImages'])->name('subir.imagen');
 
-    Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
     
-        // 1. Verifica el Token de Seguridad
-        // Obtén el token de tu .env, que debe ser un string largo y único
-        if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
-            abort(403, 'Acceso Denegado. Token de limpieza inválido.');
-        }
-
-        $zipPath = base_path('vendor.zip');
-
-        if (File::exists($zipPath)) {
-            // Ejecuta el comando 'unzip' para extraer en el directorio raíz
-            $output = shell_exec("unzip -o {$zipPath} -d " . base_path());
-            
-            // Opcional: Eliminar el ZIP para limpiar el servidor
-            File::delete($zipPath);
-        }
-    
-        // 2. Ejecuta los Comandos de Limpieza
-        try {
-            Artisan::call('optimize:clear');
-            
-            // Opcional: Ejecutar otros comandos (como migración si es necesario)
-            // Artisan::call('migrate --force'); 
-    
-            return response('Cache y Optimizaciones limpiadas con éxito.', 200);
-    
-        } catch (\Exception $e) {
-            return response('Error durante la limpieza: ' . $e->getMessage(), 500);
-        }
-    })->name('deploy.clean');
 
 });
 
