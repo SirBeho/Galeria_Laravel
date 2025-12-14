@@ -109,16 +109,12 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
         // Ejecuta el comando 'unzip' para extraer en el directorio raíz
         
     }else{
-        return response()->json([
-            'status' => 'success',
-            'message' => 'No se encontró el archivo vendor.zip. No se realizó ninguna acción.',
-        ], 200);
-           
+        log::info("El archivo vendor.zip no existe en la ruta esperada.");
     }
     // 2. Ejecuta los Comandos de Limpieza
 
     Artisan::call('cache:clear');
-    Artisan::call('config:clear'); // Limpia la caché de configuración (donde está la ruta incorrecta)
+    Artisan::call('config:clear'); 
     Artisan::call('route:clear');
     Artisan::call('view:clear');
    
