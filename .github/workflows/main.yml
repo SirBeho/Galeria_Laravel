@@ -45,7 +45,11 @@ jobs:
 
     - name: Compilar Assets con Vite (Producción)
       run: npm run build
-      # ^ CLAVE: Genera los archivos minificados y optimizados en public/build.
+
+    - name: 🗑️ Limpiar Workspace (Eliminar node_modules)  # <-- NUEVO PASO
+      run: |
+        echo "Eliminando node_modules y otros archivos grandes innecesarios..."
+        rm -rf node_modules 
       
     # -----------------------------------------------
     # 3. DESPLIEGUE FINAL (FTP)
@@ -59,18 +63,28 @@ jobs:
         protocol: ftp
         # Excluye archivos que solo son necesarios en desarrollo o CI
         exclude: |
-          .git*
-          .env.example
-          .env.testing
-          .env.local
-          .env.production
-          .env.cypress
-          .github
-          node_modules
-          tests
+          # 1. ARCHIVOS DE GIT Y CI (No son código de la app)
+          .git* # Metadatos del repositorio (no necesarios en producción)
+          .github           # El directorio de GitHub Actions
+          
+          # 2. DEPENDENCIAS DE DESARROLLO (Archivos grandes de la CI)
+          node_modules      # Dependencias de JS (solo necesarias para la compilación)
+          vendor            # Dependencias de PHP (si Composer no se instaló con --no-dev)
+          tests             # Archivos de pruebas PHP (no necesarios en producción)
+
+          # 3. ARCHIVOS SENSIBLES (.env y logs)
+          .env* # Excluye .env.example, .env.testing, etc.
+          .env              # ¡IMPORTANTE! Excluye el archivo .env que creamos en la CI.
+          storage/logs/* # Logs que genera el servidor (no se deben sobreescribir)
+          
+          # 4. CACHÉS RESIDUALES DE LA CI
           storage/framework/cache/data/*
-          public/images
-          # Mantenemos storage/app y storage/framework/sessions
+          
+          # 5. CARPETAS GRANDES DEL SERVIDOR (Las que quieres proteger de ser borradas)
+          public/images     # ⬅️ Tu carpeta de imágenes grandes
+          storage/app/public/* # ⬅️ Archivos subidos por usuarios (si usas storage:link)
+          storage/framework/sessions/* # ⬅️ Sesiones de usuario (para evitar conflictos)
+          storage/framework/cache/data/*
     
     # -----------------------------------------------
     # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Nueva Etapa)
