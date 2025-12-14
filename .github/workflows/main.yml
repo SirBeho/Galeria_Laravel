@@ -136,8 +136,4 @@ jobs:
         
         echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
         # La opción -f failes silently on server errors (4xx/5xx)
-        RESPONSE=$(curl -X GET -L "$CLEAN_URL") 
-        
-        # Imprimimos la respuesta completa (que contendrá el error)
-        echo "Respuesta del Servidor:"
-        echo "$RESPONSE"
+        curl -fsSL -X GET "$CLEAN_URL"
