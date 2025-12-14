@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use ZipArchive;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -70,12 +70,6 @@ Route::get('/pedido', function (Request $request) {
 })->name('pedido.view');
 
 
-   
-
-    
-
-
-
 Route::post('/notificacion', [PedidoController::class, 'notificacion_whatsapp'])->name('notificacion');
 
 Route::post('/add', [PedidoController::class, 'add'])->name('pedido.add');
@@ -95,7 +89,7 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
 
     if (File::exists($zipPath)) {
 
-        $zip = new ZipArchive;
+        $zip = new \ZipArchive;
 
         if ($zip->open($zipPath) === TRUE) {
         
