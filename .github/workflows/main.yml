@@ -84,32 +84,50 @@ jobs:
     # -----------------------------------------------
     # 3. DESPLIEGUE FINAL (FTP)
     # -----------------------------------------------
-    - name: Deploy vía FTP
+    - name: Deploy BACKEND
       uses: SamKirkland/FTP-Deploy-Action@v4.3.0
       with:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftp
-        # La acción subirá 'vendor.zip' si existe. Si no existe (cache hit), lo ignora.
+        server-dir: /
         exclude: |
-          .git* .github 
-          
-          # Archivos sensibles (NO SUBIR)
-          .env* .env             
-          
+          public/
+          .git* 
+          .github 
+          .env* 
+          .env
+
           # Archivos persistentes del servidor (PROTEGER DE BORRADO)
           storage/logs/
           storage/app/public/ 
           public/images 
           storage/framework/sessions/*
+          storage/framework/cache/data/*
           
           # Redundancia: Estos ya se borraron arriba, pero es buena práctica
           node_modules
           tests
           vendor
-
-    # -----------------------------------------------
+    - name: Deploy FRONTEND
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftp
+        # El destino es la subcarpeta que el mundo ve
+        server-dir: public_html/
+        # La fuente local es el contenido de la carpeta 'public/'
+        folder-path: public/ 
+        
+        # Excluir archivos grandes o innecesarios en public_html
+        exclude: |
+          .git* .github
+          # Excluir estos para protegerlos en el servidor
+          public/images
+      # -----------------------------------------------
     # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Descompresión Remota)
     # -----------------------------------------------
     - name: 🧹 Descompresión y Limpieza de Caché del Servidor Remoto
