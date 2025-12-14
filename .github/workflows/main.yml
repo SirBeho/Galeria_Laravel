@@ -118,7 +118,6 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftp
-        delete-remote: false
         # El destino es la subcarpeta que el mundo ve
         local-dir: public/ 
         server-dir: public_html/
