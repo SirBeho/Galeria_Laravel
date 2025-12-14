@@ -135,5 +135,19 @@ jobs:
         CLEAN_URL="https://${{ env.APP_URL_PROD }}/limpiar-deploy-secreto/${{ env.DEPLOY_CLEAN_TOKEN }}"
         
         echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
-        # La opción -f failes silently on server errors (4xx/5xx)
-        curl -fsSL -X GET "$CLEAN_URL"
+        HTTP_STATUS=$(curl -X GET -L -w "%{http_code}" -o response.txt "$CLEAN_URL") 
+        
+        # 2. LECTURA Y DIAGNÓSTICO
+        RESPONSE_BODY=$(cat response.txt)
+        
+        echo "Código de Estado HTTP: $HTTP_STATUS"
+        echo "Cuerpo de la Respuesta (Error/Éxito):"
+        echo "$RESPONSE_BODY"
+        
+        # 3. EVALUACIÓN DE FALLO (Si no es 200, marca el Job como Fallido)
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "::error::La limpieza del servidor falló. Código: $HTTP_STATUS. Mensaje: $RESPONSE_BODY"
+          exit 1
+        fi
+        
+      shell: /usr/bin/bash -e {0}
