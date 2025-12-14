@@ -110,6 +110,7 @@ jobs:
           node_modules
           tests
           vendor
+
     - name: Deploy FRONTEND
       uses: SamKirkland/FTP-Deploy-Action@v4.3.0
       with:
@@ -117,16 +118,14 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftp
+        delete-remote: false
         # El destino es la subcarpeta que el mundo ve
         local-dir: public/ 
         server-dir: public_html/
-        # La fuente local es el contenido de la carpeta 'public/'
         
         # Excluir archivos grandes o innecesarios en public_html
         exclude: |
-          .git* .github
-          # Excluir estos para protegerlos en el servidor
-          public/images
+          /images
       # -----------------------------------------------
     # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Descompresión Remota)
     # -----------------------------------------------
