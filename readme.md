@@ -1,4 +1,4 @@
-# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos [![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/laravel.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/laravel.yml)
+# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos [![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml)
 
 <img src="https://simpleskill.icons.workers.dev/svg?i=laravel,react,tailwindcss,mysql,vite,php" height="40">
 

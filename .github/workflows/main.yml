@@ -56,7 +56,7 @@ jobs:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftps
+        protocol: ftp
         # Excluye archivos que solo son necesarios en desarrollo o CI
         exclude: |
           .git*
