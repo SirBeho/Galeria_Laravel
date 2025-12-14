@@ -136,4 +136,16 @@ jobs:
         
         echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
         # La opción -f failes silently on server errors (4xx/5xx)
-        curl -fsSL -X GET "$CLEAN_URL"
+        RESPONSE_BODY=$(cat response.txt)
+        
+        echo "Código de Estado HTTP: $HTTP_STATUS"
+        echo "Cuerpo de la Respuesta (Error/Éxito):"
+        echo "$RESPONSE_BODY"
+        
+        # Evaluamos el estado: 200 es éxito. Cualquier otra cosa es un fallo.
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo "::error::La limpieza del servidor falló. Código: $HTTP_STATUS. Mensaje: $RESPONSE_BODY"
+          exit 1
+        fi
+        
+      shell: /usr/bin/bash -e {0}
