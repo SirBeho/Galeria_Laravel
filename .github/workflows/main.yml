@@ -138,6 +138,8 @@ jobs:
         # La opción -f failes silently on server errors (4xx/5xx)
         RESPONSE=$(curl -X GET -L "$CLEAN_URL")
 
+        echo "$RESPONSE"
+
         if echo "$RESPONSE" | grep -q '"status":"error"'; then
           echo "::error::La limpieza del servidor falló. Revisar el mensaje de error."
           exit 1 # Forzamos el fallo del Job con código 1
