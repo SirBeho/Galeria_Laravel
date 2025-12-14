@@ -100,7 +100,11 @@ Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
         File::delete($zipPath);
         Log::info("Despliegue ejecutado y Archivo ZIP eliminado:  " . $output);
     }else{
-        abort(404, 'Archivo ZIP no encontrado.');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'No se encontró el archivo vendor.zip. No se realizó ninguna acción.',
+        ], 200);
+           
     }
     // 2. Ejecuta los Comandos de Limpieza
    
