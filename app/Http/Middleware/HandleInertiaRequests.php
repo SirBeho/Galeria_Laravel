@@ -48,7 +48,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'designSettings' => [
             'logoUrl' => env('IMAGEN_PRINCIPAL_CODE', 'favico.png'),
-            'primaryColor' => env('COLOR_PRIMARIO', '#343a40'),
+            'primaryColor' => env('COLOR_PRIMARIO', '#2563EB'),
             'secondaryColor' => env('COLOR_SECUNDARIO', '#2563EB'),
         ],
         ];
