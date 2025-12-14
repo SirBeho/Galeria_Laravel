@@ -6,36 +6,59 @@ on:
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
+    
+    # Define la URL de producción como una variable de entorno para el Job
+    env:
+      APP_URL_PROD: xn--mundodelcumpleao-lub.com
 
     steps:
     - name: Checkout Código Fuente
       uses: actions/checkout@v4
 
     # -----------------------------------------------
-    # 1. PREPARACIÓN DEL BACKEND
+    # 1. PREPARACIÓN DEL BACKEND (con Caching Condicional)
     # -----------------------------------------------
     - name: Configurar PHP (8.2)
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2' # Asegúrate que esta es la versión de tu hosting
-        extensions: pdo_mysql, dom, curl, mbstring, zip
+        extensions: pdo_mysql, dom, curl, mbstring, zip # 'zip' es vital para el vendor.zip
         tools: composer
         
-    - name: Instalar Dependencias de Composer (Solo Prod)
+    - name: 💾 Restaurar Caché de Vendor
+      id: cache-vendor # ID para usar en condicionales
+      uses: actions/cache@v4
+      with:
+        # La clave cambia si composer.lock cambia, forzando un 'cache miss'
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        path: vendor # Cachea la carpeta 'vendor'
+        
+    - name: ⬇️ Instalar Dependencias de Composer (Solo si hay Cache Miss)
+      # Solo se ejecuta si el caché NO fue exitoso (es decir, composer.lock cambió)
+      if: steps.cache-vendor.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-dev --optimize-autoloader
-      # ^ CLAVE: Ignora las dependencias de desarrollo (--no-dev) para un paquete más ligero.
+      env:
+        COMPOSER_NO_INTERACTION: 1
+        COMPOSER_NO_AUDIT: 1
+        COMPOSER_PROCESS_TIMEOUT: 0 
       
     - name: Copiar .env de Producción
-      # Se asume que has guardado el contenido de tu .env de producción como un secreto
       run: echo "${{ secrets.ENV_FILE }}" > .env
       
     - name: Optimizar Configuración y Rutas
       run: |
         php artisan key:generate
-        php artisan config:cache # Cachea la configuración para lectura más rápida
-        php artisan route:cache  # Cachea las rutas, esencial para velocidad
+        php artisan config:cache
+        php artisan route:cache 
+        
+    - name: 📦 Empaquetar Vendor.zip (Solo si hay nuevo Vendor)
+      id: create-zip
+      # Solo se ejecuta si el caché falló (cache-miss) y se generó un nuevo vendor
+      if: steps.cache-vendor.outputs.cache-hit != 'true'
+      run: |
+        echo "Comprimiendo la nueva carpeta 'vendor' en vendor.zip..."
+        zip -r vendor.zip vendor/
         
     # -----------------------------------------------
     # 2. PREPARACIÓN DEL FRONTEND
@@ -45,12 +68,18 @@ jobs:
 
     - name: Compilar Assets con Vite (Producción)
       run: npm run build
-
-    - name: 🗑️ Limpiar Workspace (Eliminar node_modules)  # <-- NUEVO PASO
-      run: |
-        echo "Eliminando node_modules y otros archivos grandes innecesarios..."
-        rm -rf node_modules 
       
+    # -----------------------------------------------
+    # 2.1 Limpieza Final del Workspace
+    # -----------------------------------------------
+    - name: 🗑️ Limpiar Workspace antes de FTP
+      run: |
+        echo "Eliminando node_modules, tests, y carpeta vendor para subir solo el ZIP..."
+        rm -rf node_modules 
+        rm -rf tests 
+        rm -rf vendor # Eliminamos la carpeta vendor ya que su contenido está en vendor.zip
+        rm -rf storage/framework/cache/data # Cache generada en CI
+        
     # -----------------------------------------------
     # 3. DESPLIEGUE FINAL (FTP)
     # -----------------------------------------------
@@ -61,48 +90,34 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         protocol: ftp
-        # Excluye archivos que solo son necesarios en desarrollo o CI
+        # La acción subirá 'vendor.zip' si existe. Si no existe (cache hit), lo ignora.
         exclude: |
-          # 1. ARCHIVOS DE GIT Y CI (No son código de la app)
-          .git* # Metadatos del repositorio (no necesarios en producción)
-          .github           # El directorio de GitHub Actions
+          .git* .github 
           
-          # 2. DEPENDENCIAS DE DESARROLLO (Archivos grandes de la CI)
-          node_modules      # Dependencias de JS (solo necesarias para la compilación)
-          vendor            # Dependencias de PHP (si Composer no se instaló con --no-dev)
-          tests             # Archivos de pruebas PHP (no necesarios en producción)
+          # Archivos sensibles (NO SUBIR)
+          .env* .env             
+          
+          # Archivos persistentes del servidor (PROTEGER DE BORRADO)
+          storage/logs/
+          storage/app/public/ 
+          public/images    
+          storage/framework/sessions/*
+          
+          # Redundancia: Estos ya se borraron arriba, pero es buena práctica
+          node_modules
+          tests
+          vendor
 
-          # 3. ARCHIVOS SENSIBLES (.env y logs)
-          .env* # Excluye .env.example, .env.testing, etc.
-          .env              # ¡IMPORTANTE! Excluye el archivo .env que creamos en la CI.
-          storage/logs/* # Logs que genera el servidor (no se deben sobreescribir)
-          
-          # 4. CACHÉS RESIDUALES DE LA CI
-          storage/framework/cache/data/*
-          
-          # 5. CARPETAS GRANDES DEL SERVIDOR (Las que quieres proteger de ser borradas)
-          public/images     # ⬅️ Tu carpeta de imágenes grandes
-          storage/app/public/* # ⬅️ Archivos subidos por usuarios (si usas storage:link)
-          storage/framework/sessions/* # ⬅️ Sesiones de usuario (para evitar conflictos)
-          storage/framework/cache/data/*
-    
     # -----------------------------------------------
-    # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Nueva Etapa)
+    # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Descompresión Remota)
     # -----------------------------------------------
-    - name: 🧹 Limpieza de Caché del Servidor Remoto
-    # Asegúrate de usar la APP_URL de tu .env (que debe ser https://xn--mundodelcumpleao-lub.com/)
+    - name: 🧹 Descompresión y Limpieza de Caché del Servidor Remoto
+      # Este paso se ejecuta después de que el FTP haya subido el código y el vendor.zip (si aplica)
       run: |
         DEPLOY_TOKEN="${{ secrets.DEPLOY_CLEAN_TOKEN }}"
-        DEPLOY_URL="${{ secrets.FTP_HOST }}" # Usamos FTP_HOST o creamos un nuevo secreto APP_URL_PROD
+        # Construye la URL usando la variable de entorno del Job
+        CLEAN_URL="https://${{ env.APP_URL_PROD }}/limpiar-deploy-secreto/${DEPLOY_TOKEN}"
         
-        # Opcional: Reemplaza FTP_HOST con tu URL real si tienes un secreto para ella
-        # En este ejemplo, asumiremos que tienes un secreto llamado APP_URL_PROD
-
-        CLEAN_URL="https://${{ secrets.APP_URL_PROD }}/limpiar-deploy-secreto/${DEPLOY_TOKEN}"
-        
-        echo "Activando limpieza de caché en el servidor..."
-        # El comando 'curl' realiza la solicitud HTTP a la ruta secreta
+        echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
+        # La opción -f failes silently on server errors (4xx/5xx)
         curl -fsSL -X GET "$CLEAN_URL"
-      env:
-        # Asegúrate de definir el secreto APP_URL_PROD en GitHub
-        APP_URL_PROD: xn--mundodelcumpleao-lub.com

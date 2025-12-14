@@ -104,6 +104,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
             abort(403, 'Acceso Denegado. Token de limpieza inválido.');
         }
+
+        $zipPath = base_path('vendor.zip');
+
+        if (File::exists($zipPath)) {
+            // Ejecuta el comando 'unzip' para extraer en el directorio raíz
+            $output = shell_exec("unzip -o {$zipPath} -d " . base_path());
+            
+            // Opcional: Eliminar el ZIP para limpiar el servidor
+            File::delete($zipPath);
+        }
     
         // 2. Ejecuta los Comandos de Limpieza
         try {
