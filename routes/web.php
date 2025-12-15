@@ -36,17 +36,13 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create']);
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
 
-        $folderPath = dirname(__DIR__) . '/public/images';
-        $fileNames = scandir($folderPath);
-
-        $filteredFileNames = array_filter($fileNames, function($fileName) {
-            return $fileName !== '.' && $fileName !== '..';
-        });
-
-      
+        $imagePaths = Storage::disk('public')->files('images'); 
+        $imageUrls = collect($imagePaths)->map(function ($path) {
+            return Storage::disk('public')->url($path);
+        })->reverse()->values()->all();
 
         return Inertia::render('Home', [
-            'nombres' => array_reverse($filteredFileNames),
+            'nombres' => array_reverse($imageUrls),
             'user' => auth()->user() ?? false,
         ]);
 })->name('home');
