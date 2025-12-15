@@ -27,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        $settings = Cache::rememberForever('app_settings', function () {
+       /*  $settings = Cache::rememberForever('app_settings', function () {
             return Setting::all()->pluck('value', 'key')->toArray();
         });
     
-        config(['settings' => $settings]);    
+        config(['settings' => $settings]);     */
 
 
         Validator::extend('unique_name', function ($attribute, $value, $parameters, $validator) {
