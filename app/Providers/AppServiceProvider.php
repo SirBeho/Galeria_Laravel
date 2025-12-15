@@ -27,11 +27,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-       /*  $settings = Cache::rememberForever('app_settings', function () {
-            return Setting::all()->pluck('value', 'key')->toArray();
-        });
-    
-        config(['settings' => $settings]);     */
+        if (! $this->app->runningInConsole()) {
+            
+            $settings = Cache::rememberForever('app_settings', function () {
+                // Ahora esto solo se ejecuta si la DB está lista y es una petición web.
+                return Setting::all()->pluck('value', 'key')->toArray();
+            });
+        
+            // Usar Config::set() en lugar de la función helper config() es más robusto en Service Providers
+            Config::set('settings', $settings); 
+        }
 
 
         Validator::extend('unique_name', function ($attribute, $value, $parameters, $validator) {
