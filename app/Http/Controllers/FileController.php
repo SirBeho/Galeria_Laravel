@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia; // Importar para logging profesional
+use Illuminate\Support\Facades\Storage; // Importar para logging profesional
+use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Illuminate\Http\RedirectResponse;
 
 class FileController extends Controller
 {
-    public function index(Request $request) : InertiaResponse 
+    public function index(Request $request): InertiaResponse
     {
         return Inertia::render('Subir', [
             'pedidos' => Pedido::all()->sortBy('id')->load('detalle'),
@@ -21,7 +21,7 @@ class FileController extends Controller
 
     }
 
-    public function uploadImages(Request $request) : RedirectResponse
+    public function uploadImages(Request $request): RedirectResponse
     {
         $mensajesExitosos = 0;
         $mensajesErrores = [];
@@ -68,7 +68,7 @@ class FileController extends Controller
 
     }
 
-    public function eliminar(Request $request) : RedirectResponse
+    public function eliminar(Request $request): RedirectResponse
     {
         $request->validate([
             'codigos' => 'required|array',

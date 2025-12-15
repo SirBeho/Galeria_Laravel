@@ -7,11 +7,11 @@ export const useCarrito = () => {
     if (!context) {
         return {
             carrito: [], // Carrito vacío por defecto
-            setCarrito: () => {},
+            setCarrito: () => { },
             agregarAlCarrito: () => console.warn("Carrito no activo en esta página"),
-            eliminarDelCarrito: () => {},
-            vaciarCarrito: () => {},
-            isActive: false 
+            eliminarDelCarrito: () => { },
+            vaciarCarrito: () => { },
+            isActive: false
         };
     }
 
@@ -39,13 +39,13 @@ export const CarritoProvider = ({ children }) => {
         setCarrito([...carrito, item]);
     };
 
-   
+
     const eliminarDelCarrito = (indice) => {
         const nuevoCarrito = carrito.filter((_, i) => i !== indice);
         setCarrito(nuevoCarrito);
-        if (nuevo.length === 0) localStorage.removeItem('carrito');
+        if (nuevoCarrito.length === 0) localStorage.removeItem('carrito');
     };
-    
+
     const vaciarCarrito = () => {
         setCarrito([]);
         localStorage.removeItem('carrito');

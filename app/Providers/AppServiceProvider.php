@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\File;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

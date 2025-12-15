@@ -1,20 +1,30 @@
 
 import Layout from '@/Layouts/Layout';
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Head, Link, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
-import Loading from '@/Components/Loading';
+import { useEffect } from 'react';
 
-export default function Pedido({ pedido, user }) {
+export default function Pedido({ pedido, user, mensaje }) {
 
   const background = ['bg-red-500', 'bg-yellow-300', 'bg-yellow-300', 'bg-green-500'];
 
+  const [msj, setMsj] = useState(mensaje);
+
+  useEffect(() => {
+    if (mensaje) {
+      console.log(mensaje)
+      setMsj(mensaje);
+    }
+  }, [mensaje]);
+
   const [modalImg, setModalImg] = useState("");
 
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { post } = useForm({
   });
 
   const [estado, setEstado] = useState(pedido.status);
+
 
   return (
     <Layout user={user}>
@@ -31,7 +41,7 @@ export default function Pedido({ pedido, user }) {
       </div>
       {/* <div className={`${background[estado]} mt-6 p-4 rounded-xl border border-gray-300 shadow-lg`}> */}
       <div className={`${background[estado]}   xl:mx-20  rounded-xl overflow-hidden bg-gray-50 border border-gray-300 shadow-lg`}>
-      <div className="
+        <div className="
             grid   gap-y-1 gap-x-6      /* Espacio entre ítems */
             grid-cols-1          
             sm:grid-cols-2       
@@ -77,7 +87,7 @@ export default function Pedido({ pedido, user }) {
         <table className="border-t  border-black w-full text-lg text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
           <thead className="sm:table-header-group text-xs sm:text-base text-gray-700 uppercase bg-gray-50 ">
             <tr>
-            <th scope="col" className="px-6 py-3">Imagen</th>
+              <th scope="col" className="px-6 py-3">Imagen</th>
               <th scope="col" className="px-6 py-3">Cantidad</th>
               <th scope="col" className="px-6 py-3">Comentario</th>
             </tr>
@@ -86,7 +96,7 @@ export default function Pedido({ pedido, user }) {
 
             {pedido.detalle?.map((item, index) => {
               return (
-                <tr  data-cy="detalle-row" key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
+                <tr data-cy="detalle-row" key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
                   <td onClick={() => setModalImg(item.codigo)}>
                     <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`/images/${item.codigo}`} alt="foto" />
                   </td>
@@ -94,7 +104,7 @@ export default function Pedido({ pedido, user }) {
                     {item.codigo}
                   </td> */}
                   <td data-cy="detalle-Quantity"
-                   className="sm:px-6 py-4 text-center   ">
+                    className="sm:px-6 py-4 text-center   ">
                     {item.cantidad}
                   </td>
                   <td className="sm:px-6 py-4">
@@ -110,36 +120,53 @@ export default function Pedido({ pedido, user }) {
 
       </div>
 
-      {false &&
-        <div className='flex gap-3 justify-center'>
 
-          <Link
-            href={route('pedido.status', { id: pedido.numero_pedido, status: 0 })}
-            method="post"
-            as="button"
-            className='bg-red-500 my-2 w-fit px-2 rounded-md hover:bg-red-400 hover:scale-110 text-white p-1'
-          >
-            Cancelar Pedido
-          </Link>
-          <Link
-            href={route('pedido.status', { id: pedido.numero_pedido, status: 3 })}
-            method="post"
-            as="button"
-            className='bg-green-500 my-2 w-fit px-2 rounded-md hover:bg-green-400 hover:scale-110 text-white p-1'
-          >
-            Marcar como completado
-          </Link>
+      <div className='flex gap-3 justify-center'>
+
+        <Link
+          href={route('pedido.status', { id: pedido.id, status: 0 })}
+          method="post"
+          as="button"
+          className='bg-red-500 my-2 w-fit px-2 rounded-md hover:bg-red-400 hover:scale-110 text-white p-1'
+        >
+          Cancelar Pedido
+        </Link>
+        <Link
+          href={route('pedido.status', { id: pedido.id, status: 3 })}
+          method="post"
+          as="button"
+          className='bg-green-500 my-2 w-fit px-2 rounded-md hover:bg-green-400 hover:scale-110 text-white p-1'
+        >
+          Marcar como completado
+        </Link>
 
 
 
+      </div>
+
+
+      <Modal show={msj != null} onClose={() => setMsj(null)} header={"Productos Eliminados"} close_x={true}>
+        {msj?.success && <div className="text-center text-green-600 text-xl" >
+          <p>{msj.message}</p>
+        </div>}
+
+        {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+          {msj.errors.map((error, index) => (
+            <span className="block" key={index}>{error}</span>
+          ))}
+        </div>}
+
+        <div className="flex justify-center mt-5" >
+          <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
         </div>
-      }
+      </Modal>
+
 
       <Modal show={modalImg != ""} close_x={true} header={"Detalle del Artículo"} onClose={() => { setModalImg("") }}>
         <div className='flex justify-center bg-slate-100 p-2 rounded-md'>
           <div className="relative rounded-[0.5rem] overflow-hidden w-fit-content">
             <img id="modal-image" src={`images/${modalImg}`} className="img-fluid" alt="Imagen del artículo" />
-            <img className="w-32 absolute bottom-0 left-0" src="logo.png" />
+            <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
             <span id="modal-codigo" className="absolute top-10 left-16 text-black bg-white rounded-8 px-5"></span>
           </div>
         </div>

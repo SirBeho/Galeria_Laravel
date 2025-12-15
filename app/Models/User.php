@@ -2,20 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+
 /**
  * @property int $id
  * @property string $name
  * @property string $email
  * @property string $empresa
  * @property string $rnc
- * @property int $rol_id 
+ * @property int $rol_id
  * @property int $status
  * @property string $telefono
  * */
@@ -58,5 +56,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
 }

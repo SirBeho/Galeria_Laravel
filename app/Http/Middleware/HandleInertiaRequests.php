@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
+use Illuminate\Support\Facades\Log;
 
 // Importar para logging profesional
 
@@ -32,7 +33,6 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-
         return [
             ...parent::share($request),
             'auth' => [

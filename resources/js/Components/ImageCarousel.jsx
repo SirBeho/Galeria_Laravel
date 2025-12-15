@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import './galeria.css'; 
+import './galeria.css';
 
 export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast }) {
-    
+
     // --- ESTADOS ---
     const [direction, setDirection] = useState('right-to-left');
-    
+
     // Estados para el arrastre (Swipe)
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
@@ -26,7 +26,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
     };
 
     // --- HANDLERS DE GESTOS (MOUSE/TOUCH) ---
-    
+
     const onStart = (e) => {
         // Prevenir comportamiento por defecto (selección de texto, etc.)
         // e.preventDefault(); // A veces bloquea el scroll vertical en móviles, úsalo con cuidado.
@@ -75,7 +75,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
 
     return (
         <div className="relative w-full h-full flex items-center justify-center select-none">
-            
+
             {/* Botón Anterior */}
             <button
                 onClick={(e) => { e.stopPropagation(); handlePrev(); }}
@@ -87,10 +87,10 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
                 </svg>
             </button>
 
-        
+
 
             {/* AREA ACTIVA DE ARRASTRE */}
-            <div 
+            <div
                 className="carousel-viewport w-full h-full touch-pan-y" // touch-pan-y permite scroll vertical en móvil pero captura horizontal
                 onMouseDown={onStart}
                 onMouseMove={onMove}
@@ -104,7 +104,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
                     TransitionGroup está dentro para manejar el cambio de slides.
                 */}
                 <div className="w-full h-full" style={dragStyle}>
-                    <TransitionGroup 
+                    <TransitionGroup
                         className="w-full h-full"
                         childFactory={child => React.cloneElement(child, {
                             classNames: direction // 🟢 El truco 'childFactory' se mantiene
@@ -117,10 +117,10 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
                         >
                             {/* Slide Individual */}
                             <div className="carousel-slide flex items-center justify-center p-4">
-                                
+
                                 <div className="relative w-full h-full max-h-[85vh] bg-white rounded-xl shadow-2xl overflow-hidden flex items-center justify-center">
-                                    
-                                   {/*  
+
+                                    {/*  
                                    
                                     <h2 className="absolute top-4 left-6 text-2xl font-bold text-gray-800 z-10 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-md shadow-sm">
                                         {currentImageName}
@@ -134,7 +134,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
                                                 src={`/images/${currentImageName}`}
                                                 alt={currentImageName}
                                                 // Evitamos el arrastre nativo de la imagen "fantasma"
-                                                onDragStart={(e) => e.preventDefault()} 
+                                                onDragStart={(e) => e.preventDefault()}
                                             />
                                         ) : (
                                             <span className="text-gray-400">Imagen no disponible</span>

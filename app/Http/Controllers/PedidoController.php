@@ -10,15 +10,14 @@ use Inertia\Inertia;
 use function Laravel\Prompts\error;
 
 class PedidoController extends Controller
-{   
-
+{
     public function index(Request $request)
     {
         $validated = $request->validate([
-            'p' => ['required', 'integer'], 
-            'key' => ['required', 'string'], 
+            'p' => ['required', 'integer'],
+            'key' => ['required', 'string'],
         ]);
-        
+
         $numero_pedido = $validated['p'];
         $clave_acceso = $validated['key'];
 
@@ -34,14 +33,10 @@ class PedidoController extends Controller
 
         // 4. RESPUESTA (Si todo es correcto)
         return Inertia::render('Pedido', [
-            'user' => $request->user() ?? [], 
+            'user' => $request->user() ?? [],
             'pedido' => $pedido,
         ]);
     }
-    
-        
-
-
 
     public function add(Request $request)
     {
@@ -202,17 +197,28 @@ class PedidoController extends Controller
 
             if ($request->id == null || $request->status == null) {
                 $request->merge(['id' => $request->input('id'), 'status' => $request->input('status')]);
-            }
+            }   
+
+       
 
             $pedido = Pedido::findOrFail($request->id);
+
+            log::info('Pedido encontrado: '.$pedido->numero_pedido.' con estado actual: '.$pedido->status);
+
             $pedido->update([
                 'status' => $request->status,
             ]);
 
+            return redirect()->back()->with('msj', [
+                'success' => 'Estado del pedido actualizado correctamente.',
+                'message' => 'El estado del pedido No. '.$pedido->numero_pedido.' ha sido actualizado',
+            ]);
+
         } catch (\Throwable $th) {
-            return response()->json([
-                'error' => $th->getMessage(),
-            ], 500);
+           
+            return redirect()->back()->with('msj', [
+                'errors' => ['Error al actualizar el estado del pedido: '],
+            ]);
         }
     }
 }

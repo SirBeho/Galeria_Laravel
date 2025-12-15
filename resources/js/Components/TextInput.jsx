@@ -1,7 +1,10 @@
 import { forwardRef, useEffect, useRef } from 'react';
 
 export default forwardRef(function TextInput({ type = 'text', className = '', isFocused = false, ...props }, ref) {
-    const input = ref ? ref : useRef();
+    const internalRef = useRef(null);
+
+    // 2. Elegir qué ref usar para el elemento DOM
+    const input = ref || internalRef;
 
     useEffect(() => {
         if (isFocused) {

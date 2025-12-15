@@ -58,17 +58,17 @@ class LoginRequest extends FormRequest
         }
         if (Auth::check()) {
             /** @var \App\Models\User $user */ // 🚨 PHPDoc para calmar a Larastan con la propiedad status
-    $user = auth()->user();
-        if ( $user ->status == 0) {
-            Auth::logout();
+            $user = auth()->user();
+            if ($user->status == 0) {
+                Auth::logout();
 
-            RateLimiter::clear($this->throttleKey());
+                RateLimiter::clear($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'email' => 'Tu cuenta está desactivada. Contacta al administrador.',
-            ]);
+                throw ValidationException::withMessages([
+                    'email' => 'Tu cuenta está desactivada. Contacta al administrador.',
+                ]);
+            }
         }
-    }
 
         RateLimiter::clear($this->throttleKey());
     }
