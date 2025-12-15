@@ -1,10 +1,10 @@
 import Layout from "@/Layouts/Layout";
-import { Head, useForm,usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import React, { useState, useRef, useEffect } from "react"; // Agregué useEffect por si acaso
 
 // Contextos
 import { useCarrito } from '@/Contexts/CarritoContext';
-import { useVisual } from '@/Contexts/VisualContext'; 
+import { useVisual } from '@/Contexts/VisualContext';
 import { CarritoProvider } from '@/Contexts/CarritoContext'; // Para el layout
 import { VisualProvider } from '@/Contexts/VisualContext';   // Para el layout
 
@@ -13,64 +13,38 @@ import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
 import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { ProductDetailModal } from '@/Components/ProductDetailModal';
-import { set } from "date-fns";
-import React, {
-    Children,
-    Fragment,
-    act,
-    useEffect,
-    useRef,
-    useState,
-    
-} from "react";
-import ReactDOM from "react-dom";
-import { Dialog, Transition } from "@headlessui/react";
-import { chip } from "@material-tailwind/react";
 
-export default function Home({ imgHome, imgJuegos, user }) {
-    
+
+export default function Home({ imgHome, imgJuegos }) {
+
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
-    // 🟢 Obtenemos el modo eliminar del contexto visual
     const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
-    
+    const { logoUrl, primaryColor, secondaryColor } = usePage().props.designSettings;
+
     // --- IMÁGENES ---
-    const images = verJuegos ? Object.values(imgJuegos) : Object.values(imgHome);
+    const images = verJuegos ? Object.values(imgJuegos) : Object.values(imgHome || []);
 
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
     const [agregado, setAgregado] = useState(false);
     const [msj, setMsj] = useState(null);
-    
+
     // 🟢 Estado local para la SELECCIÓN de archivos (esto vive solo en Home)
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    
-    const [current, setCurrent] = useState(0); 
+
+    const [current, setCurrent] = useState(0);
     const imageRefs = useRef([]);
-    
+
     // Formulario para agregar producto
     const { data: producto, setData: setProducto, reset } = useForm({
         codigo: "", cantidad: 1, comentario: ""
     });
 
     // Formulario para eliminar (API Delete)
-    const { post: postDelete } = useForm({}); 
-    const { 
-        primaryColor, 
-    } = usePage().props.designSettings;
-
-    const {
-      data: producto,
-      setData: setProducto,
-      reset,
-  } = useForm({
-      nombre: "",
-      codigo: "",
-      cantidad: "",
-      comentario: "",
-  });
+    const { post: postDelete } = useForm({});
 
     // --- EFECTOS ---
     // Limpiar selección si se desactiva el modo eliminar desde el Navbar
@@ -114,10 +88,10 @@ export default function Home({ imgHome, imgJuegos, user }) {
     };
 
     // --- LOGICA DE ELIMINACIÓN ---
-    
+
     const toggleSelection = (e, filename) => {
         e.stopPropagation(); // Evita abrir el modal
-        setSelectedFiles(prev => 
+        setSelectedFiles(prev =>
             prev.includes(filename) ? prev.filter(n => n !== filename) : [...prev, filename]
         );
     };
@@ -134,7 +108,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
                 setMsj(response.props.mensaje);
                 setSelectedFiles([]);
                 setLoading(false);
-                toggleDeleteMode(); 
+                toggleDeleteMode();
             },
             onError: (err) => {
                 console.error(err);
@@ -148,9 +122,9 @@ export default function Home({ imgHome, imgJuegos, user }) {
     return (
         <>
             <Head title="Home" />
-            
+
             {/* --- MODALES --- */}
-            <Modal show={agregado}     onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
+            <Modal show={agregado} autoclose={3000} onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
                 <div className="py-8 text-xl text-center">El producto se agregó correctamente</div>
                 <div className="flex justify-center mt-2">
                     <button onClick={() => setAgregado(false)} data-cy="modal-added-close-btn" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
@@ -159,7 +133,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
 
             {/* 🟢 Modal Confirmar Eliminación */}
             <Modal loading={loading} show={showConfirmModal} onClose={() => setShowConfirmModal(false)} header={`Confirmar Eliminación (${selectedFiles.length} Archivos)`} close_x={true}>
-                 <div className="py-4 flex flex-col items-center">
+                <div className="py-4 flex flex-col items-center">
                     <h3 className="text-xl mb-4 font-semibold text-center">¿Seguro que desea eliminar estas imágenes?</h3>
                     <div className="flex flex-wrap justify-center gap-2 p-3 bg-gray-100 max-h-60 overflow-y-auto rounded-md w-full">
                         {selectedFiles.map((f) => (
@@ -209,10 +183,10 @@ export default function Home({ imgHome, imgJuegos, user }) {
                 <h1 className="my-6 font-bold text-4xl text-center">
                     {verJuegos ? "JUGUETES" : "GALERIA PRINCIPAL"}
                 </h1>
-                
+
                 <div className="flex gap-4 flex-wrap justify-around">
                     {images.map((file, index) => (
-                        <div
+                        <button
                             ref={(el) => (imageRefs.current[index] = el)}
                             key={index}
                             data-cy={`gallery-item`}
@@ -226,20 +200,20 @@ export default function Home({ imgHome, imgJuegos, user }) {
                             `}
                         >
                             <LazyLoadedImage file={file} />
-                            <img className="w-32 absolute bottom-0 left-0" src="logo.png" />
+                            <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
                             <span className="absolute top-2 left-4 text-black bg-white rounded-2xl px-2">--</span>
-                            
+
                             {/* 🟢 Indicador Visual de Selección (Checkbox/Círculo) */}
                             {showEliminar && (
-                                <div onClick={(e) => toggleSelection(e, file)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-lg z-10">
+                                <button onClick={(e) => toggleSelection(e, file)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-lg z-10">
                                     {selectedFiles.includes(file) ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-blue-500"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.882l-3.484 4.148-1.88-1.88a.75.75 0 1 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.25Z" clipRule="evenodd" /></svg>
                                     ) : (
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-gray-500"><circle cx="12" cy="12" r="10" /></svg>
                                     )}
-                                </div>
+                                </button>
                             )}
-                        </div>
+                        </button>
                     ))}
                 </div>
             </div>
@@ -256,13 +230,13 @@ export default function Home({ imgHome, imgJuegos, user }) {
                 producto={producto}
                 setProducto={setProducto}
                 agregarAlCarrito={handleAgregarAlCarrito}
-            /> 
-            
+            />
+
             <Loading maxWidth='sm' show={loading} />
 
-            <div className="bg-nav fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer" onClick={subir}>
+            <button style={{ backgroundColor: secondaryColor }} className="bg-nav fixed right-2 bottom-2 rounded-full w-16 h-16 flex items-center justify-center z-20 cursor-pointer" onClick={subir}>
                 <svg fill="white" className="w-8 h-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M32 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c53 0 96-43 96-96l0-306.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 109.3 160 416c0 17.7-14.3 32-32 32l-96 0z" /></svg>
-            </div>
+            </button >
         </>
     );
 }

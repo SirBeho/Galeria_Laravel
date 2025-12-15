@@ -1,7 +1,7 @@
-import React, { Fragment, use, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ImageCarousel } from './ImageCarousel';
-import { set } from 'date-fns';
+import { usePage } from '@inertiajs/react';
 
 export function ProductDetailModal({
     isOpen,
@@ -15,14 +15,7 @@ export function ProductDetailModal({
     maxWidthClass = "max-w-6xl" // Hacemos el modal ancho para escritorio
 }) {
 
-    /* console.log('abr',file, index);
-    //setCurrent(index);
-
-    
-    setOpenProdut(file);
-    setProducto({ ...producto, codigo: file });
- */
-
+    const { secondaryColor } = usePage().props.designSettings;
 
     const nextSlide = (e) => {
         e?.stopPropagation();
@@ -34,6 +27,8 @@ export function ProductDetailModal({
         e?.stopPropagation();
         if (current > 0) setCurrent(current - 1);
     };
+
+    const name = images[current]?.split('/').pop().split('.').slice(0, -1).join('.') || '';
 
     return (
         <Transition show={isOpen} as={Fragment}>
@@ -95,24 +90,27 @@ export function ProductDetailModal({
                                     <div className="flex-1 ">
 
                                         {/* Encabezado del Formulario */}
-                                        <form id="order-form"  onSubmit={agregarAlCarrito} className="flex flex-col md:gap-8  p-6 py-2 ">
+                                        <form id="order-form" onSubmit={agregarAlCarrito} className="flex flex-col md:gap-8  p-6 py-2 ">
                                             <div className='flex md:flex-col md:gap-8 justify-between border-b md:border-b-0 pb-2  '>
                                                 <div className=" flex justify-between items-center bg-white w-fit md:w-full md:border-b md:pb-1">
                                                     <div>
                                                         <h3 className="text-lg md:text-xl font-bold text-gray-900 md:pt-10">Preparar Pedido</h3>
-                                                        <p className="text-xs text-gray-500">Referencia: {images[current]}</p>
+                                                        <p className="text-[7px] text-gray-500">Referencia: {name} </p>
                                                     </div>
 
                                                 </div>
                                                 {/* Selector de Cantidad Grande */}
                                                 <div>
-                                                    <label className="  text-sm font-medium text-gray-700 mb-2">Cantidad</label>
+                                                    <label
+                                                        htmlFor='cantidad'
+                                                        className="  text-sm font-medium text-gray-700 mb-2">Cantidad</label>
                                                     <div className="flex items-center h-12 border border-gray-300 rounded-xl overflow-hidden">
                                                         <button type="button"
                                                             className="w-14  bg-gray-50 h-full hover:bg-gray-100 text-s font-bold text-gray-600 border-r transition-colors"
                                                             onClick={() => setProducto({ ...producto, cantidad: Math.max(1, parseInt(producto.cantidad) - 1) || 1 })}
                                                         >-</button>
                                                         <input
+                                                            id="cantidad"
                                                             required
                                                             type="number"
                                                             min="1"
@@ -130,8 +128,11 @@ export function ProductDetailModal({
                                             </div>
                                             {/* Comentario */}
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">Comentario / Nota</label>
+                                                <label
+                                                    htmlFor="comentario"
+                                                    className="block text-sm font-medium text-gray-700 mb-2">Comentario / Nota</label>
                                                 <textarea
+                                                    id="comentario"
                                                     data-cy="input-comentario"
                                                     rows=""
                                                     className="w-full h-11 md:h-24 focus:h-20 rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none bg-gray-50"
@@ -149,7 +150,8 @@ export function ProductDetailModal({
                                             data-cy="add-to-cart-btn"
                                             form="order-form"
                                             type="submit"
-                                            className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-transform active:scale-95 text-lg"
+                                            style={{ backgroundColor: secondaryColor }}
+                                            className="bg-blue-600 hover:scale-105 w-full flex justify-center items-center gap-2   text-white font-bold py-4 px-6 rounded-xl shadow-lg transform transition-transform active:scale-95 text-lg"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

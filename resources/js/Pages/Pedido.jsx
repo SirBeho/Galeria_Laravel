@@ -68,7 +68,7 @@ export default function Pedido({ pedido, user, mensaje }) {
             <span className='font-bold'>Estado:</span>
             <select
               data-cy="status-select"
-              className=" border min-w-56 rounded-md border-none focus:outline-blue-300 p-0 px-2 whitespace-nowrap"
+              className=" border  rounded-md border-none focus:outline-blue-300 p-0 px-2 whitespace-nowrap"
               value={pedido.status}
               onChange={(e) => {
                 setEstado(e.target.value);
@@ -88,7 +88,7 @@ export default function Pedido({ pedido, user, mensaje }) {
           <thead className="sm:table-header-group text-xs sm:text-base text-gray-700 uppercase bg-gray-50 ">
             <tr>
               <th scope="col" className="px-6 py-3">Imagen</th>
-              <th scope="col" className="px-6 py-3">Cantidad</th>
+              <th scope="col" className="px-6 py-3 text-center">Cantidad</th>
               <th scope="col" className="px-6 py-3">Comentario</th>
             </tr>
           </thead>
@@ -98,7 +98,7 @@ export default function Pedido({ pedido, user, mensaje }) {
               return (
                 <tr data-cy="detalle-row" key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
                   <td onClick={() => setModalImg(item.codigo)}>
-                    <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`/images/${item.codigo}`} alt="foto" />
+                    <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`${item.codigo}`} alt="foto" />
                   </td>
                   {/* <td className="sm:px-6 py-4">
                     {item.codigo}
@@ -107,7 +107,7 @@ export default function Pedido({ pedido, user, mensaje }) {
                     className="sm:px-6 py-4 text-center   ">
                     {item.cantidad}
                   </td>
-                  <td className="sm:px-6 py-4">
+                  <td className="sm:px-6 py-4 w-1/2">
                     {item.comentario}
                   </td>
 
@@ -165,7 +165,7 @@ export default function Pedido({ pedido, user, mensaje }) {
       <Modal show={modalImg != ""} close_x={true} header={"Detalle del Artículo"} onClose={() => { setModalImg("") }}>
         <div className='flex justify-center bg-slate-100 p-2 rounded-md'>
           <div className="relative rounded-[0.5rem] overflow-hidden w-fit-content">
-            <img id="modal-image" src={`images/${modalImg}`} className="img-fluid" alt="Imagen del artículo" />
+            <img id="modal-image" src={`${modalImg}`} className="img-fluid" alt="Imagen del artículo" />
             <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
             <span id="modal-codigo" className="absolute top-10 left-16 text-black bg-white rounded-8 px-5"></span>
           </div>

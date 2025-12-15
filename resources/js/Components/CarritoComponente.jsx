@@ -13,11 +13,11 @@ import { usePage } from '@inertiajs/react';
 // import Modal from '@/Components/Modal'; 
 // import { set } from 'date-fns';
 
-const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
+const CarritoComponente = ({ setPedidoCreado, setMsj }) => {
 
-  
 
-  
+
+
 
   const [loading, setLoading] = useState(false);
 
@@ -77,23 +77,23 @@ const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
     }
 
     transform((currentData) => ({
-      ...currentData,     
-       carrito 
+      ...currentData,
+      carrito
     }));
 
     post(route("pedido.add"), {
       onStart: () => setLoading(true),
       onFinish: () => setLoading(false),
       onSuccess: (response) => {
-           alert(response.props.flash.success);
-            setPedidoCreado(response.props.flash.pedido_status); 
-          Limpiar(); 
+        alert(response.props.flash.success);
+        setPedidoCreado(response.props.flash.pedido_status);
+        Limpiar();
       },
       onError: (errors) => {
         setMsj({
           errors: Object.values(errors),
-          success: false 
-      })
+          success: false
+        })
         console.error("Errores de validación:", errors);
       }
     });
@@ -102,7 +102,7 @@ const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
 
 
 
-  
+
 
   // Función de validación ya no es necesaria si PhoneInput se encarga del patrón
   // function isValidPhoneNumber(phoneNumber) {
@@ -178,23 +178,23 @@ const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
                   {/* Imagen */}
                   <img
                     className="h-16 w-16 object-cover rounded-md flex-shrink-0 mr-4"
-                    src={`/images/${item.codigo}`}
+                    src={`${item.codigo}`}
                     alt={`Artículo ${item.codigo}`}
                   />
 
                   {/* Detalles */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-900 truncate">
-                      {item.codigo}
+                      {'IMG' + item.codigo?.split('/').pop().split('.').slice(0, -1).join('.') || ''}
                     </p>
-                    <p  data-cy="cart-item-quantity"
-                     className="text-sm text-gray-500">
+                    <p data-cy="cart-item-quantity"
+                      className="text-sm text-gray-500">
                       Cant: <span className="font-bold">{item.cantidad}</span>
                     </p>
                     {item.comentario && (
                       <p data-cy="cart-item-comment"
-                      className="text-xs text-blue-600 italic mt-1">
-                        "{item.comentario}"
+                        className="text-xs text-blue-600 italic mt-1">
+                        &quot;{item.comentario}&quot;
                       </p>
                     )}
                   </div>

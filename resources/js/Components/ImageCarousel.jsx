@@ -63,7 +63,11 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
         setDragDelta(0);
     };
 
-    const currentImageName = images[current];
+    const currentImage = images[current]
+
+    //sacar el nombre de la imagen actual sin la ruta ni la extensión   
+
+
 
     // Estilo dinámico para mover la tarjeta mientras arrastras
     const dragStyle = {
@@ -120,19 +124,19 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
 
                                 <div className="relative w-full h-full max-h-[85vh] bg-white rounded-xl shadow-2xl overflow-hidden flex items-center justify-center">
 
-                                    {/*  
-                                   
-                                    <h2 className="absolute top-4 left-6 text-2xl font-bold text-gray-800 z-10 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-md shadow-sm">
+
+
+                                    {/* <h2 className="absolute top-4 left-6 text-2xl font-bold text-gray-800 z-10 bg-white/80 px-3 py-1 rounded-lg backdrop-blur-md shadow-sm">
                                         {currentImageName}
                                     </h2> */}
 
                                     {/* Imagen */}
                                     <div className="w-full h-full p-6">
-                                        {currentImageName ? (
+                                        {currentImage ? (
                                             <img
                                                 className="w-full h-full object-contain pointer-events-none drop-shadow-xl"
-                                                src={`/images/${currentImageName}`}
-                                                alt={currentImageName}
+                                                src={`${currentImage}`}
+                                                alt={currentImage}
                                                 // Evitamos el arrastre nativo de la imagen "fantasma"
                                                 onDragStart={(e) => e.preventDefault()}
                                             />

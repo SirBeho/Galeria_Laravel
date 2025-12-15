@@ -25,49 +25,21 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 Route::get('/', function () {
 
         $imagePaths = Storage::disk('public')->files('images'); 
+
         $imageUrls = collect($imagePaths)->map(function ($path) {
             return Storage::disk('public')->url($path);
-        })->reverse()->values()->all();
+        })->values()->all();
+
+        $imagePathsJuegos = Storage::disk('public')->files('images/juegos');
+        $imageUrlsJuegos = collect($imagePathsJuegos)->map(function ($path) {
+            return Storage::disk('public')->url($path);
+        })->values()->all();
 
         return Inertia::render('Home', [
-            'nombres' => array_reverse($imageUrls),
+            'imgHome' => array_reverse($imageUrls),
+            ' imgJuegos' => array_reverse($imageUrlsJuegos),
             'user' => auth()->user() ?? false,
         ]);
-})->name('home');
-
-Route::get('/pedido', function (Request $request) {
-
-   
-     $p_value = $request->input('p');
-     $key_value = $request->input('key');
-
-     $pedido = Pedido::where('numero_pedido', $p_value)->where('key', $key_value)->first()->load('detalle');
-
-     if (!$pedido) {
-         return Inertia::render('AccessDenied');
-     }
-     
-     return Inertia::render('Pedido', [
-        'user' => auth()->user() ?? [],
-        'pedido' => $pedido,
-     ]);
-  
-})->name('pedido.view');
-
-    $filteredFileNamesJuegos = array_filter($fileNames2, function ($fileName) {
-        return $fileName !== '.' && $fileName !== '..';
-    });
-
-    $filteredFileNamesJuegos = array_map(function ($fileName) {
-        // Retorna la ruta completa y sobrescribe el valor
-        return 'juegos/'.$fileName;
-    }, $filteredFileNamesJuegos);
-
-    return Inertia::render('Home', [
-        'imgHome' => array_reverse($filteredFileNameshome),
-        'imgJuegos' => array_reverse($filteredFileNamesJuegos),
-        'user' => auth()->user() ?? false,
-    ]);
 })->name('home');
 
 Route::get('/pedido', [PedidoController::class, 'index'])->name('pedido.view');

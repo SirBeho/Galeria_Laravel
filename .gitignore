@@ -8,6 +8,8 @@
 /storage/*.key
 /vendor
 .env
+.env.testing
+cypress.env.json
 .env*
 .phpunit.result.cache
 Homestead.json
@@ -18,4 +20,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-cypress.env.json
+/bootstrap/cache/*.php
+node_modules

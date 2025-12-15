@@ -1,86 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { FaWhatsapp } from 'react-icons/fa';
-import Dropdown from "./Dropdown";
-import { Link, useForm, usePage } from "@inertiajs/react";
-
-export default function NavBar({ carrito = {}, setNewCarrito, user, eliminar, mostrardo = () => { } }) {
-
-  const { 
-    logoUrl, 
-    primaryColor, 
-    secondaryColor
-} = usePage().props.designSettings;
-
-console.log(secondaryColor)
-
-// Componentes y Contextos
 import Modal from "@/Components/Modal";
-import CarritoComponente from "./CarritoComponente"; // Asegúrate de que CarritoComponente use useCarrito()
+import CarritoComponente from "./CarritoComponente";
 import UserDropdown from "./UserDropdown";
-import { useCarrito } from '@/Contexts/CarritoContext'; // 🟢 Contexto Carrito
-import { useVisual } from '@/Contexts/VisualContext';   // 🟢 Contexto Visual
-
-// NOTA: Debes importar axios en el componente si lo usas en handleOrderSent
-import axios from 'axios'; 
+import { useCarrito } from '@/Contexts/CarritoContext';
+import { useVisual } from '@/Contexts/VisualContext';
+import axios from 'axios';
 
 
 export default function NavBar({ user }) {
-    
-    // --- CONSUMO DE CONTEXTOS ---
-    // Carrito: Para el contador, el estado activo y el setter del modal.
-    const { carrito, setCarrito, isActive: isCarritoActive } = useCarrito();
-    
-    // Visual: Para los botones de vista y el modo eliminar.
-    const { 
-        verJuegos, 
-        toggleVerJuegos, 
-        estadoVisual, 
-        cycleEstadoVisual, 
-        showEliminar, 
-        toggleDeleteMode,
-        isActive: isVisualActive 
-    } = useVisual();
 
-    // --- ESTADOS LOCALES ---
-    const [enviado, setEnviado] = useState(false);
-    const [pedidoCreado, setPedidoCreado] = useState(null);
-    const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const {
+    logoUrl,
+    primaryColor,
+    secondaryColor
+  } = usePage().props.designSettings;
 
-    const [msj, setMsj] = useState(null);
-    
-    // --- LÓGICA DE NAVEGACIÓN ---
-    const { url } = usePage();
-    const isHome = url === '/';
+  const { carrito, setCarrito, } = useCarrito();
 
-    // Se ejecuta al cerrar el modal de pedido
-    useEffect(() => {
-        // console.log('Carrito en Nav:', carrito);
-        // Si el CarritoComponente usa useCarrito(), este useEffect es redundante
-    }, [carrito]); 
+  const {
+    verJuegos,
+    toggleVerJuegos,
+    estadoVisual,
+    cycleEstadoVisual,
+    showEliminar,
+    toggleDeleteMode,
+  } = useVisual();
 
-    // Lógica de WhatsApp consolidada
-    const handleSendOrder = () => {
-        if (pedidoCreado?.whatsappLink) {
-            window.open(pedidoCreado.whatsappLink, '_blank');
-            setEnviado(true);
-        }
+  const [enviado, setEnviado] = useState(false);
+  const [pedidoCreado, setPedidoCreado] = useState(null);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+
+  const [msj, setMsj] = useState(null);
+
+  // --- LÓGICA DE NAVEGACIÓN ---
+  const { url } = usePage();
+  const isHome = url === '/';
+
+  // Se ejecuta al cerrar el modal de pedido
+  useEffect(() => {
+    // console.log('Carrito en Nav:', carrito);
+    // Si el CarritoComponente usa useCarrito(), este useEffect es redundante
+  }, [carrito]);
+
+  // Lógica de WhatsApp consolidada
+  const handleSendOrder = () => {
+    if (pedidoCreado?.whatsappLink) {
+      window.open(pedidoCreado.whatsappLink, '_blank');
+      setEnviado(true);
     }
+  }
 
-    // Finalización del pedido (se llama después de confirmar en WhatsApp)
-    const handleOrderSent = () => {
-        if (pedidoCreado?.pedido?.id) {
-            axios.post(route("pedido.sent", { id: pedidoCreado.pedido.id }))
-                .then(() => {
-                    setCarrito([]); // 🟢 Usa setCarrito del Contexto
-                    setPedidoCreado(null);
-                    setEnviado(false);
-                })
-                .catch(error => {
-                    console.error("Error al marcar pedido como enviado:", error);
-                });
-        }
+  // Finalización del pedido (se llama después de confirmar en WhatsApp)
+  const handleOrderSent = () => {
+    if (pedidoCreado?.pedido?.id) {
+      axios.post(route("pedido.sent", { id: pedidoCreado.pedido.id }))
+        .then(() => {
+          setCarrito([]); // 🟢 Usa setCarrito del Contexto
+          setPedidoCreado(null);
+          setEnviado(false);
+        })
+        .catch(error => {
+          console.error("Error al marcar pedido como enviado:", error);
+        });
     }
+  }
 
   return (
     <>
@@ -91,16 +76,16 @@ export default function NavBar({ user }) {
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}
             <div className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
-                <img src={logoUrl} className="h-full w-auto" alt="" />
-                <a className="text-white text-xl md:text-2xl w-auto hidden sm:block " href="./">Mundo del Cumpleaños  </a> {/* Ocultar título en móvil, mostrar en sm+ */}
+              <img src={logoUrl} className="h-full w-auto" alt="" />
+              <a className="text-white text-xl md:text-2xl w-auto hidden sm:block " href="./">Mundo del Cumpleaños  </a> {/* Ocultar título en móvil, mostrar en sm+ */}
             </div>
             {/* Toggle JUGUETES/TODOS (Solo en Home) */}
             {isHome && (
-                <button onClick={toggleVerJuegos}
-                    // Tamaño y margen ajustados para ser menos invasivos en móvil
-                    className="text-white text-sm md:text-base font-bold rounded-lg hover:scale-110 hover:cursor-pointer hover:text-blue-500 hover:fill-blue-500">
-                    {verJuegos ? '🧸 JUGUETES' : '🎉 TODOS'}
-                </button>
+              <button onClick={toggleVerJuegos}
+                // Tamaño y margen ajustados para ser menos invasivos en móvil
+                className="text-white text-sm md:text-base font-bold rounded-lg hover:scale-110 hover:cursor-pointer hover:text-blue-500 hover:fill-blue-500">
+                {verJuegos ? '🧸 JUGUETES' : '🎉 TODOS'}
+              </button>
             )}
           </div>
 
@@ -109,7 +94,7 @@ export default function NavBar({ user }) {
 
             {/* Botón Carrito */}
             {carrito.length > 0 && (
-              <div
+              <button
                 data-cy="cart-button" style={{ backgroundColor: secondaryColor }}
                 className="bg-blue-600 rounded-md p-1 scale-75 md:scale-100 flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-700"
                 onClick={() => setIsCartModalOpen(true)}>
@@ -117,7 +102,7 @@ export default function NavBar({ user }) {
                 <span data-cy="cart-count-badge" id="cart-count" className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
                   {carrito.length}
                 </span>
-              </div>
+              </button>
             )}
             {user ?
               (
@@ -130,17 +115,17 @@ export default function NavBar({ user }) {
                 </Link>
               )}
             {isHome && (
-              <div  data-cy="toggle-view-btn"
-               className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
+              <button data-cy="toggle-view-btn"
+                className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
                 {estadoVisual === 0 && <img src="tres.svg" alt="grande" />}
                 {estadoVisual === 1 && <img src="dos.svg" alt="mediano" />}
-                {estadoVisual === 2 && <img src="uno.svg" alt="pequeno"  />}
-              </div>)}
+                {estadoVisual === 2 && <img src="uno.svg" alt="pequeno" />}
+              </button>)}
           </div>
         </div>
       </nav>
 
-      <Modal  show={pedidoCreado != null} closeable={false} header={"Enviando a WhatsApp"} close_x={false}>
+      <Modal show={pedidoCreado != null} closeable={false} header={"Enviando a WhatsApp"} close_x={false}>
         <div data-cy="success-message-pedido" className='flex flex-col justify-center items-center text-center'>
           <div className='py-8 text-2xl'>Su pedido se ha creado exitosamente <br /> Pedido no: {pedidoCreado?.pedido.numero_pedido}</div>
           {pedidoCreado?.whatsapp_response?.messages?.[0]?.message_status == 'accepted' ? (
@@ -159,7 +144,7 @@ export default function NavBar({ user }) {
               ) : (
                 <span className='text-sm'>Haga clic aquí para enviarlo a WhatsApp</span>
               )}
-              <FaWhatsapp data-cy="whatsapp-send-icon"  onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500 animate-sheke2" />
+              <FaWhatsapp data-cy="whatsapp-send-icon" onClick={handleSendOrder} className="cursor-pointer w-32 h-24 text-[#25d366] hover:scale-110 hover:text-green-500 animate-sheke2" />
               {enviado && (
                 <button type='button' data-cy="btn-get-send-whatsapp" onClick={handleOrderSent} className='bg-green-500 mt-8 my-2 w-fit px-2 rounded-md hover:bg-green-400 text-white p-1'>!! Mi pedido ya fue enviado</button>
               )}
@@ -169,23 +154,23 @@ export default function NavBar({ user }) {
       </Modal>
 
       <Modal data-cy="validation-error" show={msj != null} onClose={() => setMsj(null)} header={msj?.success ? "Éxito" : "Errores en el Pedido"}>
-                {msj?.success && <div className="text-center text-green-600 text-xl" >
-                    <p>{msj.success}</p>
-                </div>}
+        {msj?.success && <div className="text-center text-green-600 text-xl" >
+          <p>{msj.success}</p>
+        </div>}
 
-                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
-                    {msj.errors.map((error, index) => (
-                        <span className="block" key={index}>{error}</span>
-                    ))}
-                </div>}
+        {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+          {msj.errors.map((error, index) => (
+            <span className="block" key={index}>{error}</span>
+          ))}
+        </div>}
 
-                <div className="flex justify-center mt-2" >
-                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
-                </div>
-            </Modal>
+        <div className="flex justify-center mt-2" >
+          <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
+        </div>
+      </Modal>
 
-      <Modal show={isCartModalOpen}  close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
-        <CarritoComponente setPedidoCreado={setPedidoCreado} setMsj={setMsj}/>
+      <Modal show={isCartModalOpen} close_x={true} header={"Datos de Pedido"} onClose={() => { setIsCartModalOpen(false) }}>
+        <CarritoComponente setPedidoCreado={setPedidoCreado} setMsj={setMsj} />
       </Modal>
     </>
   );

@@ -26,6 +26,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        if (! $this->app->runningInConsole() && Schema::hasTable('settings')) {            
+            $settings = Cache::rememberForever('app_settings', function () {
+                // Ahora esto solo se ejecuta si la DB está lista y es una petición web.
+                return Setting::all()->pluck('value', 'key')->toArray();
+            });
+        
+            // Usar Config::set() en lugar de la función helper config() es más robusto en Service Providers
+            Config::set('settings', $settings); 
+        }
     }
 }
