@@ -106,8 +106,7 @@ jobs:
           storage/framework/cache/data/*
           bootstrap/cache/services.php
           bootstrap/cache/*    
-  
-          
+
           # Redundancia: Estos ya se borraron arriba, pero es buena práctica
           node_modules
           tests
