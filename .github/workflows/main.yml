@@ -150,6 +150,9 @@ jobs:
             rm -f public_html/storage 
             php artisan storage:link
 
+            echo "🔍 Verificando variable de estilos en .env..."
+            grep "COLOR_PRIMARIO" .env || echo "⚠️ La variable no existe en el archivo .env"
+
             # --- 3. LIMPIEZA Y OPTIMIZACIÓN DE CACHÉ ---
             echo "🧹 Ejecutando limpieza de caché de Laravel..."
             chmod -R 775 storage bootstrap/cache
@@ -158,8 +161,9 @@ jobs:
             php artisan config:clear
             php artisan route:clear
             php artisan view:clear
-            
-            # Opcional: Solo optimizar en producción real
             php artisan optimize 
+
+            echo "🔍 Verificando variable de estilos en .env..."
+            grep "COLOR_PRIMARIO" .env || echo "⚠️ La variable no existe en el archivo .env"
             
             echo "🚀 ¡Despliegue completado con éxito!"
