@@ -140,8 +140,7 @@ jobs:
 
         script: |
           # WORKAROUND: Aseguramos que la clave se lea correctamente.
-          # (No necesitas modificar el script interno, la acción debería funcionar ahora)
-          
+
           PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
           echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
           cd "$PROJECT_ROOT"
