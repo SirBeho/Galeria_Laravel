@@ -115,12 +115,11 @@ jobs:
           local-dir: public/      # Origen: Carpeta compilada local
           server-dir: /public_html/ # Destino: Carpeta pública del hosting
     
-      # -----------------------------------------------
-      # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH Directo)
-      # -----------------------------------------------
-      # -----------------------------------------------
-      - name: SSH Vínculo, Descompresión y Limpieza Final (Con Contraseña)
-        uses: appleboy/ssh-action@v1.0.3 
+      # ======================================================
+      # FASE 4: POST-DESPLIEGUE (SSH)
+      # ======================================================
+      - name: 🔐 12. Tareas Finales por SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }} 
           username: ${{ secrets.SSH_USER }}
@@ -128,33 +127,38 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY_SSH }}
           
           script: |
-            # --- SCRIPT REMOTO ---
-            # Definimos la ruta de la raíz del proyecto usando el usuario
-            PROJECT_ROOT="/home/${{ secrets.SSH_USER }}/domains/xn--mundodelcumpleao-lub.com"
-            echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
+            # --- CONFIGURACIÓN DE RUTAS ---
+            # Definimos la ruta absoluta para evitar errores de navegación
+            PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
+            
+            echo "📍 Navegando a la raíz del proyecto: $PROJECT_ROOT"
             cd "$PROJECT_ROOT"
-            
-            # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
+
+            # --- 1. GESTIÓN DE DEPENDENCIAS (VENDOR) ---
             if [ -f vendor.zip ]; then
-              echo "vendor.zip encontrado. Descomprimiendo..."
-              unzip -o vendor.zip -d . 
+              echo "📦 vendor.zip detectado. Descomprimiendo..."
+              unzip -o vendor.zip -d . > /dev/null # > /dev/null silencia la salida masiva
               rm vendor.zip
-              echo "vendor.zip descomprimido y eliminado."
+              echo "✅ Vendor actualizado y zip eliminado."
             else
-              echo "vendor.zip no encontrado. Saltando descompresión."
+              echo "⚠️ No se encontró vendor.zip. Omitiendo descompresión."
             fi
-            
-            # 2. CREACIÓN/VERIFICACIÓN DEL VÍNCULO SIMBÓLICO (storage:link)
-            echo "Creando/verificando vínculo simbólico (storage:link)..."
+
+            # --- 2. ENLACE SIMBÓLICO (STORAGE) ---
+            echo "🔗 Configurando Storage Link..."
+            # Borramos el enlace existente en public_html para recrearlo limpio
             rm -f public_html/storage 
-            php artisan storage:link 
-            
-            # 3. LIMPIEZA TOTAL DE CACHÉ (CRUCIAL después de un deploy)
-            echo "Realizando limpieza total de caché de Laravel..."
+            php artisan storage:link
+
+            # --- 3. LIMPIEZA Y OPTIMIZACIÓN DE CACHÉ ---
+            echo "🧹 Ejecutando limpieza de caché de Laravel..."
+            # Es vital ejecutar esto AQUÍ y no en el Build para que las rutas sean las del servidor
             php artisan cache:clear
             php artisan config:clear
             php artisan route:clear
             php artisan view:clear
-            php artisan optimize:clear
             
-            echo "Tareas post-deploy completadas con éxito."
+            # Opcional: Solo optimizar en producción real
+            php artisan optimize 
+            
+            echo "🚀 ¡Despliegue completado con éxito!"
