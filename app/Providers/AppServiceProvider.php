@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +27,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        
+        $settings = Cache::rememberForever('app_settings', function () {
+            return Setting::all()->pluck('value', 'key')->toArray();
+        });
+    
+        config(['settings' => $settings]);    
 
 
         Validator::extend('unique_name', function ($attribute, $value, $parameters, $validator) {

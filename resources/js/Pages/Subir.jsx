@@ -7,23 +7,25 @@ import Loading from "@/Components/Loading";
 
 
 
-export default function Subir({ user ,mensaje }) {
-   
+export default function Subir({ user, mensaje }) {
+
     const { data, setData, post, processing, errors, reset } = useForm([]);
+    const clearCacheForm = useForm({});
     const [loading, setLoading] = useState(false);
 
     const [images, setImages] = useState([]);
 
     const [msj, setMsj] = useState(mensaje);
 
-    useEffect(() => {   
+    useEffect(() => {
+        console.log(mensaje)
         setMsj(mensaje);
 
 
     }, [mensaje]);
 
-   
-     
+
+
 
 
     const handleImageChange = (e) => {
@@ -32,15 +34,15 @@ export default function Subir({ user ,mensaje }) {
         // Filtrar los archivos seleccionados para excluir los duplicados
         const uniqueFiles = files.filter(file => !data.some(image => image.name === file.name));
         // Actualizar el estado con las nuevas imágenes
-        setData([...data,...uniqueFiles]);
+        setData([...data, ...uniqueFiles]);
 
         const imageList = uniqueFiles.map((file) => ({
             file,
             previewURL: URL.createObjectURL(file),
-          }));
-          setImages([ ...images,...imageList]);
-      };
-      
+        }));
+        setImages([...images, ...imageList]);
+    };
+
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -53,9 +55,29 @@ export default function Subir({ user ,mensaje }) {
                 setLoading(false);
             },
         });
-
-        
     };
+    
+
+
+    const handleClearCache = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        // Hacemos POST a la ruta que definimos en Laravel
+        clearCacheForm.post(route('clean.cache'), {
+            onSuccess: (page) => {
+                console.log(page);
+                const successMessage = page.props.flash?.success || 'Caché de diseño limpiada con éxito.';
+                setMsj(page.props.mensaje);
+                setLoading(false);
+            },
+            onError: () => {
+                setMsj({ errors: ['Error al limpiar la caché.'] });
+                setLoading(false);
+            },
+        });
+    };
+
+    // ...
 
     // Resto de tu código aquí...
 
@@ -65,44 +87,69 @@ export default function Subir({ user ,mensaje }) {
 
             <Loading show={loading} />
 
-            <Modal show={msj != null} onClose={() => setMsj(null)} header={"Producto Agregado"} close_x={true}>
-       {msj?.success  && <div className="text-center text-green-600 text-xl" >
-          <p>{msj.success }</p>
-        </div>}
+            <Modal show={msj != null} onClose={() => setMsj(null)} header={msj?.title || "Producto Agregado"} close_x={true}>
+                {msj?.success && <div className="text-center text-green-600 text-xl" >
+                    <p>{msj.success}</p>
+                </div>}
 
-        {msj?.errors  && <div className="text-center text-red-500 mt-4 text-sm">
-            {msj.errors.map((error, index) => (
-                <span className="block" key={index}>{error}</span>
-            ))}
-        </div>}
+                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+                    {msj.errors.map((error, index) => (
+                        <span className="block" key={index}>{error}</span>
+                    ))}
+                </div>}
 
-        <div className="flex justify-center mt-2" >
-          <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
-        </div>
-      </Modal>
+                <div className="flex justify-center mt-2" >
+                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
+                </div>
+            </Modal>
 
+            <div className="flex justify-between items-center pt-4 my-4 ">
+                <h1 className=" font-bold text-4xl">Subir Imagenes</h1>
 
-            <h1 className="pt-4 my-4 font-bold text-4xl">Subir Imagenes</h1>
+                <button
+                    onClick={handleClearCache}
+                    disabled={loading}
+                    className={` flex items-center gap-2
+                        py-2 px-4 rounded font-bold transition-colors duration-200 
+                        ${loading
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        }
+                    `}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className='h-5 w-5'
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.992v4.99" />
+                    </svg>
+                    {loading ? 'Limpiando...' : 'Limpiar Caché'}
+                </button>
+            </div>
 
             <div className="p-2 pt-8">
-         <div className="flex gap-4  ">
-                <label
-                    htmlFor="fileInput"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-                >
-                    Cargar Imagenes
-                </label>
-                <input
-                    type="file"
-                    id="fileInput"
-                    className="hidden"
-                    multiple
-                    accept="image/*"
-                     
-                    onChange={handleImageChange}
-                />
+                <div className="flex gap-4  ">
+                    <label
+                        htmlFor="fileInput"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+                    >
+                        Cargar Imagenes
+                    </label>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        className="hidden"
+                        multiple
+                        accept="image/*"
 
-                <span className="content-center">{data.length} archivos pre cargados</span>
+                        onChange={handleImageChange}
+                    />
+
+                    <span className="content-center">{data.length} archivos pre cargados</span>
                 </div>
                 <div className="flex flex-wrap mt-4 gap-3">
                     {images?.map((image, index) => (
@@ -147,14 +194,14 @@ export default function Subir({ user ,mensaje }) {
                         </div>
                     ))}
                 </div>
-                {data.length != 0&&
-                <div className="flex justify-center">
-                <button
-                    onClick={handleFormSubmit}
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mt-4"
-                >
-                    Guardar Imágenes
-                </button> </div>}
+                {data.length != 0 &&
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleFormSubmit}
+                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded mt-4"
+                        >
+                            Guardar Imágenes
+                        </button> </div>}
 
             </div>
 

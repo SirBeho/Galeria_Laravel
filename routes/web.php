@@ -73,64 +73,6 @@ Route::post('/add', [PedidoController::class, 'add'])->name('pedido.add');
 Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
 
-Route::get('/limpiar-deploy-secreto/{token}', function ($token) {
-    try {
-
-    // 1. Verifica el Token de Seguridad
-    // Obtén el token de tu .env, que debe ser un string largo y único
-    if ($token !== env('DEPLOY_CLEAN_TOKEN')) {
-        abort(403, 'Acceso Denegado. Token de limpieza inválido.');
-    }
-
-    $zipPath = base_path('vendor.zip');
-
-    if (File::exists($zipPath)) {
-
-        $zip = new \ZipArchive;
-
-        if ($zip->open($zipPath) === TRUE) {
-        
-            // Extraer todo el contenido al directorio base (base_path())
-            $zip->extractTo(base_path());
-            $zip->close();
-            
-            // Opcional: Eliminar el ZIP para limpiar el servidor
-            File::delete($zipPath);
-            
-            Log::info("Vendor descomprimido usando ZipArchive.");
-            
-        } else {
-            // Falló al abrir el archivo ZIP (quizás corrupto o no es un ZIP)
-            throw new \Exception('No se pudo abrir el archivo vendor.zip para descompresión.');
-        }
-        // Ejecuta el comando 'unzip' para extraer en el directorio raíz
-        
-    }else{
-        log::info("El archivo vendor.zip no existe en la ruta esperada.");
-    }
-    // 2. Ejecuta los Comandos de Limpieza
-
-    Artisan::call('cache:clear');
-    Artisan::call('config:clear'); 
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-   
-        Artisan::call('optimize:clear');
-        
-        // Retorna JSON para indicar éxito
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Despliegue completado, vendor descomprimido y caché limpiada.',
-        ], 200);
-
-    } catch (\Exception $e) {
-        // Retorna JSON para indicar error
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Error durante la limpieza: ' . $e->getMessage(),
-        ], 500);
-    }
-})->name('deploy.clean');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -148,6 +90,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/eliminar', [FileController::class, 'eliminar'])->name('eliminar.imagen');
     Route::post('/subir', [FileController::class, 'uploadImages'])->name('subir.imagen');
 
+    Route::post('/limpiar-cache', function () {
+        try {
+            Cache::forget('app_settings');
+            Artisan::call('config:clear');
+            Artisan::call('view:clear');
+
+            return back()->with('msj' ,[
+                'success'=> 'La caché de la configuración del diseño ha sido actualizada.',
+                'title' => 'Cache Limpiada'
+            ]);
+            
+        
+        } catch (\Exception $e) {
+            // Retorna JSON para indicar error
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error durante la limpieza: ' . $e->getMessage(),
+            ], 500);
+        }
+    })->name('clean.cache');
+    
     
 
 });

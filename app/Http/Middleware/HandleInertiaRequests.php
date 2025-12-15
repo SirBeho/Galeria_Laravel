@@ -46,11 +46,16 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'designSettings' => [
+            'designSettings' =>[
+                'logoUrl'=> config('settings.imagen_principal_code', 'favico.png'),
+                'primaryColor'=> config('settings.color_primario', '#2563EB'),
+                'secondaryColor'=> config('settings.color_secundario', '#2563EB'),
+            ],
+            /* [
             'logoUrl' => env('IMAGEN_PRINCIPAL_CODE', 'favico.png'),
             'primaryColor' => env('COLOR_PRIMARIO', '#2563EB'),
             'secondaryColor' => env('COLOR_SECUNDARIO', '#2563EB'),
-        ],
+            ], */
         ];
     }
 }

@@ -97,6 +97,8 @@ export default function Dashboard({ nombres, user }) {
         }
     };
 
+
+
     const nextSlide = (e) => {
         e.stopPropagation();
         const Actual = document.getElementById(current);
@@ -233,7 +235,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
                                     className="h-full object-cover w-full"
-                                    src={`/images/${images[index]}`}
+                                    src={`/${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -252,7 +254,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full">
                                 <img
                                     className="h-full object-contain w-full"
-                                    src={`/images/${images[index]}`}
+                                    src={`/${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -284,13 +286,16 @@ export default function Dashboard({ nombres, user }) {
                     Detalle del Artículo
                 </h5>
 
+                http://localhost:8000/storage/images/10061.jpg
+
+
                 <div className="overflow-hidden rounded-3xl shadow-xl">
                     <div className="flex  h-full bg-white w-full transition ease-out duration-40">
                         <div className="block min-w-full w-full overflow-hidden">
                             <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
                                     className="h-full object-cover w-full"
-                                    src={`/images/${images[index]}`}
+                                    src={`/${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -309,7 +314,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full">
                                 <img
                                     className="h-full object-contain w-full"
-                                    src={`/images/${images[index]}`}
+                                    src={`/${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -320,6 +325,7 @@ export default function Dashboard({ nombres, user }) {
             </div>
         );
     };
+
 
     return (
         <Layout
@@ -364,7 +370,7 @@ export default function Dashboard({ nombres, user }) {
                     <div className="w-36 h-36 overflow-hidden rounded-md">
                         <img
                             className="h-full object-cover w-full"
-                            src={`/images/${eliminarConfirmar}`}
+                            src={`/${eliminarConfirmar}`}
                             alt="prudcto"
                         />
                     </div>
@@ -524,7 +530,7 @@ export default function Dashboard({ nombres, user }) {
                                                     <div className="w-full h-full rounded-sm overflow-hidden ">
                                                         <img
                                                             className="h-full object-cover w-full"
-                                                            src={`/images/${images[current]}`}
+                                                            src={`/${images[current]}`}
                                                             alt="Descripción"
                                                         />
                                                     </div>
@@ -546,7 +552,7 @@ export default function Dashboard({ nombres, user }) {
                                                     <div className="w-full h-full">
                                                         <img
                                                             className="h-full object-contain w-full"
-                                                            src={`/images/${images[current]}`}
+                                                            src={`/${images[current]}`}
                                                             alt="Descripción"
                                                         />
                                                     </div>
