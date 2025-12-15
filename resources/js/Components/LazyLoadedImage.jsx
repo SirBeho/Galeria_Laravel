@@ -22,7 +22,7 @@ const LazyLoadedImage = ({ file }) => {
             {inView ? (
                 <img
                     className="h-full object-cover w-full"
-                    src={`/images/${file}`}
+                    src={`${file}`}
                     alt="Descripción"
                 />
             ) : (

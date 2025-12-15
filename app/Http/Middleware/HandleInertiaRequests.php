@@ -47,8 +47,12 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
-                // 🟢 AÑADE ESTO para compartir el estado del pedido:
                 'pedido_status' => fn () => $request->session()->get('pedido_status'),
+            ],
+            'designSettings' =>[
+                'logoUrl'=> config('settings.imagen_principal_code', 'favico.png'),
+                'primaryColor'=> config('settings.color_primario', '#2563EB'),
+                'secondaryColor'=> config('settings.color_secundario', '#2563EB'),
             ],
         ];
     }

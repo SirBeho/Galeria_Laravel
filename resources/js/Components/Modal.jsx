@@ -1,7 +1,14 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState,useRef} from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import {usePage } from "@inertiajs/react";
 
-export default function Modal({children,galeria = false,show = false,maxWidth = "2xl", loading=false,closeable = true,close_x = true,header = false,onClose = () => {},}) {
+export default function Modal({children,galeria = false, autoclose = 0,show = false,maxWidth = "2xl", loading=false,closeable = true,close_x = true,header = false,onClose = () => {},}) {
+    
+    const { 
+        secondaryColor, 
+    } = usePage().props.designSettings;
+
+    
     const close = () => {
         
         if (closeable && !loading) {
@@ -14,6 +21,44 @@ export default function Modal({children,galeria = false,show = false,maxWidth = 
     };
 
     const [isClosing, setIsClosing] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(autoclose); // Estado para el tiempo restante
+
+    useEffect(() => {
+        if (show && autoclose > 0) {
+            // Inicializa el tiempo restante con el valor total de autoclose
+            setTimeLeft(autoclose);
+
+            // 1. Configurar el autocierre (Se mantiene igual)
+            const timerId = setTimeout(() => {
+                close();
+            }, autoclose);
+
+            const intervalId = setInterval(() => {
+                setTimeLeft((prevTimeLeft) => {
+                    const newTimeLeft = prevTimeLeft - 50; // Restar 50ms (intervalo)
+                    if (newTimeLeft <= 0) {
+                        clearInterval(intervalId);
+                        return 0;
+                    }
+                    return newTimeLeft;
+                });
+            }, 50);
+
+            // 3. Limpieza
+            return () => {
+                clearTimeout(timerId);
+                clearInterval(intervalId);
+                setTimeLeft(autoclose); // Reiniciar al valor completo
+            };
+        } else if (!show) {
+             setTimeLeft(autoclose); // Resetear al cerrarse
+        }
+    }, [show]); // Dependencias
+
+    // Cálculo del progreso para la barra (basado en el tiempo restante)
+    const progressPercentage = autoclose > 0 
+        ? (timeLeft / autoclose) * 100 
+        : 0;
 
     const maxWidthClass = {
         sm: "sm:max-w-sm",
@@ -59,6 +104,19 @@ export default function Modal({children,galeria = false,show = false,maxWidth = 
                       {galeria && (galeria) }
                         
                         <div onClick={(e)=> e.stopPropagation()} className={`relative ${maxWidthClass} o bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
+                        {autoclose > 0 && (
+                                <div className="absolute top-0 left-0 right-0 h-1 rounded-t-lg overflow-hidden">
+                                    <div
+                                        style={{  backgroundColor: secondaryColor ,width: `${progressPercentage}%` }} 
+                                        
+                                        className="h-full bg-blue-500 transition-all duration-50" 
+                                        // Usamos progressPercentage para que la barra vaya DECRECIENDO (desde 100% hasta 0%)
+                                     
+                                    ></div>
+                                </div>
+                            )}
+                            
+                            
                             {close_x && (
                                 <button  data-cy="modal-close-btn"
                                 onClick={close} className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2" >

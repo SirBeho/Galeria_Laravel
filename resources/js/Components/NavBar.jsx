@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { FaWhatsapp } from 'react-icons/fa';
+import Dropdown from "./Dropdown";
+import { Link, useForm, usePage } from "@inertiajs/react";
+
+export default function NavBar({ carrito = {}, setNewCarrito, user, eliminar, mostrardo = () => { } }) {
+
+  const { 
+    logoUrl, 
+    primaryColor, 
+    secondaryColor
+} = usePage().props.designSettings;
+
+console.log(secondaryColor)
 
 // Componentes y Contextos
 import Modal from "@/Components/Modal";
@@ -72,14 +84,14 @@ export default function NavBar({ user }) {
 
   return (
     <>
-      <nav className=" text-white bg-nav fixed top-0 w-full z-20 p-2">
+      <nav className={`text-white bg-nav fixed top-0 w-full z-20 p-2`} style={{ backgroundColor: primaryColor }}>
 
         <div className="flex justify-between items-center w-full max-w-7xl mx-auto px-4 md:px-8 h-10">
           {/* 1. SECCIÓN IZQUIERDA (Logo y Toggles) */}
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}
             <div className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
-                <img src="favico.png" className="h-full w-auto" alt="Logo" />
+                <img src={logoUrl} className="h-full w-auto" alt="" />
                 <a className="text-white text-xl md:text-2xl w-auto hidden sm:block " href="./">Mundo del Cumpleaños  </a> {/* Ocultar título en móvil, mostrar en sm+ */}
             </div>
             {/* Toggle JUGUETES/TODOS (Solo en Home) */}
@@ -98,11 +110,11 @@ export default function NavBar({ user }) {
             {/* Botón Carrito */}
             {carrito.length > 0 && (
               <div
-                data-cy="cart-button"
+                data-cy="cart-button" style={{ backgroundColor: secondaryColor }}
                 className="bg-blue-600 rounded-md p-1 scale-75 md:scale-100 flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-700"
                 onClick={() => setIsCartModalOpen(true)}>
                 <img src="carrito.svg" alt="Carrito" className="w-5 h-5" />
-                <span data-cy="cart-count-badge" className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
+                <span data-cy="cart-count-badge" id="cart-count" className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
                   {carrito.length}
                 </span>
               </div>

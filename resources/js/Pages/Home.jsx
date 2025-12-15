@@ -1,5 +1,5 @@
 import Layout from "@/Layouts/Layout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm,usePage } from "@inertiajs/react";
 import React, { useState, useRef, useEffect } from "react"; // Agregué useEffect por si acaso
 
 // Contextos
@@ -14,6 +14,18 @@ import Loading from "@/Components/Loading";
 import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { ProductDetailModal } from '@/Components/ProductDetailModal';
 import { set } from "date-fns";
+import React, {
+    Children,
+    Fragment,
+    act,
+    useEffect,
+    useRef,
+    useState,
+    
+} from "react";
+import ReactDOM from "react-dom";
+import { Dialog, Transition } from "@headlessui/react";
+import { chip } from "@material-tailwind/react";
 
 export default function Home({ imgHome, imgJuegos, user }) {
     
@@ -45,6 +57,20 @@ export default function Home({ imgHome, imgJuegos, user }) {
 
     // Formulario para eliminar (API Delete)
     const { post: postDelete } = useForm({}); 
+    const { 
+        primaryColor, 
+    } = usePage().props.designSettings;
+
+    const {
+      data: producto,
+      setData: setProducto,
+      reset,
+  } = useForm({
+      nombre: "",
+      codigo: "",
+      cantidad: "",
+      comentario: "",
+  });
 
     // --- EFECTOS ---
     // Limpiar selección si se desactiva el modo eliminar desde el Navbar

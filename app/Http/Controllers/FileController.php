@@ -23,38 +23,31 @@ class FileController extends Controller
 
     public function uploadImages(Request $request): RedirectResponse
     {
+
+        $disk = Storage::disk('public');
+        $directory = 'images';
+        
         $mensajesExitosos = 0;
         $mensajesErrores = [];
 
-        $disk = Storage::disk('gallery');
-        $fileNames = $disk->files();
-
-        $numbers = array_map(function ($file) {
-            if (preg_match('/(\d+)\.jpg$/', $file, $matches)) {
-                return (int) $matches[1];
-            }
-
-            return 0;
-        }, $fileNames);
-
-        // Obtener el número más alto
-        $maxNumber = max($numbers);
-
+    
+        $maxNumber = $maxNumber = $this->getMaxImageNumber('images');
+        
         foreach ($request->all() as $index => $file) {
-            if (is_a($file, \Illuminate\Http\UploadedFile::class) && $file->isValid()) {
+            if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+                
                 $maxNumber++;
                 $name = $maxNumber.'.jpg';
 
                 try {
-                    $disk->putFileAs('/', $file, $name);
-
-                    $mensajesExitosos++;
+                    $disk->putFileAs($directory, $file, $name);
+                    $mensajesExitosos ++;
                 } catch (\Exception $e) {
-                    $mensajesErrores[] = 'Error al subir el archivo: '.$file->getClientOriginalName().' - '.$e->getMessage();
-                    Log::error('Error al subir imagen: '.$e->getMessage());
+                    \Log::error("Error al subir imagen: " . $e->getMessage());
+                    $mensajesErrores[] = "Error al subir el archivo: " . $file->getClientOriginalName();
                 }
             } else {
-                $mensajesErrores[] = 'Error: El archivo no es válido o no es un archivo subido.';
+                $mensajesErrores[] = "Error: El archivo no es válido o está vacío.";
             }
         }
 
