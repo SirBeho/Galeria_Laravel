@@ -137,6 +137,10 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         
         script: |
+
+          PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
+          echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
+          cd "$PROJECT_ROOT"
  
           # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
           if [ -f vendor.zip ]; then
