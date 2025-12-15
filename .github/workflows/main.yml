@@ -84,7 +84,7 @@ jobs:
     # -----------------------------------------------
     # 3. DESPLIEGUE FINAL (FTP)
     # -----------------------------------------------
-    - name: Deploy BACKEND
+    - name: DEPLOY POR FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.0
       with:
         server: ${{ secrets.FTP_HOST }}
@@ -102,7 +102,6 @@ jobs:
           # Archivos persistentes del servidor (PROTEGER DE BORRADO)
           storage/logs/
           storage/app/public/ 
-          public/images 
           storage/framework/sessions/*
           storage/framework/cache/data/*
           bootstrap/cache/services.php
@@ -125,29 +124,43 @@ jobs:
         local-dir: public/
         server-dir: /public_html/
         
-        # Excluir archivos grandes o innecesarios en public_html
-        exclude: |
-          /images
-      # -----------------------------------------------
-    # 4. LIMPIEZA AUTOMÁTICA POST-DEPLOY (Descompresión Remota)
+       
     # -----------------------------------------------
-    - name: 🧹 Descompresión y Limpieza de Caché del Servidor Remoto
-      # Este paso se ejecuta después de que el FTP haya subido el código y el vendor.zip (si aplica)
-      run: |
-        # Construye la URL usando la variable de entorno del Job
-        CLEAN_URL="https://${{ env.APP_URL_PROD }}/limpiar-deploy-secreto/${{ env.DEPLOY_CLEAN_TOKEN }}"
+      # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH)
+      # -----------------------------------------------
+    - name: SSH Vínculo, Descompresión y Limpieza Final
+      uses: appleboy/ssh-action@v1.0.3 
+      with:
+        host: ${{ secrets.FTP_HOST }} 
+        username: ${{ secrets.FTP_USERNAME }}
+        port: 65002
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         
-        echo "Activando descompresión de vendor.zip y limpieza de caché en el servidor: $CLEAN_URL"
-        # La opción -f failes silently on server errors (4xx/5xx)
-        RESPONSE=$(curl -X GET -L "$CLEAN_URL")
-
-        echo "$RESPONSE"
-
-        if echo "$RESPONSE" | grep -q '"status":"error"'; then
-          echo "::error::La limpieza del servidor falló. Revisar el mensaje de error."
-          exit 1 # Forzamos el fallo del Job con código 1
-        else
-          echo "Limpieza completada con éxito."
-        fi
-        
-      shell: /usr/bin/bash -e {0}
+        script: |
+          echo "Navegando a la raíz del proyecto"
+          cd "/"
+          
+          # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
+          if [ -f vendor.zip ]; then
+            echo "vendor.zip encontrado. Descomprimiendo..."
+            unzip -o vendor.zip -d . 
+            rm vendor.zip
+            echo "vendor.zip descomprimido y eliminado."
+          else
+            echo "vendor.zip no encontrado. Saltando descompresión."
+          fi
+          
+          # 2. CREACIÓN/VERIFICACIÓN DEL VÍNCULO SIMBÓLICO (storage:link)
+          echo "Creando/verificando vínculo simbólico (storage:link)..."
+          rm -f public_html/storage 
+          php artisan storage:link 
+          
+          # 3. LIMPIEZA TOTAL DE CACHÉ (CRUCIAL después de un deploy)
+          echo "Realizando limpieza total de caché de Laravel..."
+          php artisan cache:clear
+          php artisan config:clear
+          php artisan route:clear
+          php artisan view:clear
+          php artisan optimize:clear
+          
+          echo "Tareas post-deploy completadas con éxito."

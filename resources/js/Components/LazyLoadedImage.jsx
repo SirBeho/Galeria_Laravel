@@ -3,6 +3,9 @@ import { useInView } from 'react-intersection-observer';
 
 // Coloca este componente DENTRO de Home.jsx o en un archivo Components/LazyImage.jsx
 const LazyLoadedImage = ({ file }) => {
+
+console.log(file);
+
     // Configura la observación:
     const { ref, inView } = useInView({
         // `rootMargin: '200px 0px'` emula el prop offset={200}
@@ -22,7 +25,7 @@ const LazyLoadedImage = ({ file }) => {
             {inView ? (
                 <img
                     className="h-full object-cover w-full"
-                    src={`/images/${file}`}
+                    src={`${file}`}
                     alt="Descripción"
                 />
             ) : (
