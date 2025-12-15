@@ -60,6 +60,7 @@ class PedidoController extends Controller
             $whatsappLink = 'https://wa.me/18094624721/?text=' . urlencode(str_replace('\\', '/', $whatsappMessage));
 
            
+           
             session()->flash('pedido_status', [
                 'message' => 'Pedido creado correctamente',
                 'pedido' => $pedido,

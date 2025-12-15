@@ -17,6 +17,8 @@ const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
 
   
 
+  
+
   const [loading, setLoading] = useState(false);
 
   const { carrito, setCarrito } = useCarrito();
@@ -83,9 +85,8 @@ const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
       onStart: () => setLoading(true),
       onFinish: () => setLoading(false),
       onSuccess: (response) => {
-          console.log('success response:', response);
-          alert(response.props.flash.success);
-          setPedidoCreado(response.props.flash.pedido_status); 
+           alert(response.props.flash.success);
+            setPedidoCreado(response.props.flash.pedido_status); 
           Limpiar(); 
       },
       onError: (errors) => {
