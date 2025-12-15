@@ -1,186 +1,165 @@
-name: Deploy Produccion Optimizada
+name: 🚀 Deploy Producción Optimizada (Hostinger)
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master" ] 
 
 jobs:
   deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
     
-    # Define la URL de producción como una variable de entorno para el Job
+    # Variables de entorno globales para el Job
     env:
       APP_URL_PROD: xn--mundodelcumpleao-lub.com
       DEPLOY_CLEAN_TOKEN: ${{ secrets.DEPLOY_CLEAN_TOKEN }}
 
     steps:
-    - name: Checkout Código Fuente
-      uses: actions/checkout@v4
-
-    # -----------------------------------------------
-    # 1. PREPARACIÓN DEL BACKEND (con Caching Condicional)
-    # -----------------------------------------------
-    - name: Configurar PHP (8.2)
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2' # Asegúrate que esta es la versión de tu hosting
-        extensions: pdo_mysql, dom, curl, mbstring, zip # 'zip' es vital para el vendor.zip
-        tools: composer
-        
-    - name: 💾 Restaurar Caché de Vendor
-      id: cache-vendor # ID para usar en condicionales
-      uses: actions/cache@v4
-      with:
-        # La clave cambia si composer.lock cambia, forzando un 'cache miss'
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        path: vendor # Cachea la carpeta 'vendor'
-        
-    - name: ⬇️ Instalar Dependencias de Composer (Solo si hay Cache Miss)
-      # Solo se ejecuta si el caché NO fue exitoso (es decir, composer.lock cambió)
-      if: steps.cache-vendor.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-dev --optimize-autoloader
-      env:
-        COMPOSER_NO_INTERACTION: 1
-        COMPOSER_NO_AUDIT: 1
-        COMPOSER_PROCESS_TIMEOUT: 0 
+      # ======================================================
+      # FASE 1: CONFIGURACIÓN Y CONSTRUCCIÓN (BUILD)
+      # ======================================================
       
-    - name: Copiar .env de Producción
-      run: echo "${{ secrets.ENV_FILE }}" > .env
+      - name: 📥 1. Descargar Código Fuente
+        uses: actions/checkout@v4
+
+      - name: 🐘 2. Configurar PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, dom, curl, mbstring, zip
+          tools: composer
+
+      # --- Optimización de Caché para Composer ---
+      - name: 💾 3. Restaurar Caché de Vendor
+        id: cache-vendor
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          path: vendor
+
+      - name: ⬇️ 4. Instalar Dependencias Backend
+        # Si no hubo caché, instalamos desde cero.
+        # --no-dev: No instalamos librerías de desarrollo para producción.
+        if: steps.cache-vendor.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-dev --optimize-autoloader
+        env:
+          COMPOSER_NO_INTERACTION: 1
+          COMPOSER_NO_AUDIT: 1
+
+      - name: 📄 5. Generar archivo .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+
+      - name: 📦 6. Crear Vendor.zip
+        id: create-zip
+        if: steps.cache-vendor.outputs.cache-hit != 'true'
+        run: |
+          echo "Comprimiendo vendor para acelerar subida FTP..."
+          zip -r vendor.zip vendor/
+
+      # --- Construcción del Frontend ---
+      - name: 📦 7. Instalar Dependencias NPM
+        run: npm ci # 'npm ci' es más rápido y seguro que 'install' para entornos CI
+
+      - name: 🎨 8. Compilar Assets (Vite Build)
+        run: npm run build
+
+      # ======================================================
+      # FASE 2: LIMPIEZA PRE-DESPLIEGUE
+      # ======================================================
       
-    - name: Optimizar Configuración y Rutas
-      run: |
-        php artisan key:generate
-        php artisan config:cache
-        php artisan route:cache 
-        
-    - name: 📦 Empaquetar Vendor.zip (Solo si hay nuevo Vendor)
-      id: create-zip
-      # Solo se ejecuta si el caché falló (cache-miss) y se generó un nuevo vendor
-      if: steps.cache-vendor.outputs.cache-hit != 'true'
-      run: |
-        echo "Comprimiendo la nueva carpeta 'vendor' en vendor.zip..."
-        zip -r vendor.zip vendor/
-        
-    # -----------------------------------------------
-    # 2. PREPARACIÓN DEL FRONTEND
-    # -----------------------------------------------
-    - name: Instalar Dependencias de NPM
-      run: npm install
+      - name: 🧹 9. Limpiar Workspace
+        run: |
+          echo "Eliminando archivos innecesarios para reducir tiempo de subida..."
+          rm -rf node_modules 
+          rm -rf tests 
+          rm -rf vendor # Ya lo tenemos en vendor.zip
+          rm -rf storage/framework/cache/data # Evitar subir caché local
+          # Opcional: Eliminar archivos fuente de frontend si solo necesitas el build
+          # rm -rf resources/js 
 
-    - name: Compilar Assets con Vite (Producción)
-      run: npm run build
-      
-    # -----------------------------------------------
-    # 2.1 Limpieza Final del Workspace
-    # -----------------------------------------------
-    - name: 🗑️ Limpiar Workspace antes de FTP
-      run: |
-        echo "Eliminando node_modules, tests, y carpeta vendor para subir solo el ZIP..."
-        rm -rf node_modules 
-        rm -rf tests 
-        rm -rf vendor # Eliminamos la carpeta vendor ya que su contenido está en vendor.zip
-        rm -rf storage/framework/cache/data # Cache generada en CI
-        
-    # -----------------------------------------------
-    # 3. DESPLIEGUE FINAL (FTP)
-    # -----------------------------------------------
-    - name: Deploy BACKEND
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-      with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftp
-        server-dir: /
-        exclude: |
-          public/
-          .git* 
-          .github 
-          .env* 
-          .env
+      # ======================================================
+      # FASE 3: DESPLIEGUE (FTP)
+      # ======================================================
 
-          # Archivos persistentes del servidor (PROTEGER DE BORRADO)
-          storage/logs/
-          storage/app/public/ 
-          storage/framework/sessions/*
-          storage/framework/cache/data/*
-          bootstrap/cache/services.php
-          bootstrap/cache/*    
+      - name: 📤 10. Subir Backend (Core de Laravel)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          server-dir: / # Sube a la raíz del usuario (donde vive artisan)
+          exclude: |
+            public/ # ¡IMPORTANTE! Excluimos public porque va a public_html
+            .git*
+            .github
+            .env*
+            node_modules
+            tests
+            vendor # Excluido porque subimos el .zip
+            
+            # Archivos que NO queremos sobrescribir en el servidor si ya existen:
+            storage/logs/
+            storage/app/public/
+            storage/framework/sessions/*
+            storage/framework/cache/data/*
 
-          # Redundancia: Estos ya se borraron arriba, pero es buena práctica
-          node_modules
-          tests
-          vendor
+      - name: 📤 11. Subir Frontend (Archivos Públicos)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: public/      # Origen: Carpeta compilada local
+          server-dir: /public_html/ # Destino: Carpeta pública del hosting
 
-    - name: Deploy FRONTEND
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-      with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        protocol: ftp
-        # El destino es la subcarpeta que el mundo ve
-        local-dir: public/
-        server-dir: /public_html/
+      # ======================================================
+      # FASE 4: POST-DESPLIEGUE (SSH)
+      # ======================================================
 
-    - name: Ejecutar script remoto vía SSH
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY_SSH }}
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
-      run: |
-        # 1. Configurar la clave SSH
-        mkdir -p ~/.ssh
-        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
-        # 2. Agregar Hostinger a hosts conocidos (evita el prompt de yes/no)
-        ssh-keyscan -p 65002 -H $SSH_HOST >> ~/.ssh/known_hosts
-
-        # 3. Ejecutar comando de prueba
-        ssh -i ~/.ssh/id_rsa -p 65002 $SSH_USER@$SSH_HOST "echo '¡Conexión SSH exitosa!'"    
-      
-       
-   # -----------------------------------------------
-    # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH Directo)
-    # -----------------------------------------------
-    # -----------------------------------------------
-    - name: SSH Vínculo, Descompresión y Limpieza Final (Con Contraseña)
-      uses: appleboy/ssh-action@v1.0.3 
-      with:
-        host: ${{ secrets.SSH_HOST }} 
-        username: ${{ secrets.SSH_USER }}
-        port: 65002
-        key: ${{ secrets.PRIVATE_KEY_SSH }}
-        
-        script: |
-          # --- SCRIPT REMOTO ---
-          # Definimos la ruta de la raíz del proyecto usando el usuario
-          PROJECT_ROOT="/home/${{ secrets.SSH_USER }}/domains/xn--mundodelcumpleao-lub.com"
-          echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
-          cd "$PROJECT_ROOT"
+      - name: 🔐 12. Tareas Finales por SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.FTP_HOST }} # Usualmente es el mismo host
+          username: ${{ secrets.FTP_USERNAME }}
+          port: 65002
+          key: ${{ secrets.PRIVATE_KEY_SSH }} # Asegúrate que el nombre coincide en GitHub Secrets
           
-          # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
-          if [ -f vendor.zip ]; then
-            echo "vendor.zip encontrado. Descomprimiendo..."
-            unzip -o vendor.zip -d . 
-            rm vendor.zip
-            echo "vendor.zip descomprimido y eliminado."
-          else
-            echo "vendor.zip no encontrado. Saltando descompresión."
-          fi
-          
-          # 2. CREACIÓN/VERIFICACIÓN DEL VÍNCULO SIMBÓLICO (storage:link)
-          echo "Creando/verificando vínculo simbólico (storage:link)..."
-          rm -f public_html/storage 
-          php artisan storage:link 
-          
-          # 3. LIMPIEZA TOTAL DE CACHÉ (CRUCIAL después de un deploy)
-          echo "Realizando limpieza total de caché de Laravel..."
-          php artisan cache:clear
-          php artisan config:clear
-          php artisan route:clear
-          php artisan view:clear
-          php artisan optimize:clear
-          
-          echo "Tareas post-deploy completadas con éxito."
+          script: |
+            # --- CONFIGURACIÓN DE RUTAS ---
+            # Definimos la ruta absoluta para evitar errores de navegación
+            PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
+            
+            echo "📍 Navegando a la raíz del proyecto: $PROJECT_ROOT"
+            cd "$PROJECT_ROOT"
+
+            # --- 1. GESTIÓN DE DEPENDENCIAS (VENDOR) ---
+            if [ -f vendor.zip ]; then
+              echo "📦 vendor.zip detectado. Descomprimiendo..."
+              unzip -o vendor.zip -d . > /dev/null # > /dev/null silencia la salida masiva
+              rm vendor.zip
+              echo "✅ Vendor actualizado y zip eliminado."
+            else
+              echo "⚠️ No se encontró vendor.zip. Omitiendo descompresión."
+            fi
+
+            # --- 2. ENLACE SIMBÓLICO (STORAGE) ---
+            echo "🔗 Configurando Storage Link..."
+            # Borramos el enlace existente en public_html para recrearlo limpio
+            rm -f public_html/storage 
+            php artisan storage:link
+
+            # --- 3. LIMPIEZA Y OPTIMIZACIÓN DE CACHÉ ---
+            echo "🧹 Ejecutando limpieza de caché de Laravel..."
+            # Es vital ejecutar esto AQUÍ y no en el Build para que las rutas sean las del servidor
+            php artisan cache:clear
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            
+            # Opcional: Solo optimizar en producción real
+            php artisan optimize 
+            
+            echo "🚀 ¡Despliegue completado con éxito!"
