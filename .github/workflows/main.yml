@@ -148,7 +148,7 @@ jobs:
             echo "🔗 Configurando Storage Link..."
             # Borramos el enlace existente en public_html para recrearlo limpio
             rm -f public_html/storage 
-            php artisan storage:link
+            php artisan storage:link-html
 
             # --- 3. LIMPIEZA Y OPTIMIZACIÓN DE CACHÉ ---
             echo "🧹 Ejecutando limpieza de caché de Laravel..."
