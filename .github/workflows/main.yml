@@ -84,7 +84,7 @@ jobs:
     # -----------------------------------------------
     # 3. DESPLIEGUE FINAL (FTP)
     # -----------------------------------------------
-    - name: DEPLOY POR FTP
+    - name: Deploy BACKEND
       uses: SamKirkland/FTP-Deploy-Action@v4.3.0
       with:
         server: ${{ secrets.FTP_HOST }}
@@ -137,9 +137,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         
         script: |
-          echo "Navegando a la raíz del proyecto"
-          cd "/"
-          
+ 
           # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
           if [ -f vendor.zip ]; then
             echo "vendor.zip encontrado. Descomprimiendo..."
