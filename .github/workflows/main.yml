@@ -139,10 +139,13 @@ jobs:
 
             # --- CONFIGURACIÓN DE RUTAS ---
             # Definimos la ruta absoluta para evitar errores de navegación
-            PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
+            PROJECT_ROOT="/home/${{ secrets.SSH_USER }}/domains/xn--mundodelcumpleao-lub.com"
             
             echo "📍 Navegando a la raíz del proyecto: $PROJECT_ROOT"
             cd "$PROJECT_ROOT"
+
+            echo "2. ¿Qué carpetas hay aquí?"
+            ls -la
 
             # --- 1. GESTIÓN DE DEPENDENCIAS (VENDOR) ---
             if [ -f vendor.zip ]; then
