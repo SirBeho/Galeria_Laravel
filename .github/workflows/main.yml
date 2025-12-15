@@ -122,7 +122,24 @@ jobs:
         # El destino es la subcarpeta que el mundo ve
         local-dir: public/
         server-dir: /public_html/
-        
+
+    - name: Ejecutar script remoto vía SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY_SSH }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+      run: |
+        # 1. Configurar la clave SSH
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # 2. Agregar Hostinger a hosts conocidos (evita el prompt de yes/no)
+        ssh-keyscan -p 65002 -H $SSH_HOST >> ~/.ssh/known_hosts
+
+        # 3. Ejecutar comando de prueba
+        ssh -i ~/.ssh/id_rsa -p 65002 $SSH_USER@$SSH_HOST "echo '¡Conexión SSH exitosa!'"    
+      
        
    # -----------------------------------------------
     # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH Directo)
