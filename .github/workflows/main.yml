@@ -127,6 +127,16 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY_SSH }}
           
           script: |
+            echo "--- DIAGNÓSTICO DE RUTAS ---"
+            echo "1. ¿Dónde estoy ahora?"
+            pwd
+            
+            echo "2. ¿Qué carpetas hay aquí?"
+            ls -la
+            
+            echo "3. ¿Qué hay dentro de la carpeta 'domains' (si existe)?"
+            ls -F domains/ || echo "No existe la carpeta domains"
+
             # --- CONFIGURACIÓN DE RUTAS ---
             # Definimos la ruta absoluta para evitar errores de navegación
             PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
