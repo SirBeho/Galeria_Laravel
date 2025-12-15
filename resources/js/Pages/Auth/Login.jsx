@@ -66,7 +66,7 @@ export default function Login({ status, canResetPassword }) {
                                     <span className="ml-2 text-sm text-gray-600">Remember me</span>
                                 </label>
                             </div>
-                            <button type="submit" className="h-9 w-full bg-softblue mt-5 text-white font-bold text-xl">INGRESAR</button>
+                            <button data-cy="login-submit-btn" type="submit" className="h-9 w-full bg-softblue mt-5 text-white font-bold text-xl">INGRESAR</button>
                             <a className='mt-4 hover:underline block  ' href="https://xn--mundodelcumpleao-lub.com/">← Ir al Catalogo</a>
 
 

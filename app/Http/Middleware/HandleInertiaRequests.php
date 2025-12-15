@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\NotificacionController;
-use App\Models\Notificacion;
-use App\Models\Solicitud;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
+use Illuminate\Support\Facades\Log;
+
+// Importar para logging profesional
 
 class HandleInertiaRequests extends Middleware
 {
@@ -22,7 +21,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -34,28 +33,27 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-
-
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => null,
-              
+
             ],
+            'mensaje' => fn () => $request->session()->get('msj'),
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'pedido_status' => fn () => $request->session()->get('pedido_status'),
             ],
             'designSettings' =>[
                 'logoUrl'=> config('settings.imagen_principal_code', 'favico.png'),
                 'primaryColor'=> config('settings.color_primario', '#2563EB'),
                 'secondaryColor'=> config('settings.color_secundario', '#2563EB'),
             ],
-            /* [
-            'logoUrl' => env('IMAGEN_PRINCIPAL_CODE', 'favico.png'),
-            'primaryColor' => env('COLOR_PRIMARIO', '#2563EB'),
-            'secondaryColor' => env('COLOR_SECUNDARIO', '#2563EB'),
-            ], */
         ];
     }
 }

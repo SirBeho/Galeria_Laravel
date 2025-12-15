@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
-use App\Models\Rol;
 use App\Models\User;
 use App\Notifications\UserCreatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,22 +33,20 @@ class RegisteredUserController extends Controller
             'name' => 'El nombre es invalido',
             'email.required' => 'El email no puede estar en blanco',
             'email.email' => 'Email no valido',
-            'email.unique' => 'Ya existe una cuenta con este email'
+            'email.unique' => 'Ya existe una cuenta con este email',
         ];
 
         $validator = validator($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:' . User::class,
+            'email' => 'required|string|email|max:255|unique:'.User::class,
         ], $mensajes);
-
 
         if ($validator->fails()) {
 
-            return redirect()->route('usuarios.index')->with('msj', ['error' => array_values($validator->errors()->messages())], 404);
+            return redirect()->route('usuarios.index')->with('msj', ['error' => array_values($validator->errors()->messages())]);
         }
 
         $password = Str::random(12);
-
 
         $user = User::create([
             'name' => $request->name,
@@ -60,13 +55,14 @@ class RegisteredUserController extends Controller
             'telefono' => $request->telefono,
             'rol_id' => $request->rol_id,
             'empresa' => $request->empresa,
-            'rnc' => $request->rnc
+            'rnc' => $request->rnc,
         ]);
 
         // // Envía la notificación por correo electrónico
         $user->notify(new UserCreatedNotification($password));
 
-        session()->put('msj', ["success" => 'Usuario registrado con exito']);
+        session()->put('msj', ['success' => 'Usuario registrado con exito']);
+
         return redirect(route('usuarios.index'));
     }
 }

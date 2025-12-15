@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('key');
             $table->dateTime('fecha')->useCurrent();
             $table->integer('status')->default('1');
-           
+
         });
     }
 

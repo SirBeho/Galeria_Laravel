@@ -3,8 +3,6 @@ import { useInView } from 'react-intersection-observer';
 
 // Coloca este componente DENTRO de Home.jsx o en un archivo Components/LazyImage.jsx
 const LazyLoadedImage = ({ file }) => {
-
-
     // Configura la observación:
     const { ref, inView } = useInView({
         // `rootMargin: '200px 0px'` emula el prop offset={200}

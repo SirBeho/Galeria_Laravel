@@ -15,19 +15,13 @@ export default function Subir({ user, mensaje }) {
 
     const [images, setImages] = useState([]);
 
-    const [msj, setMsj] = useState(mensaje);
+    const [msj, setMsj] = useState('');
 
     useEffect(() => {
         console.log(mensaje)
         setMsj(mensaje);
-
-
     }, [mensaje]);
-
-
-
-
-
+  
     const handleImageChange = (e) => {
         // Obtener los archivos seleccionados
         const files = Array.from(e.target.files);
@@ -48,7 +42,8 @@ export default function Subir({ user, mensaje }) {
         e.preventDefault();
         setLoading(true);
         post(route('subir.imagen'), {
-            onSuccess: () => {
+            onSuccess: (response) => {
+                setMsj(response.props.mensaje);
                 reset();
                 setData([]);
                 setImages([]);

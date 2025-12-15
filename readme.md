@@ -1,12 +1,14 @@
-# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos [![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml)
+# 📸 Galeria_Laravel: Plataforma de Galería Fotográfica y Pedidos 
+[![GitHub Actions CI/CD Status](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml/badge.svg)](https://github.com/SirBeho/Galeria_Laravel/actions/workflows/main.yml)
+![License](https://img.shields.io/github/license/SirBeho/Galeria_Laravel)  ![Last Commit](https://img.shields.io/github/last-commit/SirBeho/Galeria_Laravel)
 
 <img src="https://simpleskill.icons.workers.dev/svg?i=laravel,react,tailwindcss,mysql,vite,php" height="40">
 
 ## Índice
-- [Descripción del Proyecto](#descripción-del-proyecto)
+- [Descripción del Proyecto](#-descripción-y-arquitectura)
+- [Capturas de Pantalla](#-capturas-de-pantalla)
 - [Funcionalidades Principales](#funcionalidades-principales)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
-- [Arquitectura del Sistema](#arquitectura-del-sistema)
 - [Comandos por Entorno](#comandos-por-entorno)
 - [Despliegue y CI/CD](#despliegue-y-cicd-automatizado)
 - [Contribución](#contribución)
@@ -125,6 +127,58 @@ Almacena la información de los productos, usuarios administradores y registros 
 
     - Framework de pruebas unitarias y de características para la lógica del backend.
 ---
+## 💻 Instalación y Configuración Local
+
+Sigue estos pasos para levantar el proyecto en tu entorno de desarrollo:
+
+### Pre-requisitos
+* **PHP:** 8.2 o superior.
+* **Composer:** Gestor de dependencias de PHP.
+* **Node.js & NPM:** (Recomendado v18+).
+* **MySQL:** Base de datos.
+
+### Pasos de Instalación
+
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/SirBeho/Galeria_Laravel.git](https://github.com/SirBeho/Galeria_Laravel.git)
+    cd Galeria_Laravel
+    ```
+
+2.  **Instalar dependencias:**
+    ```bash
+    # Backend (Laravel)
+    composer install
+
+    # Frontend (React/Inertia)
+    npm install
+    ```
+
+3.  **Configurar variables de entorno:**
+    ```bash
+    cp .env.example .env
+    ```
+    *Abre el archivo `.env` y configura tus credenciales de base de datos (`DB_DATABASE`, `DB_USERNAME`, etc.).*
+
+4.  **Generar clave de aplicación:**
+    ```bash
+    php artisan key:generate
+    ```
+
+5.  **Vincular el Storage (Vital para las imágenes):**
+    ```bash
+    php artisan storage:link
+    ```
+
+6.  **Ejecutar migraciones y seeders (si aplica):**
+    ```bash
+    php artisan migrate
+    ```
+
+7.  **Ejecutar servidores de desarrollo:**
+    * Terminal 1 (Backend): `php artisan serve`
+    * Terminal 2 (Frontend): `npm run dev`
+---
 ## 🧪 Testing y Aseguramiento de Calidad (QA)
 
 El proyecto cuenta con una estrategia de testing híbrida que asegura tanto la lógica de negocio en el servidor como la experiencia del usuario final en el navegador.
@@ -153,30 +207,36 @@ Suite / Flujo | Escenarios Críticos Validados |
 
 ## 🚀 Despliegue y CI/CD Automatizado
 
-El proyecto utiliza **GitHub Actions** para orquestar un pipeline de integración y despliegue continuo. Este flujo de trabajo asegura que solo el código estable y probado llegue al entorno de producción.
+El proyecto utiliza **GitHub Actions** para orquestar un pipeline de integración y despliegue continuo. Este flujo de trabajo asegura que el código sea probado, optimizado y desplegado de forma atómica.
 
-### Workflow del Pipeline (`laravel.yml`)
-Cada vez que se realiza un `push` a la rama `main`, se activan secuencialmente las siguientes etapas:
+### Workflow del Pipeline (`deploy.yml`)
+Cada vez que se realiza un `push` a la rama `master`, se activan secuencialmente las siguientes etapas:
 
 | Etapa | Descripción |
 | :--- | :--- |
-| **1. Frontend Build** | Instalación de dependencias NPM y ejecución de `npm run build` para generar y minificar los assets estáticos (CSS/JS) con Vite. |
-| **2. Quality Gate (PHPUnit)** | Ejecución de la suite de pruebas **PHPUnit** (Backend). Valida la lógica, integridad de la base de datos y el sistema de archivos (Storage Mocks). |
-| **3. Quality Gate (Cypress E2E)** | **Ejecución de las pruebas End-to-End de Cypress**. Asegura que la capa de React/Inertia funcione correctamente y que el flujo de compra crítica (carrito, formulario) sea exitoso. |
-| **4. Backend Optimization** | Instalación de dependencias de Composer optimizadas (`--no-dev`) para reducir el peso y mejorar el rendimiento en producción. |
-| **5. FTP Deployment** | Sincronización inteligente de archivos (incluyendo los assets compilados) con el servidor de destino utilizando las credenciales seguras de FTP. |
+| **1. Setup & Caching** | Configuración de PHP 8.2 y restauración inteligente del caché de `vendor` para acelerar la instalación de dependencias. |
+| **2. Backend Build** | Instalación de dependencias de Composer optimizadas (`--no-dev`) y generación del archivo `.env` de producción. **Empaquetado de `vendor.zip`** para reducir drásticamente el tiempo de transferencia FTP. |
+| **3. Quality Gate (PHPUnit)** | Ejecución de la suite de pruebas **PHPUnit** (Backend). Valida la lógica, integridad de la base de datos y el sistema de archivos (Storage Mocks). |
+| **4. Quality Gate (Cypress E2E)** | **Ejecución de las pruebas End-to-End de Cypress**. Asegura que la capa de React/Inertia funcione correctamente y que el flujo de compra crítica (carrito, formulario) sea exitoso. |
+| **5. Frontend Build** | Instalación de dependencias NPM y compilación de assets con Vite (`npm run build`). Limpieza del workspace para eliminar archivos innecesarios (`node_modules`, `tests`). |
+| **6. FTP Deployment** | Sincronización inteligente de archivos con el servidor de destino utilizando las credenciales seguras de FTP: **Backend** (Core de Laravel y `vendor.zip`) y **Frontend** (Assets públicos) para asegurar que la estructura de carpetas en Hostinger sea correcta. |
+| **7. SSH Post-Deploy** | Conexión segura al servidor para tareas finales: <br>• Descompresión ultra-rápida de `vendor.zip`.<br>• Creación de enlaces simbólicos (`storage:link`).<br>• Limpieza profunda de caché (`artisan optimize`). |
 
 ### Configuración de Secretos
 Para replicar este entorno, es necesario configurar los siguientes **GitHub Secrets** en el repositorio:
 
 | Variable Secreta | Propósito |
 | :--- | :--- |
-| `FTP_SERVER` | Dirección IP o dominio del host FTP. |
-| `FTP_USERNAME` | Usuario FTP con permisos de escritura en la carpeta pública. |
+| `FTP_HOST` / `SSH_HOST` | Dirección IP o dominio del servidor (Hostinger). |
+| `FTP_USERNAME` / `SSH_USER` | Usuario del hosting con acceso SSH y FTP. |
 | `FTP_PASSWORD` | Contraseña de acceso FTP. |
+| `PRIVATE_KEY_SSH` | Clave privada SSH (Ed25519) para ejecutar comandos remotos sin contraseña. |
+| `ENV_FILE` | Contenido completo del archivo `.env` de producción. |
+| `DEPLOY_CLEAN_TOKEN` | Token de seguridad para validaciones internas de despliegue. |
+
+> **Nota:** El despliegue utiliza una estrategia de **"Vendor Zipping"**: en lugar de subir miles de archivos pequeños de la carpeta `vendor` por FTP (que es lento), se sube un único archivo `.zip` y se descomprime en el servidor vía SSH, reduciendo el tiempo de despliegue de minutos a segundos. Tambien excluye automáticamente archivos innecesarios como `.git`, `node_modules` (de desarrollo) y archivos de configuración de tests para mantener el servidor limpio.
 
 
-> **Nota:** El despliegue excluye automáticamente archivos innecesarios como `.git`, `node_modules` (de desarrollo) y archivos de configuración de tests para mantener el servidor limpio.
 
 ---
 
@@ -210,6 +270,9 @@ Para replicar este entorno, es necesario configurar los siguientes **GitHub Secr
 5.  Abre un Pull Request.
 
 ---
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la **[Licencia MIT](https://opensource.org/licenses/MIT)**.
 
 <h2 style="font-size: 1.5rem; font-weight: 600; border-bottom: 2px solid #3182ce">🧑‍💻 Autor</h2>
  <table >

@@ -1,5 +1,3 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
 import logo from "/public/assets/colorfullLogo.png";
 
 export default function Guest({ children }) {
@@ -8,13 +6,13 @@ export default function Guest({ children }) {
             {children}
 
             <div className='absolute opacity-25 w-screen h-screen '>
-                
 
-                    <img src={logo}  alt="Logo" className="w-full h-full object-cover  " />
+
+                <img src={logo} alt="Logo" className="w-full h-full object-cover  " />
 
             </div>
 
-            
+
 
 
         </div>

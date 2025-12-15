@@ -118,7 +118,8 @@ export default function Modal({children,galeria = false, autoclose = 0,show = fa
                             
                             
                             {close_x && (
-                                <button onClick={close} className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2" >
+                                <button  data-cy="modal-close-btn"
+                                onClick={close} className="px-2 font-bold hover:bg-gray-300 rounded-lg absolute right-2 top-2" >
                                     x
                                 </button>
                             )}

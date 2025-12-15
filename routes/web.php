@@ -1,21 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\ChirpController;
-use App\Http\Controllers\ComentarioController;
-use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReporteController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\SolicitudController;
-use App\Http\Controllers\TipoSolicitudController;
-use App\Models\Empresa;
 use App\Models\Pedido;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
@@ -66,22 +54,35 @@ Route::get('/pedido', function (Request $request) {
   
 })->name('pedido.view');
 
+    $filteredFileNamesJuegos = array_filter($fileNames2, function ($fileName) {
+        return $fileName !== '.' && $fileName !== '..';
+    });
 
+    $filteredFileNamesJuegos = array_map(function ($fileName) {
+        // Retorna la ruta completa y sobrescribe el valor
+        return 'juegos/'.$fileName;
+    }, $filteredFileNamesJuegos);
+
+    return Inertia::render('Home', [
+        'imgHome' => array_reverse($filteredFileNameshome),
+        'imgJuegos' => array_reverse($filteredFileNamesJuegos),
+        'user' => auth()->user() ?? false,
+    ]);
+})->name('home');
+
+Route::get('/pedido', [PedidoController::class, 'index'])->name('pedido.view');
 Route::post('/notificacion', [PedidoController::class, 'notificacion_whatsapp'])->name('notificacion');
 
 Route::post('/add', [PedidoController::class, 'add'])->name('pedido.add');
 Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
 
-
-
 Route::middleware(['auth', 'verified'])->group(function () {
 
-
     Route::get('/panel', function () {
-        return Inertia::render('Panel',[
-            'pedidos'=> Pedido::all()->sortBy('id')->load('detalle'),
-            
+        return Inertia::render('Panel', [
+            'pedidos' => Pedido::all()->sortBy('id')->load('detalle'),
+
             'user' => auth()->user() ?? [],
         ]);
     })->name('panel');
@@ -116,5 +117,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-->name('logout');
-require __DIR__ . '/auth.php';
+    ->name('logout');
+require __DIR__.'/auth.php';

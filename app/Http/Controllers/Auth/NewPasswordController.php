@@ -39,13 +39,13 @@ class NewPasswordController extends Controller
             'email' => 'required|email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
-            
+
             'token' => 'El token es obligatorio.',
-          
+
             'email' => 'El correo electrónico debe ser válido.',
-         
+
             'password' => 'La contraseña es obligatoria.',
-           
+
         ]);
 
         // Aquí intentaremos restablecer la contraseña del usuario. Si tiene éxito,
@@ -74,7 +74,4 @@ class NewPasswordController extends Controller
             'email' => [trans($status)],
         ]);
     }
-
-
-       
 }

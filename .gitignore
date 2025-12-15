@@ -7,11 +7,8 @@
 /public/images
 /storage/*.key
 /vendor
+.env
 .env*
-.env.cypress
-.env.example
-.env.backup
-.env.production
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -21,3 +18,4 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+cypress.env.json
