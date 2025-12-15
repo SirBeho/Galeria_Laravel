@@ -124,25 +124,34 @@ jobs:
         server-dir: /public_html/
         
        
+   # -----------------------------------------------
+    # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH Directo)
     # -----------------------------------------------
-      # 5. CONFIGURACIÓN FINAL DEL SERVIDOR (SSH)
-      # -----------------------------------------------
-    - name: SSH Vínculo, Descompresión y Limpieza Final
-      uses: appleboy/ssh-action@v1.0.3 
-      with:
-        host: ${{ secrets.FTP_HOST }} 
-        username: ${{ secrets.FTP_USERNAME }}
-        port: 65002
-        # ELIMINAMOS el parámetro 'key' de aquí.
+    - name: SSH Vínculo, Descompresión y Limpieza Final (Workaround Directo)
+      # Usamos el ambiente nativo para más control
+      run: |
+        echo "Iniciando conexión SSH directa para Post-Deploy..."
         
-        # AGREGAMOS la clave como una variable de ambiente:
-        key: ${{ secrets.SSH_PRIVATE_KEY }} # <-- Mantenemos el parámetro 'key' pero con el secreto
-
-        script: |
-          # WORKAROUND: Aseguramos que la clave se lea correctamente.
-
-          PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
-          echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
+        # 1. Crear el archivo de clave privada desde el secreto (Workaround)
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        
+        # 2. Agregar el host al known_hosts para evitar el prompt de seguridad
+        # Necesario cuando se usa el cliente SSH directamente
+        ssh-keyscan -p 65002 -H ${{ secrets.FTP_HOST }} >> ~/.ssh/known_hosts
+        
+        # 3. Definir variables de entorno
+        SSH_USER="${{ secrets.FTP_USERNAME }}"
+        SSH_HOST="${{ secrets.FTP_HOST }}"
+        SSH_PORT="65002"
+        PROJECT_ROOT="/home/$SSH_USER/domains/xn--mundodelcumpleao-lub.com"
+        
+        # 4. Ejecutar el script remoto usando la clave recién creada (-i)
+        # El script completo se pasa entre comillas simples ''
+        ssh -i ~/.ssh/deploy_key -p $SSH_PORT $SSH_USER@$SSH_HOST '
+          # --- SCRIPT REMOTO ---
+          echo "Navegando a la raíz del proyecto: '"$PROJECT_ROOT"'"
           cd "$PROJECT_ROOT"
           
           # 1. DESCOMPRESIÓN DE VENDOR.ZIP (si existe)
@@ -169,3 +178,5 @@ jobs:
           php artisan optimize:clear
           
           echo "Tareas post-deploy completadas con éxito."
+        '
+      shell: bash
