@@ -221,9 +221,9 @@ export default function Dashboard({ nombres, user }) {
                 >
                     x
                 </button>
-                <h1 className="absolute left-9 top-16  text-white" style={{
+                {/* <h1 className="absolute left-9 top-16  text-white" style={{
                     filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                }}>{images[index]}</h1>
+                }}>{images[index]}</h1> */}
 
                 <h5 className="text-xl font-bold text-center pb-2">
                     Detalle del Artículo
@@ -235,7 +235,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
                                     className="h-full object-cover w-full"
-                                    src={`/${images[index]}`}
+                                    src={`${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -254,7 +254,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full">
                                 <img
                                     className="h-full object-contain w-full"
-                                    src={`/${images[index]}`}
+                                    src={`${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -278,15 +278,15 @@ export default function Dashboard({ nombres, user }) {
                     x
                 </button>
 
-                <h1 className="absolute left-9 top-16  text-white" style={{
+               {/*  <h1 className="absolute left-9 top-16  text-white" style={{
                     filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                }}>{images[index]}</h1>
+                }}>{images[index]}</h1> */}
 
                 <h5 className="text-xl font-bold text-center pb-2">
                     Detalle del Artículo
                 </h5>
 
-                http://localhost:8000/storage/images/10061.jpg
+       
 
 
                 <div className="overflow-hidden rounded-3xl shadow-xl">
@@ -295,7 +295,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full rounded-sm overflow-hidden ">
                                 <img
                                     className="h-full object-cover w-full"
-                                    src={`/${images[index]}`}
+                                    src={`${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -314,7 +314,7 @@ export default function Dashboard({ nombres, user }) {
                             <div className="w-full h-full">
                                 <img
                                     className="h-full object-contain w-full"
-                                    src={`/${images[index]}`}
+                                    src={`${images[index]}`}
                                     alt="Descripción"
                                 />
                             </div>
@@ -516,9 +516,9 @@ export default function Dashboard({ nombres, user }) {
                                               x
                                           </button>
 
-                                          <h1 className="absolute left-9 top-16  text-white" style={{
+                                         {/*  <h1 className="absolute left-9 top-16  text-white" style={{
                                             filter: "drop-shadow(2px 4px 6px rgba(0, 0, 0, 1))",
-                                        }}>{images[current]}</h1>
+                                        }}>{images[current]}</h1> */}
 
                                           <h5 className="text-xl font-bold text-center pb-2">
                                               Detalle del Artículo
@@ -530,7 +530,7 @@ export default function Dashboard({ nombres, user }) {
                                                     <div className="w-full h-full rounded-sm overflow-hidden ">
                                                         <img
                                                             className="h-full object-cover w-full"
-                                                            src={`/${images[current]}`}
+                                                            src={`${images[current]}`}
                                                             alt="Descripción"
                                                         />
                                                     </div>
@@ -552,7 +552,7 @@ export default function Dashboard({ nombres, user }) {
                                                     <div className="w-full h-full">
                                                         <img
                                                             className="h-full object-contain w-full"
-                                                            src={`/${images[current]}`}
+                                                            src={`${images[current]}`}
                                                             alt="Descripción"
                                                         />
                                                     </div>
