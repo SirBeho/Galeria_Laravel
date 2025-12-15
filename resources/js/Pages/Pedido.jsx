@@ -57,6 +57,7 @@ export default function Pedido({ pedido, user }) {
           <label className="flex  gap-1">
             <span className='font-bold'>Estado:</span>
             <select
+              data-cy="status-select"
               className=" border min-w-56 rounded-md border-none focus:outline-blue-300 p-0 px-2 whitespace-nowrap"
               defaultValue={pedido.status}
               onChange={(e) => {
@@ -81,18 +82,19 @@ export default function Pedido({ pedido, user }) {
               <th scope="col" className="px-6 py-3">Comentario</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-cy="detalle-data-table" data-pedido-id={pedido.id}>
 
             {pedido.detalle?.map((item, index) => {
               return (
-                <tr key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
+                <tr  data-cy="detalle-row" key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
                   <td onClick={() => setModalImg(item.codigo)}>
                     <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`/images/${item.codigo}`} alt="foto" />
                   </td>
                   {/* <td className="sm:px-6 py-4">
                     {item.codigo}
                   </td> */}
-                  <td className="sm:px-6 py-4 text-center   ">
+                  <td data-cy="detalle-Quantity"
+                   className="sm:px-6 py-4 text-center   ">
                     {item.cantidad}
                   </td>
                   <td className="sm:px-6 py-4">

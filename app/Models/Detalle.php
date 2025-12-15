@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Detalle extends Model
 {
@@ -18,6 +19,11 @@ class Detalle extends Model
        
     ];
     public $timestamps = false;
+
+    public function pedido():  BelongsTo
+    {
+        return $this->belongsTo(Pedido::class, 'pedido');
+    }
 
 }
 

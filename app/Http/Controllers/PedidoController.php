@@ -12,24 +12,33 @@ class PedidoController extends Controller
     
     public function add(Request $request)
     {
-        
 
+        $request->validate([
+            'nombre' => 'required|string',
+            'telefono' => 'required|string',
+            'carrito' => 'array|min:1|required', 
+            'carrito.*.codigo' => 'required|string',
+            'carrito.*.cantidad' => 'required|integer|min:1',
+            'carrito.*.comentario' => 'nullable|string',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'carrito.min' => 'El carrito debe contener al menos un artículo.',
+            'carrito.required' => 'El carrito no puede estar vacío.',
+        ]);
        
         try {
-            if ($request->carrito == null) {
-                throw new \Exception('El carrito no puede estar vacío');
-            }
+            
+           
 
-            $request->validate([
-                'nombre' => 'required',
-                'telefono' => 'required',
-            ]);
-
+            
             $pedido = Pedido::create([
                 'nombre' => $request->nombre,
                 'telefono' => $request->telefono,
                 'key' => bin2hex(random_bytes(10)),
             ]);
+
+           
 
             $carrito = $request->carrito;
             foreach ($carrito as $item) {
@@ -38,10 +47,12 @@ class PedidoController extends Controller
                     'codigo' => $item['codigo'],
                     'cantidad' => $item['cantidad'],
                     'comentario' => $item['comentario'],
-                   
                 ]);
             }
 
+          
+
+            
             $host = $_SERVER['HTTP_HOST'];
             $dir = dirname($_SERVER['REQUEST_URI']);
             $url = "http://" . $host . $dir . "pedido?p=$pedido->numero_pedido&key=$pedido->key";
@@ -54,12 +65,10 @@ class PedidoController extends Controller
                 'message' => 'Pedido creado correctamente',
                 'pedido' => $pedido,
                 'whatsappLink' => $whatsappLink,
-                'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
+                'whatsapp_response' => 'Not attempted',
+               // 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
             ]);
     
-            // 🟢 FORZAR UNA REDIRECCIÓN A LA MISMA PÁGINA (o a donde sea)
-            // Inertia ve el 302 y detiene la renderización.
-            // La sesión 'pedido_status' estará disponible en la próxima página (Home).
             return redirect()->back()->with('success', 'Pedido creado Correctamente.');
             //añadir respuesta de whatsapp
            
@@ -69,9 +78,13 @@ class PedidoController extends Controller
                 'whatsappLink' => $whatsappLink,
                 'whatsapp_response' => $this->notificacion_whatsapp($request->nombre, $pedido->numero_pedido, $url),
             ]); */
-        } catch (\Throwable $th) {
+        }  catch (\Throwable $th) {
+            Log::error("Fallo al crear pedido: " . $th->getMessage()); // 🟢 Registrar error
+    
+            // Devolver una respuesta JSON clara
             return response()->json([
-                'error' => $th->getMessage(),
+                'error' => 'Ocurrió un error interno al procesar el pedido.',
+                'details' => $th->getMessage(),
             ], 500);
         }
     }
@@ -144,11 +157,14 @@ class PedidoController extends Controller
 
 
     public function sent(Request $request)
+    
     {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
         try {
-            $request->validate([
-                'id' => 'required',
-            ]);
+           
 
             $pedido = Pedido::find($request->id);
             $pedido->update([
@@ -160,11 +176,12 @@ class PedidoController extends Controller
 
     public function status(Request $request)
     {
+        $request->validate([
+            'id' => 'required',
+            'status' => 'required|numeric',
+        ]);
         try {
-            $request->validate([
-                'id' => 'required',
-                'status' => 'required|numeric',
-            ]);
+            
             
             if ($request->id == null || $request->status == null) {
                 $request->merge(['id' => $request->input('id'), 'status' => $request->input('status')]);

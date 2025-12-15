@@ -13,7 +13,9 @@ import { usePage } from '@inertiajs/react';
 // import Modal from '@/Components/Modal'; 
 // import { set } from 'date-fns';
 
-const CarritoComponente = ({  setPedidoCreado }) => {
+const CarritoComponente = ({  setPedidoCreado ,setMsj }) => {
+
+  
 
   
 
@@ -75,8 +77,8 @@ const CarritoComponente = ({  setPedidoCreado }) => {
     }
 
     transform((currentData) => ({
-      ...currentData,               
-       carrito
+      ...currentData,     
+       carrito 
     }));
 
     post(route("pedido.add"), {
@@ -88,10 +90,11 @@ const CarritoComponente = ({  setPedidoCreado }) => {
           Limpiar(); 
       },
       onError: (errors) => {
-  
+        setMsj({
+          errors: Object.values(errors),
+          success: false 
+      })
         console.error("Errores de validación:", errors);
-        alert(error.response?.data?.error || "Ocurrió un error al procesar el pedido.");
-        // Los mensajes de error se mostrarán debajo de los inputs.
       }
     });
   }
@@ -121,6 +124,7 @@ const CarritoComponente = ({  setPedidoCreado }) => {
             <label className="flex flex-col w-full text-sm font-medium text-gray-600">
               Nombre:
               <input
+                data-cy="input-nombre"
                 placeholder="Ingrese su nombre"
                 required={true}
                 value={data.nombre}
@@ -135,6 +139,7 @@ const CarritoComponente = ({  setPedidoCreado }) => {
             <label className="flex flex-col w-full text-sm font-medium text-gray-600">
               Teléfono:
               <PhoneInput
+                data-cy="input-telefono"
                 country='DO'
                 value={data.telefono}
                 onChange={(e) => setData("telefono", e)}
@@ -154,6 +159,7 @@ const CarritoComponente = ({  setPedidoCreado }) => {
             Artículos ({carrito?.length || 0})
             {carrito?.length > 0 && (
               <button
+                data-cy="clear-carrito-btn"
                 onClick={Limpiar}
                 type='button'
                 className='text-xs font-medium text-red-600 hover:bg-red-50 px-2 py-1 rounded transition-colors'
@@ -166,9 +172,9 @@ const CarritoComponente = ({  setPedidoCreado }) => {
           {carrito.length === 0 ? (
             <p className="text-gray-500 text-center py-8">El carrito está vacío. Agregue artículos para continuar.</p>
           ) : (
-            <div className="space-y-2">
+            <div data-cy="cart-item-list" className="space-y-2">
               {carrito?.map((item, index) => (
-                <div key={index} className="flex bg-white border border-gray-200 rounded-lg shadow-sm p-3 items-center">
+                <div data-cy="cart-item-row" key={index} className="flex bg-white border border-gray-200 rounded-lg shadow-sm p-3 items-center">
                   {/* Imagen */}
                   <img
                     className="h-16 w-16 object-cover rounded-md flex-shrink-0 mr-4"
@@ -181,11 +187,13 @@ const CarritoComponente = ({  setPedidoCreado }) => {
                     <p className="text-sm font-semibold text-gray-900 truncate">
                       {item.codigo}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p  data-cy="cart-item-quantity"
+                     className="text-sm text-gray-500">
                       Cant: <span className="font-bold">{item.cantidad}</span>
                     </p>
                     {item.comentario && (
-                      <p className="text-xs text-blue-600 italic mt-1">
+                      <p data-cy="cart-item-comment"
+                      className="text-xs text-blue-600 italic mt-1">
                         "{item.comentario}"
                       </p>
                     )}
@@ -213,6 +221,7 @@ const CarritoComponente = ({  setPedidoCreado }) => {
 
           <button
             type='submit'
+            data-cy="submit-pedido-btn"
             disabled={carrito.length === 0 || processing}
             className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white font-bold text-lg transition-colors transform active:scale-[0.99] shadow-md
                         ${carrito.length === 0 || processing ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}

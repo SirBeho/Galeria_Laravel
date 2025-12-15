@@ -11,6 +11,8 @@ use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 use Illuminate\Support\Facades\Session;
 
+use Illuminate\Support\Facades\Log; // Importar para logging profesional
+
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -36,12 +38,6 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
 
-            $mensaje = session('msj');
-            if ($mensaje) {
-                Session::forget('msj');
-            }
-
-
 
         return [
             ...parent::share($request),
@@ -49,7 +45,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => null,
               
             ],
-            'mensaje' => $mensaje,
+            'mensaje' => fn () => $request->session()->get('msj'),
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

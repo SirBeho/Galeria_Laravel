@@ -13,13 +13,14 @@ import Modal from "@/Components/Modal";
 import Loading from "@/Components/Loading";
 import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { ProductDetailModal } from '@/Components/ProductDetailModal';
+import { set } from "date-fns";
 
 export default function Home({ imgHome, imgJuegos, user }) {
     
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
     // 🟢 Obtenemos el modo eliminar del contexto visual
-    const { verJuegos, estadoVisual, showEliminar, setShowEliminar } = useVisual();
+    const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
     
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos) : Object.values(imgHome);
@@ -28,6 +29,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
     const [agregado, setAgregado] = useState(false);
+    const [msj, setMsj] = useState(null);
     
     // 🟢 Estado local para la SELECCIÓN de archivos (esto vive solo en Home)
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -102,11 +104,11 @@ export default function Home({ imgHome, imgJuegos, user }) {
         setShowConfirmModal(false);
 
         postDelete(route("eliminar.imagen", { codigos: selectedFiles }), {
-            onSuccess: () => {
-                // Inertia recargará las props (imgHome/imgJuegos) automáticamente
+            onSuccess: (response) => {
+                setMsj(response.props.mensaje);
                 setSelectedFiles([]);
                 setLoading(false);
-                setShowEliminar(false); // 🟢 Salimos del modo eliminar al terminar con éxito
+                toggleDeleteMode(); 
             },
             onError: (err) => {
                 console.error(err);
@@ -122,10 +124,10 @@ export default function Home({ imgHome, imgJuegos, user }) {
             <Head title="Home" />
             
             {/* --- MODALES --- */}
-            <Modal show={agregado} onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
+            <Modal show={agregado}     onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
                 <div className="py-8 text-xl text-center">El producto se agregó correctamente</div>
                 <div className="flex justify-center mt-2">
-                    <button onClick={() => setAgregado(false)} className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
+                    <button onClick={() => setAgregado(false)} data-cy="modal-added-close-btn" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
                 </div>
             </Modal>
 
@@ -150,6 +152,22 @@ export default function Home({ imgHome, imgJuegos, user }) {
                 </div>
             </Modal>
 
+            <Modal show={msj != null} onClose={() => setMsj(null)} header={"Productos Eliminados"} close_x={true}>
+                {msj?.success && <div className="text-center text-green-600 text-xl" >
+                    <p>{msj.message}</p>
+                </div>}
+
+                {msj?.errors && <div className="text-center text-red-500 mt-4 text-sm">
+                    {msj.errors.map((error, index) => (
+                        <span className="block" key={index}>{error}</span>
+                    ))}
+                </div>}
+
+                <div className="flex justify-center mt-2" >
+                    <button onClick={() => setMsj(null)} type="button" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500" >Cerrar</button>
+                </div>
+            </Modal>
+
             {/* 🟢 Botón Flotante Eliminar (Solo visible si hay seleccionados) */}
             {showEliminar && !showConfirmModal && selectedFiles.length > 0 && (
                 <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
@@ -171,6 +189,7 @@ export default function Home({ imgHome, imgJuegos, user }) {
                         <div
                             ref={(el) => (imageRefs.current[index] = el)}
                             key={index}
+                            data-cy={`gallery-item`}
                             // 🟢 Condicional de click: Si showEliminar es true, selecciona. Si no, abre modal.
                             onClick={showEliminar ? (e) => toggleSelection(e, file) : () => open(file, index)}
                             style={{ boxShadow: "5px 5px 10px rgba(0,0,0,0.5)" }}
