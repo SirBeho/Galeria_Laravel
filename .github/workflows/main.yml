@@ -148,15 +148,15 @@ jobs:
     - name: SSH Vínculo, Descompresión y Limpieza Final (Con Contraseña)
       uses: appleboy/ssh-action@v1.0.3 
       with:
-        host: ${{ secrets.FTP_HOST }} 
-        username: ${{ secrets.FTP_USERNAME }}
+        host: ${{ secrets.SSH_HOST }} 
+        username: ${{ secrets.SSH_USER }}
         port: 65002
-        password: ${{ secrets.FTP_PASSWORD }} 
+        key: ${{ secrets.PRIVATE_KEY_SSH }}
         
         script: |
           # --- SCRIPT REMOTO ---
           # Definimos la ruta de la raíz del proyecto usando el usuario
-          PROJECT_ROOT="/home/${{ secrets.FTP_USERNAME }}/domains/xn--mundodelcumpleao-lub.com"
+          PROJECT_ROOT="/home/${{ secrets.SSH_USER }}/domains/xn--mundodelcumpleao-lub.com"
           echo "Navegando a la raíz del proyecto: $PROJECT_ROOT"
           cd "$PROJECT_ROOT"
           
