@@ -4,7 +4,8 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User; // Asegúrate de importar tus modelos
+
+// Asegúrate de importar tus modelos
 
 class OrderProcessingTest extends TestCase
 {
@@ -27,16 +28,16 @@ class OrderProcessingTest extends TestCase
         $response = $this->post(route('pedido.add'), $payload);
 
         // 3. Afirmaciones
-        
+
         // Debe ser una redirección exitosa (Inertia suele redireccionar o devolver un 200)
-        $response->assertStatus(200); 
+        $response->assertStatus(200);
 
         // Asegurar que el pedido fue creado en la DB
         $this->assertDatabaseHas('pedidos', [
             'nombre' => 'Jose Perez',
             'telefono' => '(809) 555-1234',
         ]);
-        
+
         // Asegurar que los artículos del pedido se guardaron correctamente
         $this->assertDatabaseCount('carrito', 2);
     }

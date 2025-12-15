@@ -2,16 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\NotificacionController;
-use App\Models\Notificacion;
-use App\Models\Solicitud;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
-use Illuminate\Support\Facades\Session;
 
-use Illuminate\Support\Facades\Log; // Importar para logging profesional
+// Importar para logging profesional
 
 class HandleInertiaRequests extends Middleware
 {
@@ -25,7 +20,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -38,12 +33,11 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
 
-
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => null,
-              
+
             ],
             'mensaje' => fn () => $request->session()->get('msj'),
             'ziggy' => fn () => [

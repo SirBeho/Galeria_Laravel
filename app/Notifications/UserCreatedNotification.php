@@ -4,8 +4,6 @@ namespace App\Notifications;
 
 use App\Mail\UserCreatedMail;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class UserCreatedNotification extends Notification
@@ -26,7 +24,7 @@ class UserCreatedNotification extends Notification
      */
     public function via(object $notifiable)
     {
-        return  ['mail'];
+        return ['mail'];
     }
 
     /**

@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Pedido extends Model
 {
     use HasFactory;
-    
-    protected $table = "pedido";
+
+    protected $table = 'pedido';
+
     protected $fillable = [
         'numero_pedido',
         'nombre',
@@ -32,8 +33,8 @@ class Pedido extends Model
 
     public function detalle(): HasMany
     {
-        return $this->hasMany(Detalle::class,'pedido');
+        return $this->hasMany(Detalle::class, 'pedido');
     }
+
     public $timestamps = false;
-    
 }

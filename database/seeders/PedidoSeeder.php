@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\User; // Asume que tienes un modelo User
-use App\Models\Pedido;
 use App\Models\Detalle;
+use App\Models\Pedido; // Asume que tienes un modelo User
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class PedidoSeeder extends Seeder
 {
@@ -25,9 +24,9 @@ class PedidoSeeder extends Seeder
         // 🛑 CREAR LOS DETALLES RELACIONADOS
         Detalle::factory()->create([
             'pedido' => $pedido1->id,
-            'cantidad' => 10
+            'cantidad' => 10,
         ]);
-        
+
         Detalle::factory()->create([
             'pedido' => $pedido1->id,
             'cantidad' => 5,

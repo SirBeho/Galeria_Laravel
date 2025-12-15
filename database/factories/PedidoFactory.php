@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+
 use App\Models\Detalle;
 use App\Models\Pedido;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,8 +21,8 @@ class PedidoFactory extends Factory
         return [
             'nombre' => $this->faker->name(),
             'telefono' => $this->faker->phoneNumber(),
-            'status' => 1, 
-            'numero_pedido' => $this->faker->unique()->numberBetween(1000, 9999), 
+            'status' => 1,
+            'numero_pedido' => $this->faker->unique()->numberBetween(1000, 9999),
             'key' => bin2hex(random_bytes(10)), // Clave de acceso
         ];
     }
@@ -35,13 +36,13 @@ class PedidoFactory extends Factory
     {
         // 🟢 CLAVE: Después de crear un pedido, ejecuta esta función.
         return $this->afterCreating(function (Pedido $pedido) {
-            
-            $detallesCount = rand(2, 3); 
+
+            $detallesCount = rand(2, 3);
 
             Detalle::factory($detallesCount)->create([
-                'pedido' => $pedido->id, 
+                'pedido' => $pedido->id,
             ]);
-            
+
         });
     }
 }

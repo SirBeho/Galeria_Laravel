@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Defuse\Crypto\Key;
+use Illuminate\Console\Command;
 
 class GenerateEncryptionKey extends Command
 {
@@ -13,7 +13,9 @@ class GenerateEncryptionKey extends Command
      * @var string
      */
     protected $signature = 'generate:encryption-key';
+
     protected $description = 'Generate a new encryption key';
+
     /**
      * Execute the console command.
      */

@@ -19,8 +19,7 @@ class PasswordController extends Controller
             'current_password' => ['required', 'current_password'],
             'password' => ['required', Password::min(8), 'confirmed'],
         ]);
-           
-      
+
         unset($request->user()->solicitudes);
         $request->user()->update([
             'password' => Hash::make($validated['password']),
