@@ -21,7 +21,6 @@ class DetalleFactory extends Factory
         $fileNames = Storage::disk('gallery')->files();
 
         return [
-            //tomar codigo de la lista de archivos que estan $fileNames
             'codigo' => $this->faker->randomElement($fileNames),
             'cantidad' => $this->faker->numberBetween(1, 5),
             'comentario' => $this->faker->sentence(3),

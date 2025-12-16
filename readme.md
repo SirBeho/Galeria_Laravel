@@ -184,7 +184,7 @@ Sigue estos pasos para levantar el proyecto en tu entorno de desarrollo:
 El proyecto cuenta con una estrategia de testing híbrida que asegura tanto la lógica de negocio en el servidor como la experiencia del usuario final en el navegador.
 
 ### 1. Backend Testing (PHPUnit)
-Se utiliza **PHPUnit** con base de datos en memoria (`sqlite :memory:`) y **Storage Mocks** para validar la lógica crítica sin ensuciar el entorno de producción.
+Se utiliza **PHPUnit** configurado con un entorno aislado (`.env.testing`) y una base de datos SQLite persistente en archivo (`database/testing.sqlite`). Esto garantiza consistencia de datos y permite depurar el estado de la base de datos post-test si es necesario.
 
 | Suite de Pruebas | Cobertura Principal |
 | :--- | :--- |
@@ -194,7 +194,7 @@ Se utiliza **PHPUnit** con base de datos en memoria (`sqlite :memory:`) y **Stor
 | **🔒 Seguridad de Vistas** | • Acceso denegado a pedidos con claves (keys) inválidas.<br>• Redirección de usuarios no autenticados. |
 
 ### 2. End-to-End Testing (Cypress)
-Se utiliza **Cypress** para simular la interacción real de un usuario en un navegador Chrome, validando flujos completos y persistencia de datos.
+Se utiliza **Cypress** ejecutándose contra un servidor de pruebas dedicado (`php artisan serve --env=testing`). Este entorno comparte la misma base de datos SQLite de pruebas, asegurando un aislamiento total de los datos de desarrollo/producción y garantizando la persistencia necesaria para flujos complejos.
 
 
 Suite / Flujo | Escenarios Críticos Validados |
@@ -257,6 +257,12 @@ Para replicar este entorno, es necesario configurar los siguientes **GitHub Secr
 | `npm run dev`   | Inicia el servidor de desarrollo con *Hot Module Replacement* (HMR). |
 | `npm run build` | Compila y minifica los assets para producción en la carpeta `public/build`. |
 
+### **Testing (Cypress + PHPUnit)**
+| **Comando** | **Descripción** |
+|-----------------------|-------------------------------------------------|
+|`php artisan test`   |Ejecuta la suite de pruebas unitarias y de características (PHPUnit).
+|`npm run test `  |Ejecuta el flujo completo de Cypress (Migración + Servidor Test + Tests E2E).
+|`npx cypress open`   |Abre la interfaz interactiva de Cypress (Requiere servidor corriendo).
 ---
 
 ## 🤝 Contribución

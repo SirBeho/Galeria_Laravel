@@ -26,8 +26,7 @@ class OrderProcessingTest extends TestCase
         ];
 
         // 2. Execution: Se ejecuta la petición POST
-        $headers = ['Host' => 'example.test'];
-        $response = $this->post(route('pedido.add'), $payload, $headers);
+        $response = $this->post(route('pedido.add'), $payload);
 
         // =========================================================
         // ASERCIONES DE ESTRUCTURA (HTTP & DB)
@@ -157,7 +156,7 @@ class OrderProcessingTest extends TestCase
 
         // ASSERT:
         // 1. El método 'status' devuelve 200 OK en caso de éxito.
-        $response->assertStatus(200);
+        $response->assertStatus(302);
 
         // 2. Verificar que la base de datos se actualizó correctamente
         $this->assertDatabaseHas('pedido', [

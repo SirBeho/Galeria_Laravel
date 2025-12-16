@@ -18,13 +18,14 @@ export default function Panel({ pedidos, user }) {
   
     }); */
 
-
+  console.log(pedidos)
   pedidos.forEach(function (objeto) {
 
     objeto.cantidad = objeto.detalle.length;
 
     objeto.fecha2 = format(parseISO(objeto.fecha), 'dd/MM/yyyy').toString();
   });
+
 
 
 

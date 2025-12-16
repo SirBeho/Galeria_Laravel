@@ -9,7 +9,10 @@ import Loading from "@/Components/Loading";
 
 export default function Subir({ user, mensaje }) {
 
-    const { data, setData, post, processing, errors, reset } = useForm([]);
+    const { data, setData, post, processing, errors, reset } = useForm({
+        images: [],
+    });
+
     const clearCacheForm = useForm({});
     const [loading, setLoading] = useState(false);
 
@@ -17,18 +20,20 @@ export default function Subir({ user, mensaje }) {
 
     const [msj, setMsj] = useState('');
 
+    console.log(data)
+
     useEffect(() => {
         console.log(mensaje)
         setMsj(mensaje);
     }, [mensaje]);
-  
+
     const handleImageChange = (e) => {
         // Obtener los archivos seleccionados
         const files = Array.from(e.target.files);
         // Filtrar los archivos seleccionados para excluir los duplicados
-        const uniqueFiles = files.filter(file => !data.some(image => image.name === file.name));
+        const uniqueFiles = files.filter(file => !data['images'].some(image => image.name === file.name));
         // Actualizar el estado con las nuevas imágenes
-        setData([...data, ...uniqueFiles]);
+        setData('images', [...data.images, ...uniqueFiles]);
 
         const imageList = uniqueFiles.map((file) => ({
             file,
@@ -37,21 +42,40 @@ export default function Subir({ user, mensaje }) {
         setImages([...images, ...imageList]);
     };
 
+    useEffect(() => {
+        return () => {
+            images.forEach((image) => {
+                // LIBERA la memoria del navegador para la vista previa
+                URL.revokeObjectURL(image.previewURL);
+            });
+        };
+    }, [images]);
+
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
         post(route('subir.imagen'), {
             onSuccess: (response) => {
+                console.log(response)
                 setMsj(response.props.mensaje);
                 reset();
                 setData([]);
                 setImages([]);
                 setLoading(false);
             },
+            onError: (errors) => {
+
+                setMsj({
+                    errors: Object.values(errors),
+                    success: false
+                });
+                console.log(errors);
+                setLoading(false);
+            }
         });
     };
-    
+
 
 
     const handleClearCache = (e) => {
@@ -144,7 +168,7 @@ export default function Subir({ user, mensaje }) {
                         onChange={handleImageChange}
                     />
 
-                    <span className="content-center">{data.length} archivos pre cargados</span>
+                    <span className="content-center">{data['images'].length} archivos pre cargados</span>
                 </div>
                 <div className="flex flex-wrap mt-4 gap-3">
                     {images?.map((image, index) => (
@@ -167,7 +191,7 @@ export default function Subir({ user, mensaje }) {
                                         (img, i) =>
                                             image.file.name !== img.name
                                     );
-                                    setData(newData);
+                                    setData('images', newData);
                                 }}
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -189,7 +213,7 @@ export default function Subir({ user, mensaje }) {
                         </div>
                     ))}
                 </div>
-                {data.length != 0 &&
+                {data['images'].length != 0 &&
                     <div className="flex justify-center">
                         <button
                             onClick={handleFormSubmit}

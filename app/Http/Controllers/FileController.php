@@ -21,22 +21,38 @@ class FileController extends Controller
 
     }
 
-    public function uploadImages(Request $request): RedirectResponse
-    {
+    public function uploadImages(Request $request)
+    {   
 
+        $request->validate([
+            // Asumiendo que el input del formulario se llama 'images[]'
+            'images' => 'required|array',
+            'images.*' => 'file|required|image|max:5120', // Solo JPEG, máximo 5MB
+        ],[
+            'images.required' => 'Debes seleccionar al menos una imagen para subir.',
+            'images.array' => 'El formato de las imágenes subidas no es válido.',
+            
+            // El asterisco (*) permite aplicar el mensaje a CUALQUIER error en los elementos del array
+            'images.*.file' => 'Uno de los elementos no es un archivo válido.',
+            'images.*.required' => 'Uno de los archivos subidos está vacío o es nulo.',
+            'images.*.image' => 'Uno de los archivos no es un formato de imagen reconocido (JPG, PNG, GIF, etc.).',
+            'images.*.max' => 'Uno de los archivos excede el tamaño máximo permitido de 5 MB.',
+        ]);
+        
         $disk = Storage::disk('public');
         $directory = 'images';
         
         $mensajesExitosos = 0;
         $mensajesErrores = [];
 
-    
         $maxNumber = $maxNumber = $this->getMaxImageNumber('images');
-        
-        foreach ($request->all() as $index => $file) {
+
+        $files = $request->file('images');
+        foreach ($files as $index => $file) {
             if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
                 
                 $maxNumber++;
+           
                 $name = $maxNumber.'.jpg';
 
                 try {
@@ -59,23 +75,31 @@ class FileController extends Controller
 
         return redirect()->back()->with('msj', ['success' => $mensaje, 'errors' => $mensajesErrores]);
 
+     
+
     }
 
-    public function eliminar(Request $request): RedirectResponse
+    public function eliminar(Request $request)
     {
         $request->validate([
             'codigos' => 'required|array',
             'codigos.*' => 'string',
+            'directorio' => 'required|string',
         ]);
 
+        $directory = $request->input('directorio');
+
         $files = $request->input('codigos');
+
+
         /** @var array<string> $files */
-        $disk = Storage::disk('gallery'); // 🟢 Usar el disco
+        $disk = Storage::disk('public'); // 🟢 Usar el disco
         $deletionSuccessful = 0;
 
         try {
             foreach ($files as $fileName) {
                 // 3. Verificar y Eliminar
+                $fileName =  $directory.$fileName;
 
                 if ($disk->exists($fileName)) {
 
@@ -84,6 +108,7 @@ class FileController extends Controller
                         //Log::info("Archivo eliminado: " . $fileName);
                         $deletionSuccessful++;
                     } else {
+                        var_dump('Fallo grave al eliminar archivo existente: '.$fileName);
                         // Fallo de eliminación por permisos, etc.
                         Log::error('Fallo grave al eliminar archivo existente: '.$fileName);
                     }
@@ -107,5 +132,42 @@ class FileController extends Controller
                 'errors' => ['error'],
             ]);
         }
+    }
+
+     /**
+     * Obtiene el número más alto de los archivos .jpg en el directorio de imágenes.
+     *
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $disk
+     * @param string $directory
+     * @return int
+     */
+    /**
+     * Obtiene el número más alto de los archivos .jpg en los directorios de imágenes.
+     * Busca recursivamente en la carpeta 'images/' y sus subcarpetas.
+     *
+     * @param string $baseDirectory La carpeta base donde empezar a buscar (ej: 'images').
+     * @return int
+     */
+    private function getMaxImageNumber(string $baseDirectory): int
+    {
+        // Usamos el disco 'public'
+        $disk = Storage::disk('public'); 
+
+        $filePaths = $disk->allFiles($baseDirectory); 
+
+        $numbers = collect($filePaths)
+            ->map(function($path) {
+                $fileName = basename($path); 
+                
+                preg_match('/(\d+)\.jpg$/', $fileName, $matches);
+                
+                return isset($matches[1]) ? (int)$matches[1] : 0; 
+            })
+            ->filter()
+            ->all();
+
+        $max =  max(array_merge([0], $numbers)) ;
+
+        return $max > 10000 ? $max : 10000;
     }
 }

@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 
 export default function Pedido({ pedido, user, mensaje }) {
 
+  console.log(pedido)
+
   const background = ['bg-red-500', 'bg-yellow-300', 'bg-yellow-300', 'bg-green-500'];
 
   const [msj, setMsj] = useState(mensaje);

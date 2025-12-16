@@ -2,13 +2,13 @@ name: 🚀 Deploy Producción Optimizada (Hostinger)
 
 on:
   push:
-    branches: [ "master" ] 
+    branches: ["master"]
 
 jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
-    
+
     # Variables de entorno globales para el Job
     env:
       APP_URL_PROD: xn--mundodelcumpleao-lub.com
@@ -18,14 +18,14 @@ jobs:
       # ======================================================
       # FASE 1: CONFIGURACIÓN Y CONSTRUCCIÓN (BUILD)
       # ======================================================
-      
+
       - name: 📥 1. Descargar Código Fuente
         uses: actions/checkout@v4
 
       - name: 🐘 2. Configurar PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           extensions: pdo_mysql, dom, curl, mbstring, zip
           tools: composer
 
@@ -37,11 +37,10 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: vendor
 
-      - name: ⬇️ 4. Instalar Dependencias Backend
+      - name: ⬇️ 4. Instalar Dependencias Backend (Dev + Prod)
         # Si no hubo caché, instalamos desde cero.
-        # --no-dev: No instalamos librerías de desarrollo para producción.
         if: steps.cache-vendor.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-dev --optimize-autoloader
+        run: composer install --prefer-dist  --optimize-autoloader
         env:
           COMPOSER_NO_INTERACTION: 1
           COMPOSER_NO_AUDIT: 1
@@ -49,6 +48,17 @@ jobs:
       - name: 📄 5. Generar archivo .env
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
+      - name: 🔑 5.1 Generar Key de Aplicación
+        run: php artisan key:generate
+
+      # CAMBIO 2: Ejecutamos las pruebas
+      - name: 🧪 5.2 Ejecutar Pruebas (PHPUnit)
+        run: |
+          php artisan migrate:fresh --env=testing
+          php artisan test --stop-on-failure
+
+      - name: 🧹 5.3 Limpiar Dependencias de Desarrollo
+        run: composer install --prefer-dist --no-dev --optimize-autoloader
 
       - name: 📦 6. Crear Vendor.zip
         id: create-zip
@@ -67,7 +77,7 @@ jobs:
       # ======================================================
       # FASE 2: LIMPIEZA PRE-DESPLIEGUE
       # ======================================================
-      
+
       - name: 🧹 9. Limpiar Workspace
         run: |
           echo "Eliminando archivos innecesarios para reducir tiempo de subida..."
@@ -76,7 +86,7 @@ jobs:
           rm -rf vendor # Ya lo tenemos en vendor.zip
           rm -rf storage/framework/cache/data # Evitar subir caché local
           # Opcional: Eliminar archivos fuente de frontend si solo necesitas el build
-          # rm -rf resources/js 
+          # rm -rf resources/js
 
       # ======================================================
       # FASE 3: DESPLIEGUE (FTP)
@@ -98,7 +108,7 @@ jobs:
             node_modules
             tests
             vendor # Excluido porque subimos el .zip
-            
+
             # Archivos que NO queremos sobrescribir en el servidor si ya existen:
             storage/logs/
             storage/app/public/
@@ -112,25 +122,25 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
-          local-dir: public/      # Origen: Carpeta compilada local
+          local-dir: public/ # Origen: Carpeta compilada local
           server-dir: /public_html/ # Destino: Carpeta pública del hosting
-    
+
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH)
       # ======================================================
       - name: 🔐 12. Tareas Finales por SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }} 
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           port: 65002
           key: ${{ secrets.PRIVATE_KEY_SSH }}
-          
+
           script: |
             # --- CONFIGURACIÓN DE RUTAS ---
             # Definimos la ruta absoluta para evitar errores de navegación
             PROJECT_ROOT="/home/${{ secrets.SSH_USER }}/domains/xn--mundodelcumpleao-lub.com"
-            
+
             echo "📍 Navegando a la raíz del proyecto: $PROJECT_ROOT"
             cd "$PROJECT_ROOT" || { echo "❌ ERROR FATAL: No se pudo entrar a la carpeta."; exit 1; }
 
@@ -159,5 +169,5 @@ jobs:
             php artisan route:clear
             php artisan view:clear
             php artisan optimize 
-            
+
             echo "🚀 ¡Despliegue completado con éxito!"

@@ -84,7 +84,7 @@ export default function NavBar({ user }) {
               <button onClick={toggleVerJuegos}
                 // Tamaño y margen ajustados para ser menos invasivos en móvil
                 className="text-white text-sm md:text-base font-bold rounded-lg hover:scale-110 hover:cursor-pointer hover:text-blue-500 hover:fill-blue-500">
-                {verJuegos ? '🧸 JUGUETES' : '🎉 TODOS'}
+                {verJuegos ? '🎉 TODOS' : '🧸 JUGUETES'}
               </button>
             )}
           </div>

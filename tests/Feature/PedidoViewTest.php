@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Pedido;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class PedidoViewTest extends TestCase
@@ -34,21 +35,43 @@ class PedidoViewTest extends TestCase
         $user = User::factory()->create();
 
         // Crear un pedido de prueba para verificar que se cargue
-        $pedido = Pedido::factory()->create();
-
+        $pedido1 = Pedido::factory()->create();
+        $pedido2 = Pedido::factory()->create();
+        
         $response = $this->actingAs($user)->get(route('panel'));
 
         $response->assertStatus(200);
 
         // Verifica que se renderiza el componente Inertia correcto
-        $response->assertInertia(fn ($page) => $page->component('Panel'));
+        $response->assertInertia(function (AssertableInertia $page) use ($pedido1,$user) {
+            
+            // 1. Verificar la clave principal 'pedidos' y su tamaño (debe ser 2)
+            $page->has('pedidos', 2) 
+            
+            // 2. Anidación: Entrar al primer pedido (índice 0) para verificar su estructura
+            ->has('pedidos.0', function (AssertableInertia $pedido) use ($pedido1) {
+                
+                // 3. Verificar propiedades del Pedido Padre (Pedido #1)
+                $pedido->where('id', $pedido1->id)
+                       ->where('numero_pedido', '10000')
 
-        // Verifica que la data de 'pedidos' esté presente
-        $response->assertInertia(fn ($page) => $page->has('pedidos', fn ($pedidos) =>
-                // Verifica que al menos el pedido de prueba exista
-                $pedidos->where('id', $pedido->id)->isNotEmpty()
-        )
-        );
+                       // 4. Verificar la colección anidada 'detalle' (debe tener 3 ítems)
+                       ->has('detalle', 3) 
+                       
+                       // 5. Verificar la estructura de un elemento del detalle (índice 0)
+                       ->has('detalle.0', function (AssertableInertia $detalleItem)  use ($pedido1){
+                           // Verificar que el detalle tiene las claves correctas
+                           
+                           $detalleItem->hasAll(['id', 'pedido', 'codigo', 'cantidad', 'comentario'])
+                                       ->where('pedido', $pedido1->id) // Clave foránea correcta
+                                       ->etc(); 
+                       })
+                       ->etc(); // Permite otras propiedades en el modelo Pedido
+            })
+            // Opcional: Podrías verificar 'pedidos.1' de forma similar si lo necesitas.
+            ->where('pedidos.1.numero_pedido', '10001') 
+            ->etc(); // Permite otras props del Panel
+        });
     }
 
     // =========================================================
@@ -60,23 +83,29 @@ class PedidoViewTest extends TestCase
     {
         // ARRANGE: Crear un pedido con un numero_pedido y key conocidos
         $pedido = Pedido::factory()->create([
-            'numero_pedido' => 500,
             'key' => 'ABCDE12345',
         ]);
 
-        // ACT
         $response = $this->get(route('pedido.view', [
-            'p' => 500,
+            'p' => 10000,
             'key' => 'ABCDE12345',
         ]));
 
         // ASSERT
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page->component('Pedido')
-                 // Verifica que la data de 'pedido' contiene los detalles correctos
-            ->where('pedido.numero_pedido', 500)
-            ->where('pedido.key', 'ABCDE12345')
+
+        $response->assertInertia(fn (AssertableInertia $page) => $page
+            ->component('Pedido')
+            ->has('pedido', fn (AssertableInertia $pedido) => $pedido 
+                ->hasAll(['telefono', 'status', 'numero_pedido', 'key'])
+                ->where('numero_pedido', '10000')
+                ->where('key', 'ABCDE12345')
+                ->where('status', 1) 
+                ->etc()
+            ) 
         );
+
+      
     }
 
     /** @test */
@@ -84,13 +113,12 @@ class PedidoViewTest extends TestCase
     {
         // ARRANGE: Crear un pedido válido
         Pedido::factory()->create([
-            'numero_pedido' => 501,
             'key' => 'VALIDKEY',
         ]);
 
         // Caso 1: Número de pedido correcto, clave incorrecta
         $response1 = $this->get(route('pedido.view', [
-            'p' => 501,
+            'p' => 10000,
             'key' => 'INVALIDKEY',
         ]));
 

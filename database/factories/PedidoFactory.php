@@ -35,14 +35,11 @@ class PedidoFactory extends Factory
     public function configure()
     {
         // 🟢 CLAVE: Después de crear un pedido, ejecuta esta función.
-        return $this->afterCreating(function (Pedido $pedido) {
-
+        
             $detallesCount = rand(2, 3);
-
-            Detalle::factory($detallesCount)->create([
-                'pedido' => $pedido->id,
-            ]);
-
-        });
+            return $this->has(
+                Detalle::factory()->count(3), // ⬅️ Crea 2 o 3 detalles
+                'detalle' // ⬅️ Nombre del método de relación en el modelo Pedido.
+            );
     }
 }

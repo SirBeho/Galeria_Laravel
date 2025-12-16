@@ -12,7 +12,7 @@ describe('Verificación de Contenido y Datos del Panel de Administración', () =
     // 1. ANTES DE CADA TEST: Autenticación Rápida
     // ----------------------------------------------------------------------
     beforeEach(() => {
-        // 🛑 CLAVE: Restaura la sesión guardada por el loginUIWithCache.
+
         // Asumimos que el PedidoSeeder ya se ejecutó en la suite de auth-access.
         cy.loginUIWithCache(USER_EMAIL, USER_PASSWORD);
 
@@ -96,7 +96,7 @@ describe('Verificación de Contenido y Datos del Panel de Administración', () =
 
         // Confirmar el cambio de estado en el modal
         const NEW_STATUS = '2';
-        
+
         cy.get('[data-cy="status-select"]').should('have.value', '1');
 
         cy.get('[data-cy="detalle-data-table"]')
@@ -109,12 +109,12 @@ describe('Verificación de Contenido y Datos del Panel de Administración', () =
 
         cy.wait('@updateStatus').then((interception) => {
             cy.get('@dbID').then((dbId) => {
-            
+
                 // 🛑 ASERCIONES CON EL VALOR REAL (dbId)
                 expect(interception.request.query.id).to.equal(dbId, 'Verificación de ID de Pedido en Query');
                 expect(interception.request.query.status).to.equal(NEW_STATUS, 'Verificación del nuevo Status en Query');
             });
-    
+
             // Verificaciones del Servidor (no requieren el ID)
             expect(interception.response.statusCode).to.be.oneOf([200, 302], 'Verificación de Status Code Exitoso');
         });

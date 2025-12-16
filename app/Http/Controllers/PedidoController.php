@@ -72,7 +72,7 @@ class PedidoController extends Controller
                     'comentario' => $item['comentario'],
                 ]);
             }
-
+           
             $host = $_SERVER['HTTP_HOST'];
             $dir = dirname($_SERVER['REQUEST_URI']);
             $url = 'http://'.$host.$dir."pedido?p=$pedido->numero_pedido&key=$pedido->key";
@@ -203,7 +203,6 @@ class PedidoController extends Controller
 
             $pedido = Pedido::findOrFail($request->id);
 
-            log::info('Pedido encontrado: '.$pedido->numero_pedido.' con estado actual: '.$pedido->status);
 
             $pedido->update([
                 'status' => $request->status,

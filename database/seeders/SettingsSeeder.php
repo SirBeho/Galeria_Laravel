@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Setting;
 
-class SettingsTableSeeder extends Seeder
+class SettingsSeeder extends Seeder
 {
     /**
      * Run the database seeds.

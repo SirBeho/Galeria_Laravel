@@ -19,8 +19,8 @@ import './commands'
 before(() => {
     // 🛑 CLAVE: Limpiar, Migrar y Seedear.
     // Usamos el entorno 'testing' o un entorno personalizado que use 'config/testing/cypress.php'.
-    cy.exec('php artisan migrate:fresh --seed --env=cypress', {
-        failOnNonZeroExit: false, 
+    cy.exec('php artisan migrate:fresh --seed --env=testing', {
+        failOnNonZeroExit: false,
         timeout: 60000 // Aumentar el timeout si la siembra es lenta
     });
 });
