@@ -63,6 +63,8 @@ jobs:
 
       - name: 🧪 8. Ejecutar Pruebas PHPUnit (Backend Quality Gate)
         run: |
+          # Crea el archivo testing.sqlite si no existe.
+          touch database/testing.sqlit
           # 🛑 Usamos el .env de PRUEBAS para aislar los datos.
           php artisan migrate:fresh --env=testing --force
           php artisan test --stop-on-failure
