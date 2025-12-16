@@ -20,8 +20,12 @@ class DetalleFactory extends Factory
 
         $fileNames = Storage::disk('gallery')->files();
 
+        $codigoFallback = ['50000.png']; 
+
+        $elementosDisponibles = empty($fileNames) ? $codigoFallback : $fileNames;
+
         return [
-            'codigo' => $this->faker->randomElement($fileNames),
+            'codigo' => $this->faker->randomElement($elementosDisponibles),
             'cantidad' => $this->faker->numberBetween(1, 5),
             'comentario' => $this->faker->sentence(3),
         ];
