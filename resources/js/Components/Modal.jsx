@@ -103,7 +103,8 @@ export default function Modal({ children, galeria = false, autoclose = 0, show =
 
                         {galeria && (galeria)}
 
-                        <button onClick={(e) => e.stopPropagation()} className={`relative ${maxWidthClass} o bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
+                        <div onClick={(e) => e.stopPropagation()} className={`relative ${maxWidthClass} o bg-white p-6 mb-6  rounded-lg shadow-xl transform transition-all sm:w-full sm:mx-auto `}>
+
                             {autoclose > 0 && (
                                 <div className="absolute top-0 left-0 right-0 h-1 rounded-t-lg overflow-hidden">
                                     <div
@@ -130,7 +131,7 @@ export default function Modal({ children, galeria = false, autoclose = 0, show =
                                 </h5>
                             )}
                             {children}{" "}
-                        </button>
+                        </div>
                     </Dialog.Panel>
                 </Transition.Child>
             </Dialog>
