@@ -1,25 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import { useVisual } from '@/Contexts/VisualContext';
+import ConfettiLauncher from '@/Components/ConfettiLauncher';
+
 
 const AvisoJuguetesProximos = () => {
     // 💡 Estado: Usado para la funcionalidad interactiva de "Notificarme"
     const [notificado, setNotificado] = useState(false);
     const { toggleVerJuegos } = useVisual();
+    const [launchCount, setLaunchCount] = useState(0);
 
     // 💡 Simulación de envío al backend (deberías reemplazar esto con una llamada a Inertia/Axios)
     const solicitarNotificacion = () => {
         // Aquí iría tu lógica real: Inertia.post('/subscribe/toys')
-
+        setLaunchCount(prevCount => prevCount + 1);
         // Simulación de éxito
         setTimeout(() => {
             setNotificado(true);
             console.log("Suscripción para notificación enviada.");
-        }, 800);
+        }, 1000);
     };
 
     return (
-        <div className="flex flex-col items-center justify-center p-8 m-8 bg-white border border-dashed border-gray-300 rounded-lg shadow-xl animate-wiggle transition-all duration-500">
+        <div className="flex flex-col items-center justify-center p-10 bg-white border border-dashed border-gray-300 rounded-lg shadow-xl transition-all duration-500 ">
+
+            <ConfettiLauncher launchKey={launchCount} />
 
             {/* 🛑 TÍTULO Y ESTADO */}
             <div className="text-center mb-6">
@@ -39,7 +44,7 @@ const AvisoJuguetesProximos = () => {
                 {!notificado ? (
                     <button
                         onClick={solicitarNotificacion}
-                        className="w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out transform hover:scale-105 shadow-md"
+                        className="animate-wiggle  w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out transform hover:scale-105 shadow-md"
                     >
                         ✔️ Avísame cuando lleguen
                     </button>
