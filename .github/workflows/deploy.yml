@@ -38,61 +38,72 @@ jobs:
           path: vendor
 
       - name: ⬇️ 4. Instalar Dependencias Backend (Dev + Prod)
-        # Si no hubo caché, instalamos desde cero.
         if: steps.cache-vendor.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist  --optimize-autoloader
+        run: composer install --prefer-dist --optimize-autoloader
         env:
           COMPOSER_NO_INTERACTION: 1
           COMPOSER_NO_AUDIT: 1
 
-      - name: 📄 5. Generar archivo .env
-        run: echo "${{ secrets.ENV_FILE }}" > .env
-
-      - name: 🔑 5.1 Generar Key de Aplicación
-        run: php artisan key:generate
-
-      # CAMBIO 2: Ejecutamos las pruebas
-      - name: 🧪 5.2 Ejecutar Pruebas (PHPUnit)
+      - name: 📄 5. Generar archivo .env y Key (CI)
         run: |
-          php artisan migrate:fresh --env=testing
+          echo "${{ secrets.ENV_FILE }}" > .env
+          php artisan key:generate
+
+      # 📦 6. Instalar Dependencias Frontend (NPM ci)
+      - name: 📦 6. Instalar Dependencias NPM (CI)
+        run: npm ci
+
+      # 🎨 7. Compilar Assets (Vite Build)
+      - name: 🎨 7. Compilar Assets (Vite Build)
+        run: npm run build
+
+      # ======================================================
+      # FASE 2: QUALITY GATES (PRUEBAS UNIFICADAS)
+      # ======================================================
+
+      - name: 🧪 8. Ejecutar Pruebas PHPUnit (Backend Quality Gate)
+        run: |
+          # 🛑 Usamos el .env de PRUEBAS para aislar los datos.
+          php artisan migrate:fresh --env=testing --force
           php artisan test --stop-on-failure
 
-      - name: 🧹 5.3 Limpiar Dependencias de Desarrollo
+      # 💥 NUEVO PASO: EJECUCIÓN DE PRUEBAS E2E (CYPRESS)
+      - name: 💻 9. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
+        run: npm run test
+        env:
+          # 💡 Aseguramos que la URL base de Cypress apunte al servidor de pruebas de Laravel
+          APP_URL: http://localhost:8000
+
+      - name: 🧹 10. Limpiar Dependencias de Desarrollo
         run: composer install --prefer-dist --no-dev --optimize-autoloader
 
-      - name: 📦 6. Crear Vendor.zip
+      # 📦 11. Crear Vendor.zip
+      - name: 📦 11. Crear Vendor.zip
         id: create-zip
         if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: |
           echo "Comprimiendo vendor para acelerar subida FTP..."
           zip -r vendor.zip vendor/
 
-      # --- Construcción del Frontend ---
-      - name: 📦 7. Instalar Dependencias NPM
-        run: npm ci # 'npm ci' es más rápido y seguro que 'install' para entornos CI
-
-      - name: 🎨 8. Compilar Assets (Vite Build)
-        run: npm run build
-
       # ======================================================
-      # FASE 2: LIMPIEZA PRE-DESPLIEGUE
+      # FASE 3: LIMPIEZA PRE-DESPLIEGUE Y DESPLIEGUE
       # ======================================================
 
-      - name: 🧹 9. Limpiar Workspace
+      - name: 🧹 12. Limpiar Workspace
         run: |
           echo "Eliminando archivos innecesarios para reducir tiempo de subida..."
           rm -rf node_modules 
           rm -rf tests 
-          rm -rf vendor # Ya lo tenemos en vendor.zip
-          rm -rf storage/framework/cache/data # Evitar subir caché local
-          # Opcional: Eliminar archivos fuente de frontend si solo necesitas el build
+          rm -rf vendor
+          rm -rf storage/framework/cache/data 
+          # rm -rf resources/js # Opcional si solo necesitas el build
           # rm -rf resources/js
 
       # ======================================================
       # FASE 3: DESPLIEGUE (FTP)
       # ======================================================
 
-      - name: 📤 10. Subir Backend (Core de Laravel)
+      - name: 📤 13. Subir Backend (Core de Laravel)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -115,7 +126,7 @@ jobs:
             storage/framework/sessions/*
             storage/framework/cache/data/*
 
-      - name: 📤 11. Subir Frontend (Archivos Públicos)
+      - name: 📤 14. Subir Frontend (Archivos Públicos)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -128,7 +139,7 @@ jobs:
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH)
       # ======================================================
-      - name: 🔐 12. Tareas Finales por SSH
+      - name: 🔐 15. Tareas Finales por SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}

@@ -71,7 +71,7 @@ export default function NavBar({ user }) {
     <>
       <nav className={`text-white bg-nav fixed top-0 w-full z-20 p-2`} style={{ backgroundColor: primaryColor }}>
 
-        <div className="flex justify-between items-center w-full max-w-7xl mx-auto px-4 md:px-8 h-10">
+        <div className="flex justify-between items-center w-full max-w-7xl mx-auto px-4  md:px-8 h-10">
           {/* 1. SECCIÓN IZQUIERDA (Logo y Toggles) */}
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}

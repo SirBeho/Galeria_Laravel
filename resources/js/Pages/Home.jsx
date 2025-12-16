@@ -27,7 +27,6 @@ export default function Home({ imgHome, imgJuegos }) {
 
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
-    console.log(images)
 
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
@@ -130,7 +129,7 @@ export default function Home({ imgHome, imgJuegos }) {
             <Head title="Home" />
 
             {/* --- MODALES --- */}
-            <Modal show={agregado} autoclose={3000} onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
+            <Modal show={agregado} autoclose={2000} onClose={() => setAgregado(false)} header="Producto Agregado" close_x={true}>
                 <div className="py-8 text-xl text-center">El producto se agregó correctamente</div>
                 <div className="flex justify-center mt-2">
                     <button onClick={() => setAgregado(false)} data-cy="modal-added-close-btn" className="bg-red-400 rounded-md p-2 px-3 text-white hover:bg-red-500">Cerrar</button>
@@ -186,7 +185,7 @@ export default function Home({ imgHome, imgJuegos }) {
 
             {/* --- GALERÍA PRINCIPAL --- */}
             <div>
-                <h1 className="my-6 font-bold text-4xl text-center">
+                <h1 className="my-4 font-bold text-4xl text-center">
                     {verJuegos ? "JUGUETES" : "GALERIA PRINCIPAL"}
                 </h1>
 
@@ -230,7 +229,7 @@ export default function Home({ imgHome, imgJuegos }) {
                         )
                     ) :
                         (
-                            <div className="max-h-60">
+                            <div className=" max-w-full">
                                 <AvisoJuguetesProximos />
                             </div>
                         )}
