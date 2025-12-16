@@ -8,7 +8,6 @@
 /storage/*.key
 /vendor
 .env
-cypress.env.json
 .env*
 !.env.testing
 .phpunit.result.cache
