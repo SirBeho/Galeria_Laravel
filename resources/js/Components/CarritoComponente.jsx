@@ -15,18 +15,18 @@ import { usePage } from '@inertiajs/react';
 
 const CarritoComponente = ({ setPedidoCreado, setMsj }) => {
 
-
-
-
+  const { galleryUrl } = usePage().props;
 
   const [loading, setLoading] = useState(false);
 
   const { carrito, setCarrito } = useCarrito();
 
+
   const { data, setData, post, transform, processing, errors } = useForm({
     nombre: "",
     telefono: "",
   });
+
 
 
   // Cargar datos de contacto (nombre/telefono) desde localStorage
@@ -178,7 +178,7 @@ const CarritoComponente = ({ setPedidoCreado, setMsj }) => {
                   {/* Imagen */}
                   <img
                     className="h-16 w-16 object-cover rounded-md flex-shrink-0 mr-4"
-                    src={`${item.codigo}`}
+                    src={`${galleryUrl}${item.codigo}`}
                     alt={`Artículo ${item.codigo}`}
                   />
 

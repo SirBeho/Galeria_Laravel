@@ -5,22 +5,22 @@ const VisualContext = createContext();
 
 export const useVisual = () => {
     const context = useContext(VisualContext);
-    
+
     // 🟢 BLINDAJE: Si no hay Provider, devolvemos valores dummy para que no explote
     if (!context) {
-        console.log("VisualContext no encontrado, usando valores por defecto.");
+        //console.log("VisualContext no encontrado, usando valores por defecto.");
         return {
             verJuegos: false,       // Valor por defecto
             toggleVerJuegos: () => console.warn("VisualContext no activo aquí"),
             estadoVisual: 0,       // Valor por defecto
-            cycleEstadoVisual: () => {},
+            cycleEstadoVisual: () => { },
             showEliminar: false,
-            setShowEliminar: () => {},
-            toggleDeleteMode: () => {},
+            setShowEliminar: () => { },
+            toggleDeleteMode: () => { },
             isActive: false        // Bandera opcional
         };
     }
-    
+
     return { ...context, isActive: true };
 }
 
@@ -43,7 +43,7 @@ export const VisualProvider = ({ children }) => {
 
     // --- ACCIONES ---
     const toggleVerJuegos = () => setVerJuegos(prev => !prev);
-    
+
     const cycleEstadoVisual = () => setEstadoVisual(prev => (prev + 1) % 3);
 
     // 🟢 Acciones para Eliminar
@@ -52,10 +52,10 @@ export const VisualProvider = ({ children }) => {
     };
 
     return (
-        <VisualContext.Provider value={{ 
-            verJuegos, 
-            toggleVerJuegos, 
-            estadoVisual, 
+        <VisualContext.Provider value={{
+            verJuegos,
+            toggleVerJuegos,
+            estadoVisual,
             cycleEstadoVisual,
             showEliminar,
             toggleDeleteMode

@@ -24,20 +24,13 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create']);
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
 
-        $imagePaths = Storage::disk('gallery')->files(); 
+    $filesHome = Storage::disk('gallery')->files(); 
+    $filesJuegos = Storage::disk('gallery')->files('juegos');
 
-        $imageUrls = collect($imagePaths)->map(function ($path) {
-            return Storage::disk('gallery')->url($path);
-        })->values()->all();
-
-        $imagePathsJuegos = Storage::disk('gallery')->files('/juegos');
-        $imageUrlsJuegos = collect($imagePathsJuegos)->map(function ($path) {
-            return Storage::disk('gallery')->url($path);
-        })->values()->all();
 
         return Inertia::render('Home', [
-            'imgHome' => array_reverse($imageUrls),
-            ' imgJuegos' => array_reverse($imageUrlsJuegos),
+            'imgHome' => array_reverse($filesHome),
+            'imgJuegos' => array_reverse($filesJuegos),
             'user' => auth()->user() ?? false,
         ]);
 })->name('home');

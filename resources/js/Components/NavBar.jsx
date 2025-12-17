@@ -40,7 +40,7 @@ export default function NavBar({ user }) {
 
   // Se ejecuta al cerrar el modal de pedido
   useEffect(() => {
-    // console.log('Carrito en Nav:', carrito);
+    // //console.log('Carrito en Nav:', carrito);
     // Si el CarritoComponente usa useCarrito(), este useEffect es redundante
   }, [carrito]);
 
@@ -75,10 +75,10 @@ export default function NavBar({ user }) {
           {/* 1. SECCIÓN IZQUIERDA (Logo y Toggles) */}
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}
-            <div className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
+            <Link href={route('home')} className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
               <img src={logoUrl} className="h-full w-auto" alt="" />
-              <a className="text-white text-xl md:text-2xl w-auto hidden sm:block " href="./">Mundo del Cumpleaños  </a> {/* Ocultar título en móvil, mostrar en sm+ */}
-            </div>
+              <div className="text-white text-xl md:text-2xl w-auto hidden sm:block ">Mundo del Cumpleaños  </div> {/* Ocultar título en móvil, mostrar en sm+ */}
+            </Link>
             {/* Toggle JUGUETES/TODOS (Solo en Home) */}
             {isHome && (
               <button onClick={toggleVerJuegos}

@@ -6,6 +6,7 @@ use App\Models\Pedido;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 use function Laravel\Prompts\error;
 
@@ -33,7 +34,7 @@ class PedidoController extends Controller
 
         // 4. RESPUESTA (Si todo es correcto)
         return Inertia::render('Pedido', [
-            'user' => $request->user() ?? [],
+            'user' => $request->user() ?? false,
             'pedido' => $pedido,
         ]);
     }

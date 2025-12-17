@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import './galeria.css';
 
-export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast }) {
+export function ImageCarousel({ Imagename, onNext, onPrev, isFirst, isLast }) {
 
     // --- ESTADOS ---
     const [direction, setDirection] = useState('right-to-left');
@@ -63,7 +63,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
         setDragDelta(0);
     };
 
-    const currentImage = images[current]
+
 
     //sacar el nombre de la imagen actual sin la ruta ni la extensión   
 
@@ -115,7 +115,7 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
                         })}
                     >
                         <CSSTransition
-                            key={current}
+                            key={Imagename}
                             timeout={500}
                             classNames={direction}
                         >
@@ -132,11 +132,11 @@ export function ImageCarousel({ images, current, onNext, onPrev, isFirst, isLast
 
                                     {/* Imagen */}
                                     <div className="w-full h-full p-6">
-                                        {currentImage ? (
+                                        {Imagename ? (
                                             <img
                                                 className="w-full h-full object-contain pointer-events-none drop-shadow-xl"
-                                                src={`${currentImage}`}
-                                                alt={currentImage}
+                                                src={`${Imagename}`}
+                                                alt={Imagename}
                                                 // Evitamos el arrastre nativo de la imagen "fantasma"
                                                 onDragStart={(e) => e.preventDefault()}
                                             />

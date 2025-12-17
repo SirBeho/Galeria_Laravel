@@ -5,9 +5,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { useEffect } from 'react';
 
-export default function Pedido({ pedido, user, mensaje }) {
-
-  console.log(pedido)
+export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
 
   const background = ['bg-red-500', 'bg-yellow-300', 'bg-yellow-300', 'bg-green-500'];
 
@@ -15,7 +13,7 @@ export default function Pedido({ pedido, user, mensaje }) {
 
   useEffect(() => {
     if (mensaje) {
-      console.log(mensaje)
+      //console.log(mensaje)
       setMsj(mensaje);
     }
   }, [mensaje]);
@@ -27,13 +25,12 @@ export default function Pedido({ pedido, user, mensaje }) {
 
   const [estado, setEstado] = useState(pedido.status);
 
-
   return (
     <Layout user={user}>
       <Head title="Pedido" />
 
       <div className='flex items-center gap-4 mb-2'>
-        <Link href={route('panel')} className='text-blue-600 fill-blue-700  hover:scale-105  cursor-pointer h-10 w-10 min-w-[40px]   '>
+        <Link href={user ? route('panel') : route('home')} className='text-blue-600 fill-blue-700  hover:scale-105  cursor-pointer h-10 w-10 min-w-[40px]   '>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM231 127c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-71 71L376 232c13.3 0 24 10.7 24 24s-10.7 24-24 24l-182.1 0 71 71c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L119 273c-9.4-9.4-9.4-24.6 0-33.9L231 127z" /></svg>
         </Link>
 
@@ -99,8 +96,8 @@ export default function Pedido({ pedido, user, mensaje }) {
             {pedido.detalle?.map((item, index) => {
               return (
                 <tr data-cy="detalle-row" key={index} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 ">
-                  <td onClick={() => setModalImg(item.codigo)}>
-                    <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`${item.codigo}`} alt="foto" />
+                  <td onClick={() => setModalImg(`${galleryUrl}${item.codigo}`)}>
+                    <img className="cursor-pointer h-40 object-cover  w-32 sm:w-40 rounded-lg" src={`${galleryUrl}${item.codigo}`} alt="foto" />
                   </td>
                   {/* <td className="sm:px-6 py-4">
                     {item.codigo}

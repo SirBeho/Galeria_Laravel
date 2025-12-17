@@ -23,7 +23,7 @@ export default function UpdatePasswordForm({ className = '' }) {
             preserveScroll: true,
             onSuccess: () => reset(),
             onError: (errors) => {
-                console.log(errors)
+                //console.log(errors)
                 if (errors.password) {
                     reset('password', 'password_confirmation');
                     passwordInput.current.focus();

@@ -17,7 +17,7 @@ const AvisoJuguetesProximos = () => {
         // Simulación de éxito
         setTimeout(() => {
             setNotificado(true);
-            console.log("Suscripción para notificación enviada.");
+            //console.log("Suscripción para notificación enviada.");
         }, 1000);
     };
 

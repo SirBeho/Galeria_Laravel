@@ -7,6 +7,7 @@ export function ProductDetailModal({
     isOpen,
     close,
     images,
+    galleryUrl,
     current,
     setCurrent,
     producto,
@@ -16,6 +17,10 @@ export function ProductDetailModal({
 }) {
 
     const { secondaryColor } = usePage().props.designSettings;
+
+    if (!isOpen) return null;
+
+    const fullImageUrl = `${galleryUrl}${images[current]}`;
 
     const nextSlide = (e) => {
         e?.stopPropagation();
@@ -74,6 +79,7 @@ export function ProductDetailModal({
                                 {/* IZQUIERDA: CARRUSEL (65% del ancho en PC) */}
                                 <div className="relative w-full md:w-[65%] h-full min-h-[80vh] md:min-h-max md:h-auto bg-gray-50">
                                     <ImageCarousel
+                                        Imagename={fullImageUrl}
                                         images={images}
                                         current={current}
                                         onNext={nextSlide}

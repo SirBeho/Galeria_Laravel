@@ -52,7 +52,7 @@ export function DataTable({ data, action, tbStructure, onNew, onUpdate, onDelete
 
     // MANEJADORES
     const handleSort = (columnName) => {
-        console.log('verificar cambio', sortKey, columnName);
+        //console.log('verificar cambio', sortKey, columnName);
         if (sortKey === columnName) {
             // Si ya está ordenado por esta columna, invertir el orden
             const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';

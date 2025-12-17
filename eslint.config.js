@@ -74,7 +74,7 @@ export default [
             // Aquí puedes permitir cosas en Cypress que están prohibidas en React
             // Por ejemplo, forzar que solo se usen comandos cy. en los tests:
             'cypress/no-unnecessary-waiting': 'warn',
-            'no-console': 'off', // Permitir console.log en los tests
+            'no-console': 'off', // Permitir //console.log en los tests
             'no-unused-expressions': 'off' // Desactivar para las aserciones de Mocha/Chai
         }
     },

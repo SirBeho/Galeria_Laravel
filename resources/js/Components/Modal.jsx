@@ -28,7 +28,7 @@ export default function Modal({ children, galeria = false, autoclose = 0, show =
         if (show && autoclose > 0) {
             // Inicializa el tiempo restante con el valor total de autoclose
             setTimeLeft(autoclose);
-            console.log('aqi')
+            //console.log('aqi')
             // 1. Configurar el autocierre (Se mantiene igual)
             const timerId = setTimeout(() => {
                 close();

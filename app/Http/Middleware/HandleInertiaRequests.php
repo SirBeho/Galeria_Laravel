@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
                 'primaryColor'=> config('settings.color_primario', '#2563EB'),
                 'secondaryColor'=> config('settings.color_secundario', '#2563EB'),
             ],
+            'galleryUrl' => \Illuminate\Support\Facades\Storage::disk('gallery')->url(''),
         ];
     }
 }

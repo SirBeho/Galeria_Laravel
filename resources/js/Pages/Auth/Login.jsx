@@ -25,7 +25,7 @@ export default function Login({ status, canResetPassword }) {
         post(route('login'));
     };
 
-    console.log(errors)
+    //console.log(errors)
 
     return (
         <GuestLayout>
@@ -36,7 +36,7 @@ export default function Login({ status, canResetPassword }) {
             <div className="w-full p-5 md:p-10 z-20 ">
 
                 <div className="flex flex-col justify-center md:flex-row md:space-x-10">
-                    
+
                     <div className="flex items-center justify-center">
                         <form onSubmit={submit} className="bg-offwhite flex flex-col w-full md:w-fit h-fit p-8 rounded-lg">
                             <h2 className="text-darkblue font-bold text-3xl px-5 text-center py-5">Login</h2>
@@ -83,7 +83,7 @@ export default function Login({ status, canResetPassword }) {
                         </form>
                     </div>
 
-                
+
 
                 </div>
             </div>

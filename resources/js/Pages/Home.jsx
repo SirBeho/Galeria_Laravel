@@ -16,9 +16,8 @@ import { ProductDetailModal } from '@/Components/ProductDetailModal';
 import AvisoJuguetesProximos from "@/Components/AvisoJuguetesProximos";
 
 
-export default function Home({ imgHome, imgJuegos }) {
-
-
+// eslint-disable-next-line no-unused-vars
+export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
 
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
@@ -27,9 +26,6 @@ export default function Home({ imgHome, imgJuegos }) {
 
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
-
-
-
 
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
@@ -48,6 +44,7 @@ export default function Home({ imgHome, imgJuegos }) {
     const { data: producto, setData: setProducto, reset } = useForm({
         codigo: "", cantidad: 1, comentario: ""
     });
+
 
     // Formulario para eliminar (API Delete)
     const { post: postDelete } = useForm({});
@@ -79,6 +76,7 @@ export default function Home({ imgHome, imgJuegos }) {
     };
 
     const open = (file, index) => {
+        //console.log(file)
         // Solo abrimos el modal si NO estamos en modo eliminar
         if (!showEliminar) {
             setCurrent(index);
@@ -95,7 +93,6 @@ export default function Home({ imgHome, imgJuegos }) {
     };
 
     // --- LOGICA DE ELIMINACIÓN ---
-
     const toggleSelection = (e, filename) => {
         e.stopPropagation(); // Evita abrir el modal
 
@@ -125,6 +122,7 @@ export default function Home({ imgHome, imgJuegos }) {
             },
         });
     };
+
 
     // --- RENDER ---
     return (
@@ -196,29 +194,29 @@ export default function Home({ imgHome, imgJuegos }) {
                     {images.length ? (
 
                         images.map((file, index) => {
-                            const name = file.split('/').pop();
+
                             return (
                                 <button
                                     ref={(el) => (imageRefs.current[index] = el)}
                                     key={index}
                                     data-cy={`gallery-item`}
                                     // 🟢 Condicional de click: Si showEliminar es true, selecciona. Si no, abre modal.
-                                    onClick={showEliminar ? (e) => toggleSelection(e, name) : () => open(file, index)}
+                                    onClick={showEliminar ? (e) => toggleSelection(e, file) : () => open(file, index)}
                                     style={{ boxShadow: "5px 5px 10px rgba(0,0,0,0.5)" }}
                                     className={`
                                 ${estadoVisual === 0 ? "flex-[1_0_100%] min-[580px]:flex-[1_0_48%] min-[900px]:flex-[1_0_30%]" : estadoVisual === 1 ? "flex-[1_0_48%]" : "flex-[1_0_100%]"}
-                                ${selectedFiles.includes(name) ? 'ring-4 ring-blue-500 ring-offset-2' : ''}
+                                ${selectedFiles.includes(file) ? 'ring-4 ring-blue-500 ring-offset-2' : ''}
                                 flex cursor-pointer max-h-80 h-80 relative mb-4 rounded-md overflow-hidden transition-all
                             `}
                                 >
-                                    <LazyLoadedImage file={file} />
+                                    <LazyLoadedImage file={`${galleryUrl}${file}`} />
                                     <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
                                     <span className="absolute top-2 left-4 text-black bg-white rounded-2xl px-2">--</span>
 
                                     {/* 🟢 Indicador Visual de Selección (Checkbox/Círculo) */}
                                     {showEliminar && (
-                                        <button onClick={(e) => toggleSelection(e, name)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-lg z-10">
-                                            {selectedFiles.includes(name) ? (
+                                        <button onClick={(e) => toggleSelection(e, file)} className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-lg z-10">
+                                            {selectedFiles.includes(file) ? (
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-blue-500"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.882l-3.484 4.148-1.88-1.88a.75.75 0 1 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.25Z" clipRule="evenodd" /></svg>
                                             ) : (
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-gray-500"><circle cx="12" cy="12" r="10" /></svg>
@@ -244,10 +242,11 @@ export default function Home({ imgHome, imgJuegos }) {
                 isOpen={openProdutM}
                 close={close}
                 images={images}
+                galleryUrl={galleryUrl}
                 current={current}
                 setCurrent={(idx) => {
                     setCurrent(idx);
-                    setProducto({ ...producto, codigo: images[idx], cantidad: 1, comentario: "" });
+                    setProducto({ codigo: images[idx], cantidad: 1, comentario: "" });
                 }}
                 producto={producto}
                 setProducto={setProducto}

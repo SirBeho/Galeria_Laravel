@@ -20,10 +20,10 @@ export default function Subir({ user, mensaje }) {
 
     const [msj, setMsj] = useState('');
 
-    console.log(data)
+    //console.log(data)
 
     useEffect(() => {
-        console.log(mensaje)
+        //console.log(mensaje)
         setMsj(mensaje);
     }, [mensaje]);
 
@@ -57,7 +57,7 @@ export default function Subir({ user, mensaje }) {
         setLoading(true);
         post(route('subir.imagen'), {
             onSuccess: (response) => {
-                console.log(response)
+                //console.log(response)
                 setMsj(response.props.mensaje);
                 reset();
                 setData([]);
@@ -70,7 +70,7 @@ export default function Subir({ user, mensaje }) {
                     errors: Object.values(errors),
                     success: false
                 });
-                console.log(errors);
+                //console.log(errors);
                 setLoading(false);
             }
         });
@@ -84,7 +84,7 @@ export default function Subir({ user, mensaje }) {
         // Hacemos POST a la ruta que definimos en Laravel
         clearCacheForm.post(route('clean.cache'), {
             onSuccess: (page) => {
-                console.log(page);
+                //console.log(page);
                 const successMessage = page.props.flash?.success || 'Caché de diseño limpiada con éxito.';
                 setMsj(page.props.mensaje);
                 setLoading(false);

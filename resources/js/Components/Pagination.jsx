@@ -1,19 +1,19 @@
 import React from 'react';
 
-export function Pagination({ data, currentPage, setCurrentPage,itemsPerPage }) {
-    
+export function Pagination({ data, currentPage, setCurrentPage, itemsPerPage }) {
+
 
     const totalPages = data.length % itemsPerPage === 0 ?
         data.length / itemsPerPage :
         parseInt(data.length / itemsPerPage) + 1;
 
-     
+
     const goToPage = (pageNumber) => {
-        if(pageNumber > totalPages ){
+        if (pageNumber > totalPages) {
             setCurrentPage(1);
             return;
         }
-        if(pageNumber <= 0 ){
+        if (pageNumber <= 0) {
             setCurrentPage(totalPages);
             return;
         }
@@ -26,7 +26,7 @@ export function Pagination({ data, currentPage, setCurrentPage,itemsPerPage }) {
         let startPage = 1;
         let endPage = totalPages;
 
-        console.log(totalPages, itemsPerPage)
+        //console.log(totalPages, itemsPerPage)
 
         if (totalPages > itemsPerPage) {
             const halfitemsPerPage = Math.floor(itemsPerPage / 2);
