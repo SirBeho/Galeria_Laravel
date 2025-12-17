@@ -10,6 +10,7 @@ export const useVisual = () => {
     if (!context) {
         //console.log("VisualContext no encontrado, usando valores por defecto.");
         return {
+            setVerJuegos: () => { },
             verJuegos: false,       // Valor por defecto
             toggleVerJuegos: () => console.warn("VisualContext no activo aquí"),
             estadoVisual: 0,       // Valor por defecto
@@ -53,6 +54,7 @@ export const VisualProvider = ({ children }) => {
 
     return (
         <VisualContext.Provider value={{
+            setVerJuegos,
             verJuegos,
             toggleVerJuegos,
             estadoVisual,

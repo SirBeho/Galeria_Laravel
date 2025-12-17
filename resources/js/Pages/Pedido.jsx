@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 
 export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
 
+  console.log()
+
   const background = ['bg-red-500', 'bg-yellow-300', 'bg-yellow-300', 'bg-green-500'];
 
   const [msj, setMsj] = useState(mensaje);
@@ -17,6 +19,12 @@ export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
       setMsj(mensaje);
     }
   }, [mensaje]);
+
+
+  useEffect(() => {
+    setEstado(pedido.status);
+  }, [pedido.status]);
+
 
   const [modalImg, setModalImg] = useState("");
 
@@ -70,7 +78,6 @@ export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
               className=" border  rounded-md border-none focus:outline-blue-300 p-0 px-2 whitespace-nowrap"
               value={pedido.status}
               onChange={(e) => {
-                setEstado(e.target.value);
                 post(route('pedido.status', { id: pedido.id, status: e.target.value }));
               }}
             >
@@ -144,7 +151,7 @@ export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
       </div>
 
 
-      <Modal show={msj != null} onClose={() => setMsj(null)} header={"Productos Eliminados"} close_x={true}>
+      <Modal autoclose={2000} show={msj != null} onClose={() => setMsj(null)} header={"Pedido Actualizado"} close_x={true}>
         {msj?.success && <div className="text-center text-green-600 text-xl" >
           <p>{msj.message}</p>
         </div>}

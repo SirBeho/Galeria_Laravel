@@ -20,6 +20,7 @@ export default function NavBar({ user }) {
   const { carrito, setCarrito, } = useCarrito();
 
   const {
+    setVerJuegos,
     verJuegos,
     toggleVerJuegos,
     estadoVisual,
@@ -75,7 +76,7 @@ export default function NavBar({ user }) {
           {/* 1. SECCIÓN IZQUIERDA (Logo y Toggles) */}
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}
-            <Link href={route('home')} className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
+            <Link href={route('home')} onClick={() => setVerJuegos(false)} className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
               <img src={logoUrl} className="h-full w-auto" alt="" />
               <div className="text-white text-xl md:text-2xl w-auto hidden sm:block ">Mundo del Cumpleaños  </div> {/* Ocultar título en móvil, mostrar en sm+ */}
             </Link>
