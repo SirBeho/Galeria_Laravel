@@ -24,3 +24,21 @@ before(() => {
         timeout: 60000 // Aumentar el timeout si la siembra es lenta
     });
 });
+
+
+after(() => {
+    cy.log('*** CLEANUP: Eliminando archivos vía cy.exec ***');
+
+    const TEST_IMAGES = ['test_1.png', 'test_2.png', 'test_3.png'];
+    const GALLERY_PATH = 'storage/app/public/gallery';
+    // 1. Construimos la cadena con las rutas completas
+    const filesPathString = TEST_IMAGES.map(img => `${GALLERY_PATH}/${img}`).join(' ');
+
+    // 2. Ejecutamos el comando 'rm'
+    // -f fuerza la eliminación y no da error si el archivo no existe
+    cy.exec(`rm -f ${filesPathString}`, {
+        failOnNonZeroExit: false // Importante: Si ya se borraron, que no falle el test
+    }).then((result) => {
+        cy.log('Resultado limpieza:', result.stdout);
+    });
+});

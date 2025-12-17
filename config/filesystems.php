@@ -63,7 +63,8 @@ return [
 
         'gallery' => [
             'driver' => 'local',
-            'root' => public_path('images'),
+            'root' => storage_path('app/public/gallery'), 
+            'url' => env('APP_URL').'/storage/gallery',
             'visibility' => 'public',
         ],
 

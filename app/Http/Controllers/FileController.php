@@ -39,13 +39,12 @@ class FileController extends Controller
             'images.*.max' => 'Uno de los archivos excede el tamaño máximo permitido de 5 MB.',
         ]);
         
-        $disk = Storage::disk('public');
-        $directory = 'images';
-        
+        $disk = Storage::disk('gallery');
+
         $mensajesExitosos = 0;
         $mensajesErrores = [];
 
-        $maxNumber = $maxNumber = $this->getMaxImageNumber('images');
+        $maxNumber = $maxNumber = $this->getMaxImageNumber();
 
         $files = $request->file('images');
         foreach ($files as $index => $file) {
@@ -56,7 +55,7 @@ class FileController extends Controller
                 $name = $maxNumber.'.jpg';
 
                 try {
-                    $disk->putFileAs($directory, $file, $name);
+                    $disk->putFileAs('', $file, $name);
                     $mensajesExitosos ++;
                 } catch (\Exception $e) {
                     \Log::error("Error al subir imagen: " . $e->getMessage());
@@ -83,23 +82,20 @@ class FileController extends Controller
     {
         $request->validate([
             'codigos' => 'required|array',
-            'codigos.*' => 'string',
-            'directorio' => 'required|string',
-        ]);
+            'codigos.*' => 'string'
+        ]); 
 
-        $directory = $request->input('directorio');
+        /** @var array<string> $files */
+        $disk = Storage::disk('gallery'); // 🟢 Usar el disco
 
         $files = $request->input('codigos');
 
-
-        /** @var array<string> $files */
-        $disk = Storage::disk('public'); // 🟢 Usar el disco
         $deletionSuccessful = 0;
 
         try {
             foreach ($files as $fileName) {
                 // 3. Verificar y Eliminar
-                $fileName =  $directory.$fileName;
+                $fileName =  $fileName;
 
                 if ($disk->exists($fileName)) {
 
@@ -148,10 +144,10 @@ class FileController extends Controller
      * @param string $baseDirectory La carpeta base donde empezar a buscar (ej: 'images').
      * @return int
      */
-    private function getMaxImageNumber(string $baseDirectory): int
+    private function getMaxImageNumber(string $baseDirectory = '' ): int
     {
         // Usamos el disco 'public'
-        $disk = Storage::disk('public'); 
+        $disk = Storage::disk('gallery'); 
 
         $filePaths = $disk->allFiles($baseDirectory); 
 

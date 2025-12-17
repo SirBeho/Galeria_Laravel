@@ -19,5 +19,7 @@ class UserSeeder extends Seeder
             'password' => 'admin',
         ]);
 
+        $this->command->info('✅ Usuario Creado".');
+
     }
 }

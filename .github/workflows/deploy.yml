@@ -114,7 +114,7 @@ jobs:
           protocol: ftp
           server-dir: / # Sube a la raíz del usuario (donde vive artisan)
           exclude: |
-            public/ # ¡IMPORTANTE! Excluimos public porque va a public_html
+            public/ 
             .git*
             .github
             .env*

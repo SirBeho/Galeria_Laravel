@@ -4,8 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\File; // ¡Necesario para el disco simulado!
+use Illuminate\Support\Facades\File; 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Filesystem\Filesystem; 
 use Tests\TestCase;
 
 class ImageDeleteTest extends TestCase
@@ -13,10 +14,8 @@ class ImageDeleteTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
-
-    // 🟢 Definimos el disco de la galería
-    const GALLERY_DISK = 'public';
-    const IMAGES_DIRECTORY = 'images/';
+    protected Filesystem $disk;
+    const GALLERY_DISK = 'gallery';
 
     protected function setUp(): void
     {
@@ -26,11 +25,8 @@ class ImageDeleteTest extends TestCase
 
         // 2. Simular el disco (crea una carpeta temporal y la vincula a 'gallery')
         Storage::fake(self::GALLERY_DISK);
+        $this->disk = Storage::disk(self::GALLERY_DISK); 
 
-        // 3. Crear el directorio físico temporal para que File::put funcione
-        // Tu controlador usa File::put internamente para el setup del disco simulado
-        // aunque el controlador usa File::put, el Storage::fake ya se encarga de la simulación.
-        // Solo creamos el usuario.
     }
 
     // =========================================================
@@ -46,26 +42,21 @@ class ImageDeleteTest extends TestCase
         $file3 = '102.jpg';
 
         // Usamos Storage::put para crear los archivos en el disco 'gallery' fake
-        Storage::disk(self::GALLERY_DISK)->put(self::IMAGES_DIRECTORY.$file1 ,'dummy content 1');
-        Storage::disk(self::GALLERY_DISK)->put(self::IMAGES_DIRECTORY.$file2 ,'dummy content 1');
-        Storage::disk(self::GALLERY_DISK)->put(self::IMAGES_DIRECTORY.$file3 ,'dummy content 1');
-
-       
+        $this->disk->put($file1 ,'dummy content 1');
+        $this->disk->put($file2 ,'dummy content 1');
+        $this->disk->put($file3 ,'dummy content 1');
 
         // Verificar que existen antes del test
-        Storage::disk(self::GALLERY_DISK)->assertExists(self::IMAGES_DIRECTORY.$file1);
-        Storage::disk(self::GALLERY_DISK)->assertExists(self::IMAGES_DIRECTORY.$file2);
-        Storage::disk(self::GALLERY_DISK)->assertExists(self::IMAGES_DIRECTORY.$file3);
+        $this->disk->assertExists($file1);
+        $this->disk->assertExists($file2);
+        $this->disk->assertExists($file3);
 
-        $disk = Storage::disk('public'); 
-
-        $filePaths = $disk->allFiles(self::IMAGES_DIRECTORY); 
+        $filePaths = $this->disk->allFiles(); 
 
         // ACT: Ejecutar la petición de eliminación
         $response = $this->actingAs($this->user)
             ->post(route('eliminar.imagen'), [ 
-                'codigos' => [$file1, $file2],
-                'directorio' => self::IMAGES_DIRECTORY,
+                'codigos' => [$file1, $file2]
             ]);
 
         // ASSERT:
@@ -80,11 +71,11 @@ class ImageDeleteTest extends TestCase
             });
 
         // 2. Verificar que los archivos eliminados ya NO EXISTEN
-        Storage::disk(self::GALLERY_DISK)->assertMissing(self::IMAGES_DIRECTORY.$file1);
-        Storage::disk(self::GALLERY_DISK)->assertMissing(self::IMAGES_DIRECTORY.$file2);
+        $this->disk->assertMissing($file1);
+        $this->disk->assertMissing($file2);
 
         // 3. Verificar que el archivo restante SÍ EXISTE
-        Storage::disk(self::GALLERY_DISK)->assertExists(self::IMAGES_DIRECTORY.$file3);
+        $this->disk->assertExists($file3);
     }
 
     // =========================================================
@@ -125,17 +116,16 @@ class ImageDeleteTest extends TestCase
         $inexistente = 'inexistente.jpg';
 
         // Solo creamos el archivo existente
-        Storage::disk(self::GALLERY_DISK)->put(self::IMAGES_DIRECTORY.$file4, 'dummy content 1');
+        $this->disk->put($file4, 'dummy content 1');
 
         // Confirmación para el test:
-        Storage::disk(self::GALLERY_DISK)->assertExists(self::IMAGES_DIRECTORY.$file4); // DEBE pasar
-        Storage::disk(self::GALLERY_DISK)->assertMissing(self::IMAGES_DIRECTORY.$inexistente); // DEBE pasar
+        $this->disk->assertExists($file4); // DEBE pasar
+        $this->disk->assertMissing($inexistente); // DEBE pasar
 
         // ACT: Intenta eliminar ambos archivos
         $response = $this->actingAs($this->user)
             ->post(route('eliminar.imagen'), [
-                'codigos' => [$file4, $inexistente],
-                'directorio' => self::IMAGES_DIRECTORY,
+                'codigos' => [$file4, $inexistente]
             ]);
 
         // ASSERT:
@@ -149,9 +139,9 @@ class ImageDeleteTest extends TestCase
         });
 
         // 3. El archivo existente fue eliminado
-        Storage::disk(self::GALLERY_DISK)->assertMissing($file4);
+        $this->disk->assertMissing($file4);
 
         // 4. El archivo que nunca existió sigue sin existir (assertMissing por redundancia, aunque ya no hace falta)
-        Storage::disk(self::GALLERY_DISK)->assertMissing($inexistente);
+        $this->disk->assertMissing($inexistente);
     }
 }

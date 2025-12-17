@@ -24,15 +24,15 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create']);
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
 
-        $imagePaths = Storage::disk('public')->files('images'); 
+        $imagePaths = Storage::disk('gallery')->files(); 
 
         $imageUrls = collect($imagePaths)->map(function ($path) {
-            return Storage::disk('public')->url($path);
+            return Storage::disk('gallery')->url($path);
         })->values()->all();
 
-        $imagePathsJuegos = Storage::disk('public')->files('images/juegos');
+        $imagePathsJuegos = Storage::disk('gallery')->files('/juegos');
         $imageUrlsJuegos = collect($imagePathsJuegos)->map(function ($path) {
-            return Storage::disk('public')->url($path);
+            return Storage::disk('gallery')->url($path);
         })->values()->all();
 
         return Inertia::render('Home', [

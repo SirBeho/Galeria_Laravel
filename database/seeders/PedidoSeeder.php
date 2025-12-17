@@ -15,7 +15,6 @@ class PedidoSeeder extends Seeder
     public function run(): void
     {
         $pedido1 = Pedido::create([
-            'numero_pedido' => 1001,
             'nombre' => 'Juan Perez',
             'telefono' => '(809) 597-2637',
             'key' => bin2hex(random_bytes(10)),
@@ -32,8 +31,8 @@ class PedidoSeeder extends Seeder
             'cantidad' => 5,
         ]);
 
-        Pedido::factory()->create([
-            'numero_pedido' => 1002,
-        ]);
+        Pedido::factory()->create();
+
+        $this->command->info('✅ Pedidos Creados".');
     }
 }

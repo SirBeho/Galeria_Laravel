@@ -23,10 +23,13 @@ export default function Home({ imgHome, imgJuegos }) {
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
     const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
-    const { logoUrl, primaryColor, secondaryColor } = usePage().props.designSettings;
+    const { secondaryColor } = usePage().props.designSettings;
 
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
+
+
+
 
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);

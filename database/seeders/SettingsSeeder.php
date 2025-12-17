@@ -26,5 +26,7 @@ class SettingsSeeder extends Seeder
                 ['value' => $setting['value']]
             );
         }
+
+        $this->command->info('✅ Configuracion Creada".');
     }
 }
