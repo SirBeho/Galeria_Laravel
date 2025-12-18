@@ -1,0 +1,20 @@
+includes:
+    # Esta línea incluye la configuración base de Larastan para trabajar con Laravel
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    # Le dice a Larastan qué carpetas debe escanear
+    paths:
+        - app/
+        - database/
+        - routes/
+        - tests/
+    
+    # Define la estrictez del análisis (0 es permisivo, 9 es súper estricto)
+    # Nivel 5 es el punto ideal para forzar un buen tipado y manejo de nulos.
+    level: 9
+
+    # Si tu proyecto usa Traits o Clases Mágicas y genera errores falsos, 
+    # puedes indicarle que ignore clases o métodos específicos aquí:
+    # excludePaths:
+    #    - database/

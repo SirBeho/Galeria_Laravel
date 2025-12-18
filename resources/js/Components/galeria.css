@@ -1,0 +1,87 @@
+/* galeria.css */
+
+/* Contenedor base */
+.carousel-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: transparent; /* O el color que prefieras */
+}
+
+/* El elemento individual (La carta) */
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* La magia ocurre aquí: 500ms de suavidad */
+    transition: transform 200ms ease-in-out, opacity 500ms ease-in-out;
+    backface-visibility: hidden;
+    will-change: transform; /* Optimización de rendimiento */
+}
+
+/* ==========================================================================
+   MOVIMIENTO 1: RIGHT-TO-LEFT (Botón Siguiente ->)
+   Todo el mundo se mueve hacia la izquierda <<<<
+   ========================================================================== */
+
+/* La imagen NUEVA entra desde la derecha */
+.right-to-left-enter {
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 10; /* Asegura que la nueva esté encima si hay solapamiento */
+}
+.right-to-left-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* La imagen VIEJA se va hacia la izquierda */
+.right-to-left-exit {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 0;
+}
+.right-to-left-exit-active {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* ==========================================================================
+   MOVIMIENTO 2: LEFT-TO-RIGHT (Botón Anterior <-)
+   Todo el mundo se mueve hacia la derecha >>>>
+   ========================================================================== */
+
+/* La imagen NUEVA entra desde la izquierda */
+.left-to-right-enter {
+    transform: translateX(-100%);
+    opacity: 0;
+    z-index: 10;
+}
+.left-to-right-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* La imagen VIEJA se va hacia la derecha */
+.left-to-right-exit {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 0;
+}
+.left-to-right-exit-active {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+/* ==========================================================================
+   ESTILOS ADICIONALES (Opcionales)
+   ========================================================================== */
+   .hover-effect-chaild:hover svg {
+    /* Cuando el padre recibe hover, el hijo recibe: */
+    background-color: rgba(255, 255, 255, 0.5); /* Simula un hover más fuerte (ej: bg-white/50) */
+    /* Opcional: Escalar el icono */
+    transform: scale(1.1);
+}
