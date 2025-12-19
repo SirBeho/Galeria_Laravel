@@ -13,6 +13,8 @@ export default function Subir({ user, mensaje }) {
         images: [],
     });
 
+    console.log(data)
+
     const clearCacheForm = useForm({});
     const [loading, setLoading] = useState(false);
 
@@ -60,7 +62,7 @@ export default function Subir({ user, mensaje }) {
                 //console.log(response)
                 setMsj(response.props.mensaje);
                 reset();
-                setData([]);
+                setData('images', []);
                 setImages([]);
                 setLoading(false);
             },
@@ -168,7 +170,7 @@ export default function Subir({ user, mensaje }) {
                         onChange={handleImageChange}
                     />
 
-                    <span className="content-center">{data['images'].length} archivos pre cargados</span>
+                    <span className="content-center">{data['images']?.length || 0} archivos pre cargados</span>
                 </div>
                 <div className="flex flex-wrap mt-4 gap-3">
                     {images?.map((image, index) => (
