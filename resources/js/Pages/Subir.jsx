@@ -108,7 +108,7 @@ export default function Subir({ user, mensaje }) {
 
             <Loading show={loading} />
 
-            <Modal show={msj != null} onClose={() => setMsj(null)} header={msj?.title || "Producto Agregado"} close_x={true}>
+            <Modal show={msj != null} autoclose={2000} onClose={() => setMsj(null)} header={msj?.title || "Producto Agregado"} close_x={true}>
                 {msj?.success && <div className="text-center text-green-600 text-xl" >
                     <p>{msj.success}</p>
                 </div>}

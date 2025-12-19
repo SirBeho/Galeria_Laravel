@@ -78,7 +78,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
 
         if (observerRef.current) observer.observe(observerRef.current);
         return () => observer.disconnect();
-    }, [nextPage, cargando, estadoVisual]);
+    }, [nextPage, cargando, estadoVisual, verJuegos]);
 
 
     // --- LOGICA UI ---
@@ -167,7 +167,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
                     <div className="flex flex-wrap justify-center gap-2 p-3 bg-gray-100 max-h-60 overflow-y-auto rounded-md w-full">
                         {selectedFiles.map((f) => (
                             <div key={f} className="w-20 h-20 overflow-hidden rounded-md shadow-md border relative">
-                                <img className="h-full object-cover w-full" src={`/images/${f}`} alt={f} />
+                                <img className="h-full object-cover w-full" src={`${galleryUrl}${f}`} alt={f} />
                                 {/* <span className="absolute bottom-0 w-full bg-black/50 text-white text-xs text-center truncate">
                                     {f}
                                 </span> */}

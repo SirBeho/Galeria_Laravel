@@ -83,6 +83,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Artisan::call('config:clear');
             Artisan::call('view:clear');
 
+            Cache::forget('gallery_home_files');
+            Cache::forget('gallery_juegos_files');
+
             return back()->with('msj' ,[
                 'success'=> 'La caché de la configuración del diseño ha sido actualizada.',
                 'title' => 'Cache Limpiada'

@@ -24,7 +24,7 @@ const LazyLoadedImage = ({ file }) => {
                     <img
                         src={thumbSrc}
                         alt="preview"
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${loaded ? 'opacity-0' : 'opacity-100'
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${loaded ? 'opacity-0' : 'opacity-100'
                             }`}
                         style={{ filter: 'blur(0px)' }} // Un pequeño desenfoque oculta los píxeles
                     />
@@ -34,7 +34,7 @@ const LazyLoadedImage = ({ file }) => {
                         src={file}
                         alt="Descripción"
                         onLoad={() => setLoaded(true)}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'
                             }`}
                         loading="lazy"
                     />
