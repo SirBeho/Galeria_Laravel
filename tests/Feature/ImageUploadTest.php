@@ -32,8 +32,8 @@ class ImageUploadTest extends TestCase
 
         // 🟢 SIMULAR ARCHIVOS PRE-EXISTENTES USANDO EL DISCO FAKE:
         // Creamos los archivos directamente en el disco simulado.
-        $this->disk->put('50.jpg' ,'dummy content 1');
-        $this->disk->put('51.jpg' ,'dummy content 1');
+        $this->disk->put('50.webp' ,'dummy content 1');
+        $this->disk->put('51.webp' ,'dummy content 1');
         $this->disk->put('placeholder.txt' ,'dummy content 1');
     }
 
@@ -45,8 +45,8 @@ class ImageUploadTest extends TestCase
     public function it_uploads_multiple_images_and_renames_them_sequentially()
     {   
        
-        // ARRANGE: Archivos falsos. El maxNumber es 51, los nuevos serán 10000.jpg y 10001.jpg.
-        $file1 = UploadedFile::fake()->image('img_a.jpg')->size(100);
+        // ARRANGE: Archivos falsos. El maxNumber es 51, los nuevos serán 10000.webp y 10001.webp.
+        $file1 = UploadedFile::fake()->image('img_a.webp')->size(100);
         $file2 = UploadedFile::fake()->image('img_b.png')->size(200);
 
         // ACT: Petición como usuario autenticado
@@ -63,8 +63,8 @@ class ImageUploadTest extends TestCase
        // var_dump($this->disk->files());
 
         // 🟢 Verificar la existencia de los nuevos archivos en el disco simulado
-        $this->disk->assertExists('10001.jpg');
-        $this->disk->assertExists('10002.jpg');
+        $this->disk->assertExists('10001.webp');
+        $this->disk->assertExists('10002.webp');
 
         // Verifica el mensaje de éxito
         $response->assertSessionHas('msj', function ($msj) {
@@ -109,7 +109,7 @@ class ImageUploadTest extends TestCase
     public function it_records_an_error_message_on_invalid_file()
     {
         // ARRANGE: Payload con un archivo válido y un valor que no es un archivo
-        $validFile = UploadedFile::fake()->image('valid.jpg');
+        $validFile = UploadedFile::fake()->image('valid.webp');
         $payload = [
             // Primer elemento: Un archivo válido que debería subirse
             'images' => [
@@ -139,8 +139,8 @@ class ImageUploadTest extends TestCase
             return $successCondition && $errorCondition;
         }); */
 
-        // El nuevo archivo no debe existir (52.jpg)
-        $this->disk->assertMissing('10003.jpg');
+        // El nuevo archivo no debe existir (52.webp)
+        $this->disk->assertMissing('10003.webp');
     }
 
     // =========================================================
@@ -150,7 +150,7 @@ class ImageUploadTest extends TestCase
     /** @test */
     public function unauthenticated_user_cannot_upload_images()
     {
-        $file = UploadedFile::fake()->image('security_test.jpg')->size(100);
+        $file = UploadedFile::fake()->image('security_test.webp')->size(100);
 
         // ACT: Petición SIN autenticación (usando $this->post)
         $response = $this->post(route('subir.imagen'), ['images' =>  ['file_0' => $file]]);
@@ -160,6 +160,6 @@ class ImageUploadTest extends TestCase
 
         // El disco debe estar vacío, excepto por los archivos iniciales que se crearon en setUp.
         // Pero el archivo de seguridad no debe existir.
-        $this->disk->assertMissing('52.jpg');
+        $this->disk->assertMissing('52.webp');
     }
 }
