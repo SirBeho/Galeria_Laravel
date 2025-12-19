@@ -7,7 +7,6 @@
   <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=laravel,php,react,tailwindcss,vite,cypress&perline=14"/></a>&nbsp;<a><img src="./public/mysql.svg" width="48px"/>&nbsp;<img src="./public/phpunit.svg" width="48px" /></a>&nbsp;<a><img src="./public/filesystem.svg" width="48px" /></a>&nbsp;<a><img src="https://skillicons.dev/icons?i=githubactions,git,js,linux,github,vscode&perline=14" /></a>
 </p>
 
-
 ## Índice
 
 -   [✨ Descripción General](#-descripción-y-arquitectura)
@@ -72,52 +71,54 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
 
 ---
 
-### <span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://simpleskill.icons.workers.dev/svg?i=react" height="40"> Frontend & UI</span>
+### <img src="https://simpleskill.icons.workers.dev/svg?i=react" height="40">  Frontend & UI
 
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=react" height="25"> React 18</span>**
+-   **<img src="https://skillicons.dev/icons?i=react" height="25">  React 18**
     -   Librería principal para la construcción de interfaces reactivas y modulares.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://avatars.githubusercontent.com/u/47703742?s=200&v=4" height="25" style="border-radius: 15%"> Inertia.js</span>**
+-   **<img src="https://avatars.githubusercontent.com/u/47703742?s=200&v=4" height="25" style="border-radius: 15%">  Inertia.js**
     -   El puente monolítico que conecta Laravel y React, eliminando la necesidad de una API REST compleja.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=tailwindcss" height="25"> Tailwind CSS</span>**
+-   **<img src="https://skillicons.dev/icons?i=tailwindcss" height="25">  Tailwind CSS**
     -   Framework de estilos "utility-first" para un diseño rápido y responsivo.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=js" height="25"> Headless UI & Flowbite</span>**
+-   **<img src="https://skillicons.dev/icons?i=js" height="25">  Headless UI & Flowbite**
     -   Componentes accesibles (Modales, Menús) integrados perfectamente con Tailwind.
 
 ---
 
-### <span style="display: inline-flex; align-items: center;gap: 10px;"> <img src="https://simpleskill.icons.workers.dev/svg?i=laravel"  height="40"> Backend & Servicios </span>
+### <img src="https://simpleskill.icons.workers.dev/svg?i=laravel"  height="40">  Backend & Servicios </span>
 
--   **<span style="display: inline-flex; align-items: center;gap: 10px;"> <img src="https://skillicons.dev/icons?i=laravel" height="25"> Laravel 10</span>**
+-   **<img src="https://skillicons.dev/icons?i=laravel" height="25">  Laravel 10**
     -   Framework PHP robusto para la lógica del servidor, enrutamiento y seguridad.
--   **<span style="display: inline-flex; align-items: center;gap: 10px;"> <img src="https://skillicons.dev/icons?i=php" height="25"> PHP 8.2</span>**
+-   **<img src="https://skillicons.dev/icons?i=php" height="25">  PHP 8.2**
     -   Lenguaje base del servidor.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"> <img src="./public/filesystem.svg" height="25"/> Illuminate/Filesystem</span>**
+-   **<img src="./public/filesystem.svg" height="25"/>  Illuminate/Filesystem**
     -   Gestión avanzada de discos y almacenamiento de imágenes.
+-   **<img src="./public/intervencion.svg" height="25">  Intervention Image**
+    -   Motor de procesamiento para la manipulación y optimización de recursos gráficos.
 
 ---
 
-### <span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://simpleskill.icons.workers.dev/svg?i=mysql" height="40"> Base de Datos</span>
+### <img src="https://simpleskill.icons.workers.dev/svg?i=mysql" height="40">  Base de Datos</span>
 
--   **<span style="display: inline-flex; align-items: center;gap: 10px;"> <img src="https://skillicons.dev/icons?i=mysql" height="25"> MySQL</span>**
+-   **<img src="https://skillicons.dev/icons?i=mysql" height="25">  MySQL**
     -   Almacenamiento relacional para usuarios y metadatos de pedidos.
 
 ---
 
-### <span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://ekiip.com/wp-content/uploads/2020/01/cropped-devops.png"  width="50"> Herramientas y DevOps</span>
+### <img src="https://ekiip.com/wp-content/uploads/2020/01/cropped-devops.png"  width="50">  Herramientas y DevOps</span>
 
--   **<img src="https://skillicons.dev/icons?i=github" height="25"> &nbsp;GitHub**
+-   **<img src="https://skillicons.dev/icons?i=github" height="25">  GitHub**
     -   Plataforma de alojamiento de código y control de versiones mediante Git.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=githubactions" height="25"> GitHub Actions</span>**
+-   **<img src="https://skillicons.dev/icons?i=githubactions" height="25">  GitHub Actions**
     -   Pipeline de CI/CD para despliegues.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=vscode" height="25">  VS Code</span>**
+-   **<img src="https://skillicons.dev/icons?i=vscode" height="25">  VS Code**
     -   Entorno de desarrollo con extensiones para PHP y React.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=cypress" height="20">  Cypress</span>**
+-   **<img src="https://skillicons.dev/icons?i=cypress" height="25">  Cypress**
     -   Testing End-to-End (E2E) para automatización de navegadores y pruebas de integración.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="./public/phpunit.svg" height="20">  PHPUnit</span>**
+-   **<img src="./public/phpunit.svg" height="25">  PHPUnit**
     -   Framework de pruebas unitarias y de características para la lógica del backend.
--   **<span style="display: inline-flex; align-items: center;gap: 10px"><img src="https://skillicons.dev/icons?i=vite" height="25">  Vite</span>**
+-   **<img src="https://skillicons.dev/icons?i=vite" height="25">  Vite**
     -   Empaquetador de módulos de próxima generación para un desarrollo frontend ultrarrápido.
--   **<span style="display: inline-flex; align-items: center;gap: 10px;"> <img src="https://skillicons.dev/icons?i=linux" height="18"> Linux (Hostinger)</span>**
+-   **<img src="https://skillicons.dev/icons?i=linux" height="25">  Linux (Hostinger)**
     -   Entorno de producción.
 
 ---
