@@ -186,7 +186,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
 
             {/* --- GALERÍA PRINCIPAL --- */}
             <div>
-                <h1 className="my-4 font-bold text-4xl text-center">
+                <h1 data-cy="header-home" className="my-4 font-bold text-4xl text-center">
                     {verJuegos ? "JUGUETES" : "GALERIA PRINCIPAL"}
                 </h1>
 

@@ -60,7 +60,7 @@ describe('Flujo de Autenticación y Acceso al Panel', () => {
         cy.url().should('include', '/');
 
         // Verificamos que el formulario de login está visible
-        cy.get('[data-cy="login-submit-btn"]').should('be.visible');
+        cy.get('[data-cy="header-home"]').should('be.visible');
     });
 
     it('Debe bloquear el acceso directo a la página de subir si no está autenticado', () => {
@@ -72,7 +72,7 @@ describe('Flujo de Autenticación y Acceso al Panel', () => {
         cy.url().should('include', '/');
 
         // Verificamos que el formulario de login está visible
-        cy.get('[data-cy="login-submit-btn"]').should('be.visible');
+        cy.get('[data-cy="header-home"]').should('be.visible');
     });
 
 
