@@ -26,7 +26,7 @@ class PedidoViewTest extends TestCase
 
         // Debe ser redirigido a la página de login
         $response->assertStatus(302);
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('/'));
     }
 
     /** @test */

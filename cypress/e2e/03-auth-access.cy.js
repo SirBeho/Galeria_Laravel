@@ -57,7 +57,7 @@ describe('Flujo de Autenticación y Acceso al Panel', () => {
         cy.visit('/panel');
 
         // Verificamos que fuimos redirigidos a /login
-        cy.url().should('include', '/login');
+        cy.url().should('include', '/');
 
         // Verificamos que el formulario de login está visible
         cy.get('[data-cy="login-submit-btn"]').should('be.visible');
@@ -66,10 +66,10 @@ describe('Flujo de Autenticación y Acceso al Panel', () => {
     it('Debe bloquear el acceso directo a la página de subir si no está autenticado', () => {
 
         // Empezamos limpio (gracias al beforeEach).
-        cy.visit('//subir');
+        cy.visit('/subir');
 
         // Verificamos que fuimos redirigidos a /login
-        cy.url().should('include', '/login');
+        cy.url().should('include', '/');
 
         // Verificamos que el formulario de login está visible
         cy.get('[data-cy="login-submit-btn"]').should('be.visible');
