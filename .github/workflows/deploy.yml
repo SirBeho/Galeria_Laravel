@@ -3,6 +3,7 @@ name: 🚀 Deploy Producción Optimizada (Hostinger)
 on:
   push:
     branches: ["master"]
+  workflow_dispatch:
 
 jobs:
   deploy:
