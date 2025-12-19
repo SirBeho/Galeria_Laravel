@@ -11,7 +11,6 @@ const LazyLoadedImage = ({ file }) => {
     // Generamos la ruta de la miniatura
     const thumbSrc = file.replace('/gallery/', '/gallery/thumbs/').replace('.webp', '_thumb.webp');
 
-    console.log(thumbSrc)
 
     return (
         <div

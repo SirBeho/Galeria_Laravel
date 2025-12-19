@@ -25,9 +25,9 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
     const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
     const observerRef = useRef();
     const { secondaryColor } = usePage().props.designSettings;
-    console.log(imgHome.length)
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
+
 
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
@@ -260,7 +260,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
                         )}
 
                 </div>
-                {nextPage && <div ref={observerRef} className="w-full h-10 flex justify-center">Cargando más...</div>}
+                {nextPage && !verJuegos && <div ref={observerRef} className="w-full h-10 flex justify-center">Cargando más...</div>}
             </div>
 
             <ProductDetailModal
