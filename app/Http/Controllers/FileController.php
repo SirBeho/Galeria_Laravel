@@ -150,14 +150,14 @@ class FileController extends Controller
     }
 
      /**
-     * Obtiene el número más alto de los archivos .jpg en el directorio de imágenes.
+     * Obtiene el número más alto de los archivos .webp en el directorio de imágenes.
      *
      * @param \Illuminate\Contracts\Filesystem\Filesystem $disk
      * @param string $directory
      * @return int
      */
     /**
-     * Obtiene el número más alto de los archivos .jpg en los directorios de imágenes.
+     * Obtiene el número más alto de los archivos .webp en los directorios de imágenes.
      * Busca recursivamente en la carpeta 'images/' y sus subcarpetas.
      *
      * @param string $baseDirectory La carpeta base donde empezar a buscar (ej: 'images').
@@ -174,7 +174,7 @@ class FileController extends Controller
             ->map(function($path) {
                 $fileName = basename($path); 
                 
-                preg_match('/(\d+)\.jpg$/', $fileName, $matches);
+                preg_match('/(\d+)\.webp$/', $fileName, $matches);
                 
                 return isset($matches[1]) ? (int)$matches[1] : 0; 
             })
