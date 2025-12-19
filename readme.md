@@ -52,9 +52,10 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
 
 ### 1. Experiencia Visual y Rendimiento
 
--   **Lazy Loading Inteligente:** Implementación de componentes de carga diferida (`LazyLoadedImage`) para asegurar que el navegador solo descargue las imágenes visibles en el _viewport_, mejorando drásticamente el rendimiento inicial.
--   **Layout Adaptable:** El usuario puede alternar dinámicamente la visualización de la grilla (1, 2 o 3 columnas) según su preferencia, persistiendo la configuración en el navegador.
--   **Categorización Dinámica:** Navegación instantánea entre categorías principales (ej. "Galería Principal" vs "Juguetes") sin latencia.
+-   **Lazy Loading & Caché:** Implementación de componentes de carga diferida (`LazyLoadedImage`) para descagar solo las imágenes visibles en el _viewport_.Incluye persistencia en el navegador para asegurar visitas recurrentes instantáneas.
+-   **Layout Adaptable:** El usuario puede alternar dinámicamente la visualización (1, 2 o 3 columnas) según su preferencia, persistiendo la configuración en el navegador para futuras sesiones.
+-   **Scroll Infinito y Categorización(SPA):** Navegación instantánea entre categorías (ej. "Galería Principal" vs "Juguetes") sin latencia y flujo de scroll dinámico que acumula imágenes sin recargar la página.
+-   **Optimización WebP & Thumbs:** Conversión automática de imágenes a (`WebP`) y generación de thumbnails (400px), reduciendo el peso de los archivos hasta un 60% para una carga ultra-ligera.
 
 ### 2. E-Commerce y Pedidos
 
