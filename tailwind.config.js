@@ -13,6 +13,9 @@ export default {
 
     theme: {
         extend: {
+            screens: {
+                'td': '800px',
+            },
             fontFamily: {
                 'ubuntu': ['Ubuntu', 'sans-serif'],
             },
@@ -73,21 +76,21 @@ export default {
                         transform: 'translate(2px, 0) rotate(2deg)',
                     },
                 },
-                sheke2 : {
+                sheke2: {
 
-                    
+
                     '0%, 50%, 100%': { transform: 'translate(0)' },
-                    '10% ,20% , 30% ,40%':  { transform: 'translate(-5px ,5px)' },
-                    '5%, 15%, 25%, 35% , 45%': { transform: 'translate(5px , -5px)'},
-                    
-                    
+                    '10% ,20% , 30% ,40%': { transform: 'translate(-5px ,5px)' },
+                    '5%, 15%, 25%, 35% , 45%': { transform: 'translate(5px , -5px)' },
+
+
                 }
             },
             animation: {
                 // Crea la clase utilitaria 'animate-wiggle'
                 wiggle: 'wiggle 4s ease-in-out infinite',
                 shaketop: 'shaketop 2s ease-in infinite both',
-                sheke2 : 'sheke2 2s ease-in-out infinite',
+                sheke2: 'sheke2 2s ease-in-out infinite',
             }
         },
     },

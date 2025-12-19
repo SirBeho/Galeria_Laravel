@@ -59,7 +59,7 @@ export function ProductDetailModal({
 
                     <div className="flex min-h-full items-center justify-center p-4 text-center ">
                         {/* Botón Cerrar Flotante (Visible en móvil) */}
-                        <button onClick={close} className="absolute top-8 right-8  md:hidden  z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
+                        <button onClick={close} className="absolute top-8 right-8  td:hidden  z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
                             ✕
                         </button>
                         <Transition.Child
@@ -71,13 +71,13 @@ export function ProductDetailModal({
                             leaveFrom="opacity-100 scale-100 translate-y-0"
                             leaveTo="opacity-0 scale-95 translate-y-4"
                         >
-                            <Dialog.Panel className={`w-full h-[95vh] ${maxWidthClass} transform overflow-auto bg-white rounded-2xl text-left align-middle shadow-2xl transition-all flex flex-col md:flex-row  md:min-h-[95vh]`}>
+                            <Dialog.Panel className={`w-full h-[95vh] ${maxWidthClass} transform overflow-auto bg-white rounded-2xl text-left align-middle shadow-2xl transition-all flex flex-col td:flex-row  td:min-h-[95vh]`}>
                                 {/* Botón Cerrar Flotante */}
-                                <button onClick={close} className="absolute top-3 right-4 hidden md:block z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
+                                <button onClick={close} className="absolute top-3 right-4 hidden td:block z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
                                     ✕
                                 </button>
                                 {/* IZQUIERDA: CARRUSEL (65% del ancho en PC) */}
-                                <div className="relative w-full md:w-[65%] h-full min-h-[80vh] md:min-h-max md:h-auto bg-gray-50">
+                                <div className="relative w-full td:w-[65%] h-full min-h-[80vh] td:min-h-max td:h-auto bg-gray-50">
                                     <ImageCarousel
                                         Imagename={fullImageUrl}
                                         images={images}
@@ -91,16 +91,16 @@ export function ProductDetailModal({
                                 </div>
 
                                 {/* DERECHA: FORMULARIO (35% del ancho en PC) */}
-                                <div className="w-full md:w-[35%] flex flex-col bg-white border-l md:overflow-auto border-gray-100 md:h-full">
+                                <div className="w-full td:w-[35%] flex flex-col bg-white border-l td:overflow-auto border-gray-100 td:h-full">
                                     {/* Contenido Scrollable */}
                                     <div className="flex-1 ">
 
                                         {/* Encabezado del Formulario */}
-                                        <form id="order-form" onSubmit={agregarAlCarrito} className="flex flex-col md:gap-8  p-6 py-2 ">
-                                            <div className='flex md:flex-col md:gap-8 justify-between border-b md:border-b-0 pb-2  '>
-                                                <div className=" flex justify-between items-center bg-white w-fit md:w-full md:border-b md:pb-1">
+                                        <form id="order-form" onSubmit={agregarAlCarrito} className="flex flex-col td:gap-8  p-6 py-2 ">
+                                            <div className='flex td:flex-col td:gap-8 justify-between border-b td:border-b-0 pb-2  '>
+                                                <div className=" flex justify-between items-center bg-white w-fit td:w-full td:border-b td:pb-1">
                                                     <div>
-                                                        <h3 className="text-lg md:text-xl font-bold text-gray-900 md:pt-10">Preparar Pedido</h3>
+                                                        <h3 className="text-lg td:text-xl font-bold text-gray-900 td:pt-10">Preparar Pedido</h3>
                                                         <p className="text-[7px] text-gray-500">Referencia: {name} </p>
                                                     </div>
 
@@ -141,7 +141,7 @@ export function ProductDetailModal({
                                                     id="comentario"
                                                     data-cy="input-comentario"
                                                     rows=""
-                                                    className="w-full h-11 md:h-24 focus:h-20 rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none bg-gray-50"
+                                                    className="w-full h-11 td:h-24 focus:h-20 rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none bg-gray-50"
                                                     placeholder="Ej: Quiero una docena de este color..."
                                                     value={producto.comentario || ''}
                                                     onChange={(e) => setProducto({ ...producto, comentario: e.target.value })}
