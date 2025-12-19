@@ -31,14 +31,14 @@ const LazyLoadedImage = ({ file }) => {
                     />
 
                     {/* IMAGEN REAL: Se carga encima con un fade-in suave */}
-                    {/* <img
+                    <img
                         src={file}
                         alt="Descripción"
-                        onLoad={() => setLoaded(true)} 
+                        onLoad={() => setLoaded(true)}
                         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'
                             }`}
                         loading="lazy"
-                    /> */}
+                    />
                 </>
             )}
         </div>
