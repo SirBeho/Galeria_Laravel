@@ -18,4 +18,18 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    ExpiresActive On
+
+    # Imágenes WebP (el formato principal que estamos usando)
+    ExpiresByType image/webp "access plus 1 year"
+
+    # Otros formatos por si acaso
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+
+    # Archivos estáticos
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
 </IfModule>

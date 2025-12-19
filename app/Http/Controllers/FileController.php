@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage; // Importar para logging profesional
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class FileController extends Controller
 {
@@ -38,13 +40,14 @@ class FileController extends Controller
             'images.*.image' => 'Uno de los archivos no es un formato de imagen reconocido (JPG, PNG, GIF, etc.).',
             'images.*.max' => 'Uno de los archivos excede el tamaño máximo permitido de 5 MB.',
         ]);
-        
-        $disk = Storage::disk('gallery');
 
+        $manager = new ImageManager(new Driver());
+
+        $disk = Storage::disk('gallery');
         $mensajesExitosos = 0;
         $mensajesErrores = [];
-
         $maxNumber = $maxNumber = $this->getMaxImageNumber();
+
 
         $files = $request->file('images');
         foreach ($files as $index => $file) {
@@ -52,11 +55,27 @@ class FileController extends Controller
                 
                 $maxNumber++;
            
-                $name = $maxNumber.'.jpg';
+                $fileName = $maxNumber . '.webp';
+                $thumbName = $maxNumber . '_thumb.webp';
 
                 try {
-                    $disk->putFileAs('', $file, $name);
+                    //imagen es webp
+                    $image = $manager->read($file);
+                    $image->scale(width: 1600);
+                    $encodedFull = $image->toWebp(90);
+                    $disk->put($fileName, $encodedFull);
+
+
+                    $thumbnail = $manager->read($file);
+                    $thumbnail->cover(400, 400); 
+                
+                    $encodedThumb = $thumbnail->toWebp(60);
+                    $disk->put('thumbs/' . $thumbName, $encodedThumb);
+
+
+                    //$disk->putFileAs('', $file, $name);
                     $mensajesExitosos ++;
+                    unset($image, $thumbnail, $encodedFull, $encodedThumb);
                 } catch (\Exception $e) {
                     \Log::error("Error al subir imagen: " . $e->getMessage());
                     $mensajesErrores[] = "Error al subir el archivo: " . $file->getClientOriginalName();

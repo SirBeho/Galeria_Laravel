@@ -24,14 +24,30 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create']);
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
 
-    $filesHome = Storage::disk('gallery')->files(); 
-    $filesJuegos = Storage::disk('gallery')->files('juegos');
+    $allFilesHome = Cache::remember('gallery_home_files', 600, function () {
+        return array_reverse(Storage::disk('gallery')->files());
+    });
+
+    $allFilesJuegos = Cache::remember('gallery_juegos_files', 600, function () {
+        return array_reverse(Storage::disk('gallery')->files('juegos'));
+    });
+
+    // 2. Paginación Manual (Obtener el número de página de la URL)
+    $page = Request::get('page', 1);
+    $perPage = 100;
+    $offset = 0;
+    $limit = $page * $perPage;
+
+    // Cortamos el array para enviar solo 50
+    $imgHome = array_slice($allFilesHome, $offset, $limit);
+    $imgJuegos = array_slice($allFilesJuegos, 0, $offset + $perPage);
 
 
         return Inertia::render('Home', [
-            'imgHome' => array_reverse($filesHome),
-            'imgJuegos' => array_reverse($filesJuegos),
+            'imgHome' => $imgHome,
+            'imgJuegos' => $imgJuegos,
             'user' => auth()->user() ?? false,
+            'nextPage' => count($allFilesHome) > $limit ? $page + 1 : null,
         ]);
 })->name('home');
 

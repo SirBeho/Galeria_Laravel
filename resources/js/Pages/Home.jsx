@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/Layout";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage, router } from "@inertiajs/react";
 import React, { useState, useRef, useEffect } from "react"; // Agregué useEffect por si acaso
+
 
 // Contextos
 import { useCarrito } from '@/Contexts/CarritoContext';
@@ -17,16 +18,17 @@ import AvisoJuguetesProximos from "@/Components/AvisoJuguetesProximos";
 
 
 // eslint-disable-next-line no-unused-vars
-export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
+export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage }) {
 
     // --- CONTEXTOS ---
     const { agregarAlCarrito: contextAgregarAlCarrito } = useCarrito();
     const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
+    const observerRef = useRef();
     const { secondaryColor } = usePage().props.designSettings;
 
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
-
+    const [isFetching, setIsFetching] = useState(false);
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -56,6 +58,27 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
             setSelectedFiles([]);
         }
     }, [showEliminar]);
+
+    const [cargando, setCargando] = useState(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            // Solo dispara si es visible, hay página siguiente y NO estamos cargando ya
+            if (entries[0].isIntersecting && nextPage && !cargando) {
+                setCargando(true); // Bloqueamos nuevas entradas
+
+                router.get('/', { page: nextPage }, {
+                    preserveScroll: true,
+                    preserveState: true,
+                    only: ['imgHome', 'nextPage'],
+                    onFinish: () => setCargando(false) // Desbloqueamos al terminar
+                });
+            }
+        }, { threshold: 0.1 });
+
+        if (observerRef.current) observer.observe(observerRef.current);
+        return () => observer.disconnect();
+    }, [nextPage, cargando]);
 
 
     // --- LOGICA UI ---
@@ -210,6 +233,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
                             `}
                                 >
                                     <LazyLoadedImage file={`${galleryUrl}${file}`} />
+                                    {/* <LazyLoadedImage file={`${galleryUrl}thumbs/${file.replace('.webp', '_thumb.webp')}`} /> */}
                                     <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
                                     <span className="absolute top-2 left-4 text-black bg-white rounded-2xl px-2">--</span>
 
@@ -236,6 +260,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user }) {
                         )}
 
                 </div>
+                {nextPage && <div ref={observerRef} className="w-full h-10 flex justify-center">Cargando más...</div>}
             </div>
 
             <ProductDetailModal
