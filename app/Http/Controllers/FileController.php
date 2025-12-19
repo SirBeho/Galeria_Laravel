@@ -104,6 +104,8 @@ class FileController extends Controller
             'codigos.*' => 'string'
         ]); 
 
+      
+
         /** @var array<string> $files */
         $disk = Storage::disk('gallery'); // 🟢 Usar el disco
 
@@ -116,11 +118,10 @@ class FileController extends Controller
                 // 3. Verificar y Eliminar
                 $fileName =  $fileName;
 
-                if ($disk->exists($fileName)) {
 
                     // 2. Intentar Eliminar (Si existe, debería funcionar)
-                    if ($disk->delete($fileName)) {
-                        //Log::info("Archivo eliminado: " . $fileName);
+                    if ($disk->exists($fileName) && $disk->delete($fileName)) {
+                        Log::info("Archivo eliminado: " . $fileName);
                         $deletionSuccessful++;
                     } else {
                         var_dump('Fallo grave al eliminar archivo existente: '.$fileName);
@@ -128,7 +129,7 @@ class FileController extends Controller
                         Log::error('Fallo grave al eliminar archivo existente: '.$fileName);
                     }
 
-                }
+                
 
             }
 
