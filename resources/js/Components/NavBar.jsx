@@ -37,7 +37,8 @@ export default function NavBar({ user }) {
 
   // --- LÓGICA DE NAVEGACIÓN ---
   const { url } = usePage();
-  const isHome = url === '/';
+  const isHome = url.split('?')[0] === '/';
+  console.log(isHome)
 
   // Se ejecuta al cerrar el modal de pedido
   useEffect(() => {

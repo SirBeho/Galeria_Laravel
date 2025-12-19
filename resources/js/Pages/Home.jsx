@@ -25,10 +25,10 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
     const { verJuegos, estadoVisual, showEliminar, toggleDeleteMode } = useVisual();
     const observerRef = useRef();
     const { secondaryColor } = usePage().props.designSettings;
-
+    console.log(imgHome.length)
     // --- IMÁGENES ---
     const images = verJuegos ? Object.values(imgJuegos || []) : Object.values(imgHome || []);
-    const [isFetching, setIsFetching] = useState(false);
+
     // --- ESTADOS LOCALES ---
     const [openProdutM, setOpenProdutM] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -67,7 +67,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
             if (entries[0].isIntersecting && nextPage && !cargando) {
                 setCargando(true); // Bloqueamos nuevas entradas
 
-                router.get('/', { page: nextPage }, {
+                router.get('/', { ev: estadoVisual, page: nextPage }, {
                     preserveScroll: true,
                     preserveState: true,
                     only: ['imgHome', 'nextPage'],
@@ -78,7 +78,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
 
         if (observerRef.current) observer.observe(observerRef.current);
         return () => observer.disconnect();
-    }, [nextPage, cargando]);
+    }, [nextPage, cargando, estadoVisual]);
 
 
     // --- LOGICA UI ---

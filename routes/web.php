@@ -34,7 +34,12 @@ Route::get('/', function () {
 
     // 2. Paginación Manual (Obtener el número de página de la URL)
     $page = Request::get('page', 1);
+    $estado = (int) Request::get('ev', 0);
     $perPage = 100;
+    if ($estado == 0) {
+        $perPage = 99;
+    }
+   
     $offset = 0;
     $limit = $page * $perPage;
 

@@ -69,7 +69,7 @@ class FileController extends Controller
                     $thumbnail = $manager->read($file);
                     $thumbnail->cover(400, 400); 
                 
-                    $encodedThumb = $thumbnail->toWebp(60);
+                    $encodedThumb = $thumbnail->toWebp(65);
                     $disk->put('thumbs/' . $thumbName, $encodedThumb);
 
 
