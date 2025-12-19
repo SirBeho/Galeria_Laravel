@@ -156,7 +156,7 @@ class ImageUploadTest extends TestCase
         $response = $this->post(route('subir.imagen'), ['images' =>  ['file_0' => $file]]);
 
         // ASSERT:
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/home');
 
         // El disco debe estar vacío, excepto por los archivos iniciales que se crearon en setUp.
         // Pero el archivo de seguridad no debe existir.
