@@ -35,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
             // Usar Config::set() en lugar de la función helper config() es más robusto en Service Providers
             Config::set('settings', $settings); 
         }
+
     }
 }

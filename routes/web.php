@@ -72,9 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/panel', function () {
         return Inertia::render('Panel', [
             'pedidos' => Pedido::all()->sortBy('id')->load('detalle'),
-
             'user' => auth()->user() ?? [],
-            'vapidKey' => env('VAPID_PUBLIC_KEY')
+            'vapidKey' => config('services.webpush.public_key')
         ]);
     })->name('panel');
 
