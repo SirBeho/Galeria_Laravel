@@ -14,8 +14,6 @@ self.addEventListener('push', function (event) {
         console.warn('Recibido push sin JSON válido, usando fallback');
     }
 
-    console.log(data)
-
     const options = {
         body: data.body,
         vibrate: [100, 50, 100],

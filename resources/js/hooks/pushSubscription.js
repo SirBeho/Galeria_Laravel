@@ -8,11 +8,9 @@ export const pushSubscription = (vapidKey) => {
             return;
         }
 
-        console.log("suscripcion", vapidKey)
-
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('SW registrado en:', reg.scope))
+                .then(reg => console.log('SW registrado', reg.scope))
                 .catch(err => console.log('Error al registrar SW:', err));
         }
 
