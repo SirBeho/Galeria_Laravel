@@ -76,6 +76,8 @@ jobs:
         env:
           # 💡 Aseguramos que la URL base de Cypress apunte al servidor de pruebas de Laravel
           APP_URL: http://localhost:8000
+          CYPRESS_VITE_API_URL: http://localhost:8000
+          VITE_API_URL: http://localhost:8000
 
       - name: 🧹 10. Limpiar Dependencias de Desarrollo
         run: composer install --prefer-dist --no-dev --optimize-autoloader
