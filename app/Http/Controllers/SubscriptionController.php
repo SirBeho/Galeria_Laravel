@@ -51,9 +51,9 @@ class SubscriptionController extends Controller
 
         $auth = [
             'VAPID' => [
-                'subject' => config('services.webpush.subject'),
-                'publicKey' => config('services.webpush.public_key'),
-                'privateKey' => config('services.webpush.private_Key'),
+                'subject'    => config('services.webpush.subject'),
+                'publicKey'  => config('services.webpush.public_key'),
+                'privateKey' => config('services.webpush.private_key'),
             ],
         ];
 
