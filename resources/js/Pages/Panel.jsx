@@ -4,12 +4,18 @@ import React, { useEffect, useState } from "react";
 import { Head, useForm } from '@inertiajs/react';
 import { DataTable } from '@/Components/DataTable';
 import { format, parseISO } from 'date-fns';
+import { pushSubscription } from '@/hooks/pushSubscription';
 
 
 
 
+export default function Panel({ pedidos, user, vapidKey }) {
 
-export default function Panel({ pedidos, user }) {
+  const { subscribeUser } = pushSubscription(vapidKey);
+  useEffect(() => {
+    if (user) subscribeUser();
+  }, []);
+
 
 
   /*   window.addEventListener('popstate', function (event) {
@@ -25,10 +31,6 @@ export default function Panel({ pedidos, user }) {
 
     objeto.fecha2 = format(parseISO(objeto.fecha), 'dd/MM/yyyy').toString();
   });
-
-
-
-
 
   const [openProdutM, setOpenProdutM] = useState(false);
   const [loading, setLoading] = useState(false);

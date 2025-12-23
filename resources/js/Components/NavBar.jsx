@@ -38,13 +38,6 @@ export default function NavBar({ user }) {
   // --- LÓGICA DE NAVEGACIÓN ---
   const { url } = usePage();
   const isHome = url.split('?')[0] === '/';
-  console.log(isHome)
-
-  // Se ejecuta al cerrar el modal de pedido
-  useEffect(() => {
-    // //console.log('Carrito en Nav:', carrito);
-    // Si el CarritoComponente usa useCarrito(), este useEffect es redundante
-  }, [carrito]);
 
   // Lógica de WhatsApp consolidada
   const handleSendOrder = () => {

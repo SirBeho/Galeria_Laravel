@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\SubscriptionController;
 use App\Models\Pedido;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 */
 //5NG7RN5Q761CQ2Y5CCWKSXSJ
 Route::get('/login', [AuthenticatedSessionController::class, 'create']);
+
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
 Route::get('/', function () {
 
@@ -64,12 +66,15 @@ Route::post('/enviado', [PedidoController::class, 'sent'])->name('pedido.sent');
 Route::post('/estado', [PedidoController::class, 'status'])->name('pedido.status');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    
+    Route::post('/push-subscribe', [SubscriptionController::class, 'store'])->name('push.subscribe');
 
     Route::get('/panel', function () {
         return Inertia::render('Panel', [
             'pedidos' => Pedido::all()->sortBy('id')->load('detalle'),
 
             'user' => auth()->user() ?? [],
+            'vapidKey' => env('VAPID_PUBLIC_KEY')
         ]);
     })->name('panel');
 

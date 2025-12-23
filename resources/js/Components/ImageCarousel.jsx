@@ -12,7 +12,7 @@ export function ImageCarousel({ Imagename, onNext, onPrev, isFirst, isLast }) {
     const [startX, setStartX] = useState(0);
     const [dragDelta, setDragDelta] = useState(0);
 
-    const minSwipeDistance = 100; // Mínimo píxeles para cambiar de foto
+    const minSwipeDistance = 50; // Mínimo píxeles para cambiar de foto
 
     // --- HANDLERS DE NAVEGACIÓN ---
     const handlePrev = () => {

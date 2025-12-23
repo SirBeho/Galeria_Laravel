@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SubscriptionController;
 
 use function Laravel\Prompts\error;
 
@@ -65,6 +66,9 @@ class PedidoController extends Controller
             ]);
 
             $carrito = $request->carrito;
+            $totalArticulos = 0;
+        $resumenProductos = "";
+
             foreach ($carrito as $item) {
                 $pedido->detalle()->create([
                     'pedido' => $pedido->id,
@@ -72,13 +76,17 @@ class PedidoController extends Controller
                     'cantidad' => $item['cantidad'],
                     'comentario' => $item['comentario'],
                 ]);
+
+                $totalArticulos += $item['cantidad'];
             }
-           
-            $host = $_SERVER['HTTP_HOST'];
-            $dir = dirname($_SERVER['REQUEST_URI']);
-            $url = 'http://'.$host.$dir."pedido?p=$pedido->numero_pedido&key=$pedido->key";
+
+            // En tu controlador, reemplaza toda la lógica de $protocol y $host por esto:
+            $url = url("/pedido?p={$pedido->numero_pedido}&key={$pedido->key}");
             $whatsappMessage = "Este es mi pedido No. $pedido->numero_pedido \n Puedes acceder aqui --> $url";
             $whatsappLink = 'https://wa.me/18094624721/?text='.urlencode(str_replace('\\', '/', $whatsappMessage));
+
+            // --- LÓGICA DE NOTIFICACIÓN PUSH AL ADMIN ---
+            $this->Notificar($pedido);
 
             session()->flash('pedido_status', [
                 'message' => 'Pedido creado correctamente',
@@ -170,6 +178,28 @@ class PedidoController extends Controller
         curl_close($curl);
 
         return $response;
+    }
+
+    private function Notificar($pedido){
+        try {
+            $adminId = 1; // ID del administrador
+            
+            $tituloPush = "🛍️ ¡Nuevo Pedido #{$pedido->numero_pedido}!";
+            $url = url("/pedido?p={$pedido->numero_pedido}&key={$pedido->key}");
+            
+            // Creamos un cuerpo con el nombre del cliente y el total de artículos
+            $totalArticulos = collect($pedido->detalle)->sum('cantidad');
+            $mensajePush = "Cliente: {$pedido->nombre}\nTelefono: {$pedido->telefono}\nTotal artículos: {$totalArticulos}\nPulsa para ver detalles.";
+
+            // Enviamos la notificación
+            $push = new SubscriptionController();
+            $push->sendPush($adminId, $tituloPush, $mensajePush, $url);
+
+        } catch (\Exception $e) {
+            Log::error('Error enviando push al admin: ' . $e->getMessage());
+        }
+        // --------------------------------------------
+
     }
 
     public function sent(Request $request)

@@ -63,6 +63,7 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
 -   **Integración con WhatsApp:** Sistema de "Checkout" que genera un resumen detallado del pedido y redirige automáticamente al cliente a WhatsApp para finalizar la compra directamente con el vendedor.
 -   **Modales Interactivos:** Uso de ventanas modales para ver detalles de productos, confirmar acciones y gestionar el carrito sin salir de la galería.
 -   **Enlaces de Seguimiento Seguro:** Generación de URLs únicas protegidas por tokens de seguridad (key), permitiendo a los clientes consultar el detalle de su pedido sin necesidad de crear una cuenta de usuario.
+-   **Notificaciones Tiempo Real:** Generacion de notificacion al navegador del admin mediante el protocolo WebPush al generarse un pedido, permitiendo ver detalles del pedido incluso con el navegador cerrado.
 
 ### 3. Administración y Gestión
 
@@ -71,6 +72,8 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
 -   **Seguridad:** Rutas protegidas mediante _Middleware_ de autenticación de Laravel para asegurar que solo los administradores puedan modificar el catálogo.
 
 ---
+
+## ⚙️ Tecnologías Utilizadas
 
 ### <img src="https://simpleskill.icons.workers.dev/svg?i=react" height="40">  Frontend & UI
 
@@ -82,6 +85,8 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
     -   Framework de estilos "utility-first" para un diseño rápido y responsivo.
 -   **<img src="https://skillicons.dev/icons?i=js" height="25">  Headless UI & Flowbite**
     -   Componentes accesibles (Modales, Menús) integrados perfectamente con Tailwind.
+-   **<img src="./public/serviceworker.svg" height="25">  Service Workers API**
+    -   Gestión de eventos en segundo plano que permite recibir y mostrar notificaciones incluso cuando la aplicación no está abierta en el navegador.
 
 ---
 
@@ -95,6 +100,8 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
     -   Gestión avanzada de discos y almacenamiento de imágenes.
 -   **<img src="./public/intervencion.svg" height="25">  Intervention Image**
     -   Motor de procesamiento para la manipulación y optimización de recursos gráficos.
+-   **<img src="./public/webpush.svg" height="25">  Web-Push**
+    -   Gestión de notificaciones cifradas desde el servidor Laravel.
 
 ---
 
