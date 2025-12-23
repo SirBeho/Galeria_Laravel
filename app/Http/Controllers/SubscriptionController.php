@@ -51,9 +51,9 @@ class SubscriptionController extends Controller
 
         $auth = [
             'VAPID' => [
-                'subject' => env('VAPID_SUBJECT', 'mailto:tu@email.com'),
-                'publicKey' => env('VAPID_PUBLIC_KEY'),
-                'privateKey' => env('VAPID_PRIVATE_KEY'),
+                'subject' => config('services.webpush.subject'),
+                'publicKey' => config('services.webpush.public_key'),
+                'privateKey' => config('services.webpush.private_Key'),
             ],
         ];
 
