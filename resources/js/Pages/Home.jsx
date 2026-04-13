@@ -17,7 +17,7 @@ import { ProductDetailModal } from '@/Components/ProductDetailModal';
 import AvisoJuguetesProximos from "@/Components/AvisoJuguetesProximos";
 
 // Imágenes
-import Overlay from "@/Assets/images/overlay.png";
+import Overlay from "@/assets/images/overlay.png";
 
 
 // eslint-disable-next-line no-unused-vars
