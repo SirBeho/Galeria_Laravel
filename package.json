@@ -7,7 +7,8 @@
         "cy:run": "cypress run",
         "db:test:refresh": "php artisan migrate:fresh --env=testing --seed",
         "serve:test": "php artisan serve --env=testing --quiet",
-        "test": "npm run build && npm run db:test:refresh && start-server-and-test serve:test http://localhost:8000 cy:run"
+        "test": "npm run build && npm run db:test:refresh && start-server-and-test serve:test http://localhost:8000 cy:run",
+        "galeria": "php artisan serve --host=0.0.0.0 --port=8000 --env=local"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",

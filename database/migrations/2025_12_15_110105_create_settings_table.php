@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique(); // Ej: 'color_primario'
+            $table->string('key'); // Ej: 'color_primario'
             $table->text('value')->nullable(); // Ej: '#B91C1C'
+            $table->integer('month')->default(1); 
+          //  $table->unique(['key', 'month']);
             $table->timestamps();
         });
     }

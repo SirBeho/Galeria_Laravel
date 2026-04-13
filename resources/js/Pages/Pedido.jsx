@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Head, Link, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { useEffect } from 'react';
+import Overlay from "@/Assets/images/overlay.png";
 
 export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
 
@@ -172,7 +173,7 @@ export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
         <div className='flex justify-center bg-slate-100 p-2 rounded-md'>
           <div className="relative rounded-[0.5rem] overflow-hidden w-fit-content">
             <img id="modal-image" src={`${modalImg}`} className="img-fluid" alt="Imagen del artículo" />
-            <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
+            <img className="w-32 absolute bottom-0 left-0" src={Overlay} alt="Logo" />
             <span id="modal-codigo" className="absolute top-10 left-16 text-black bg-white rounded-8 px-5"></span>
           </div>
         </div>

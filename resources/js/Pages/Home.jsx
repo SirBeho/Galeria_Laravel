@@ -16,6 +16,9 @@ import LazyLoadedImage from "@/Components/LazyLoadedImage";
 import { ProductDetailModal } from '@/Components/ProductDetailModal';
 import AvisoJuguetesProximos from "@/Components/AvisoJuguetesProximos";
 
+// Imágenes
+import Overlay from "@/Assets/images/overlay.png";
+
 
 // eslint-disable-next-line no-unused-vars
 export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage }) {
@@ -234,7 +237,7 @@ export default function Home({ imgHome, imgJuegos, galleryUrl, user, nextPage })
                                 >
                                     <LazyLoadedImage file={`${galleryUrl}${file}`} />
                                     {/* <LazyLoadedImage file={`${galleryUrl}thumbs/${file.replace('.webp', '_thumb.webp')}`} /> */}
-                                    <img className="w-32 absolute bottom-0 left-0" src="logo.png" alt="Logo" />
+                                    <img className="w-32 absolute bottom-0 left-0" src={Overlay} alt="Logo" />
                                     <span className="absolute top-2 left-4 text-black bg-white rounded-2xl px-2">--</span>
 
                                     {/* 🟢 Indicador Visual de Selección (Checkbox/Círculo) */}

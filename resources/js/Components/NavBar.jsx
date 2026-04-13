@@ -8,6 +8,12 @@ import { useCarrito } from '@/Contexts/CarritoContext';
 import { useVisual } from '@/Contexts/VisualContext';
 import axios from 'axios';
 
+import tres from '@/assets/icons/tres.svg';
+import dos from '@/assets/icons/dos.svg';
+import uno from '@/assets/icons/uno.svg';
+import carrito_svg from '@/assets/icons/carrito.svg';
+
+
 
 export default function NavBar({ user }) {
 
@@ -71,7 +77,7 @@ export default function NavBar({ user }) {
           <div className="h-full flex items-center gap-4 ">
             {/* Logo */}
             <Link href={route('home')} onClick={() => setVerJuegos(false)} className="h-full flex gap-3 items-center cursor-pointer hover:scale-105 rounded-md">
-              <img src={logoUrl} className="h-full w-auto" alt="" />
+              <img src={logoUrl} className="h-full w-auto" alt="" onError={(e) => { e.target.onerror = null; e.target.src = "/assets/favicon.png"; }} />
               <div className="text-white text-xl md:text-2xl w-auto hidden sm:block ">Mundo del Cumpleaños  </div> {/* Ocultar título en móvil, mostrar en sm+ */}
             </Link>
             {/* Toggle JUGUETES/TODOS (Solo en Home) */}
@@ -93,7 +99,7 @@ export default function NavBar({ user }) {
                 data-cy="cart-button" style={{ backgroundColor: secondaryColor }}
                 className="bg-blue-600 rounded-md p-1 scale-75 md:scale-100 flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-700"
                 onClick={() => setIsCartModalOpen(true)}>
-                <img src="carrito.svg" alt="Carrito" className="w-5 h-5" />
+                <img src={carrito_svg} alt="Carrito" className="w-5 h-5" />
                 <span data-cy="cart-count-badge" id="cart-count" className="text-black bg-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
                   {carrito.length}
                 </span>
@@ -112,9 +118,9 @@ export default function NavBar({ user }) {
             {isHome && (
               <button data-cy="toggle-view-btn"
                 className=" h-4 w-4 self-center cursor-pointer hover:scale-110" onClick={cycleEstadoVisual}>
-                {estadoVisual === 0 && <img src="tres.svg" alt="grande" />}
-                {estadoVisual === 1 && <img src="dos.svg" alt="mediano" />}
-                {estadoVisual === 2 && <img src="uno.svg" alt="pequeno" />}
+                {estadoVisual === 0 && <img src={tres} alt="grande" />}
+                {estadoVisual === 1 && <img src={dos} alt="mediano" />}
+                {estadoVisual === 2 && <img src={uno} alt="pequeno" />}
               </button>)}
           </div>
         </div>

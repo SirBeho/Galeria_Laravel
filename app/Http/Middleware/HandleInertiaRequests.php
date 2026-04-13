@@ -50,7 +50,7 @@ class HandleInertiaRequests extends Middleware
                 'pedido_status' => fn () => $request->session()->get('pedido_status'),
             ],
             'designSettings' =>[
-                'logoUrl'=> config('settings.imagen_principal_code', 'favico.png'),
+                'logoUrl'=> 'assets/'.config('settings.imagen_principal_code', 'favico.png'),
                 'primaryColor'=> config('settings.color_primario', '#2563EB'),
                 'secondaryColor'=> config('settings.color_secundario', '#2563EB'),
             ],

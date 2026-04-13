@@ -16,9 +16,9 @@ class FileSeeder extends Seeder
         $dummyContent = 'This is a test image file content.';
         
         // Si necesitas un archivo más realista, puedes usar un archivo binario pequeño:
-        $disk->put('test_1.png', file_get_contents(public_path('navidad.png')));
-        $disk->put('test_2.png', file_get_contents(public_path('navidad.png')));
-        $disk->put('test_3.png', file_get_contents(public_path('navidad.png')));
+        $disk->put('test_1.png', file_get_contents(public_path('assets/favicon.png')));
+        $disk->put('test_2.png', file_get_contents(public_path('assets/favicon.png')));
+        $disk->put('test_3.png', file_get_contents(public_path('assets/favicon.png')));
 
         //$this->command->info('✅ Archivos de prueba creados en el disco "gallery".');
         $this->command->info('✅ Archivos Creados".');

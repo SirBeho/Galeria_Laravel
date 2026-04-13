@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/github/license/SirBeho/Galeria_Laravel) ![Last Commit](https://img.shields.io/github/last-commit/SirBeho/Galeria_Laravel)
 
 <p align="left">
-  <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=laravel,php,react,tailwindcss,vite,cypress&perline=14"/></a>&nbsp;<a><img src="./public/mysql.svg" width="48px"/>&nbsp;<img src="./public/phpunit.svg" width="48px" /></a>&nbsp;<a><img src="./public/filesystem.svg" width="48px" /></a>&nbsp;<a><img src="https://skillicons.dev/icons?i=githubactions,git,js,linux,github,vscode&perline=14" /></a>
+  <a href="https://skillicons.dev"><img src="https://skillicons.dev/icons?i=laravel,php,react,tailwindcss,vite,cypress&perline=14"/></a>&nbsp;<a><img src="./docs/svg/mysql.svg" width="48px"/>&nbsp;<img src="./docs/svg/phpunit.svg" width="48px" /></a>&nbsp;<a><img src="./docs/svg/filesystem.svg" width="48px" /></a>&nbsp;<a><img src="https://skillicons.dev/icons?i=githubactions,git,js,linux,github,vscode&perline=14" /></a>
 </p>
 
 ## Índice
@@ -38,13 +38,13 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
 
 ## 📸 Capturas de Pantalla
 
-|        Galería Principal        |       Detalle de Producto (Modal)        |
-| :-----------------------------: | :--------------------------------------: |
-| ![Home View](./public/home.png) | ![Modal View](./public/modal_tablet.png) |
+|          Galería Principal           |          Detalle de Producto (Modal)          |
+| :----------------------------------: | :-------------------------------------------: |
+| ![Home View](./docs/images/home.png) | ![Modal View](./docs/images/modal_tablet.png) |
 
-|         Carrito de Pedidos         |               Vista Móvil                |
-| :--------------------------------: | :--------------------------------------: |
-| ![Cart View](./public/carrito.png) | ![Mobile View](./public/home_tablet.png) |
+|           Carrito de Pedidos            |                  Vista Móvil                  |
+| :-------------------------------------: | :-------------------------------------------: |
+| ![Cart View](./docs/images/carrito.png) | ![Mobile View](./docs/images/home_tablet.png) |
 
 ---
 
@@ -85,7 +85,7 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
     -   Framework de estilos "utility-first" para un diseño rápido y responsivo.
 -   **<img src="https://skillicons.dev/icons?i=js" height="25">  Headless UI & Flowbite**
     -   Componentes accesibles (Modales, Menús) integrados perfectamente con Tailwind.
--   **<img src="./public/serviceworker.svg" height="25">  Service Workers API**
+-   **<img src="./docs/svg/serviceworker.svg" height="25">  Service Workers API**
     -   Gestión de eventos en segundo plano que permite recibir y mostrar notificaciones incluso cuando la aplicación no está abierta en el navegador.
 
 ---
@@ -96,11 +96,11 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
     -   Framework PHP robusto para la lógica del servidor, enrutamiento y seguridad.
 -   **<img src="https://skillicons.dev/icons?i=php" height="25">  PHP 8.2**
     -   Lenguaje base del servidor.
--   **<img src="./public/filesystem.svg" height="25"/>  Illuminate/Filesystem**
+-   **<img src="./docs/svg/filesystem.svg" height="25"/>  Illuminate/Filesystem**
     -   Gestión avanzada de discos y almacenamiento de imágenes.
--   **<img src="./public/intervencion.svg" height="25">  Intervention Image**
+-   **<img src="./docs/svg/intervencion.svg" height="25">  Intervention Image**
     -   Motor de procesamiento para la manipulación y optimización de recursos gráficos.
--   **<img src="./public/webpush.svg" height="25">  Web-Push**
+-   **<img src="./docs/svg/webpush.svg" height="25">  Web-Push**
     -   Gestión de notificaciones cifradas desde el servidor Laravel.
 
 ---
@@ -122,7 +122,7 @@ El sistema está optimizado para manejar grandes volúmenes de imágenes con un 
     -   Entorno de desarrollo con extensiones para PHP y React.
 -   **<img src="https://skillicons.dev/icons?i=cypress" height="25">  Cypress**
     -   Testing End-to-End (E2E) para automatización de navegadores y pruebas de integración.
--   **<img src="./public/phpunit.svg" height="25">  PHPUnit**
+-   **<img src="./docs/svg/phpunit.svg" height="25">  PHPUnit**
     -   Framework de pruebas unitarias y de características para la lógica del backend.
 -   **<img src="https://skillicons.dev/icons?i=vite" height="25">  Vite**
     -   Empaquetador de módulos de próxima generación para un desarrollo frontend ultrarrápido.

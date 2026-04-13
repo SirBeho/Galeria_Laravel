@@ -33,12 +33,12 @@ export default function Login({ status, canResetPassword }) {
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
-            <div className="w-full p-5 md:p-10 z-20 ">
+            <div className="  w-full h-full bg-red-50  p-10  flex flex-col xl:justify-center items-center   overflow-y-auto">
 
-                <div className="flex flex-col justify-center md:flex-row md:space-x-10">
+                <div className="z-20 flex flex-col  justify-center md:flex-row md:space-x-10">
 
-                    <div className="flex items-center justify-center">
-                        <form onSubmit={submit} className="bg-offwhite flex flex-col w-full md:w-fit h-fit p-8 rounded-lg">
+                    <div className="flex h-full items-center ju stify-center">
+                        <form onSubmit={submit} className="bg-offwhite flex flex-col w-full md:w-fit h-fit p-3 md:p-8 rounded-lg">
                             <h2 className="text-darkblue font-bold text-3xl px-5 text-center py-5">Login</h2>
                             <div>
                                 <label htmlFor="email" className="text-sm text-darkblue font-medium">Correo</label>
@@ -57,14 +57,14 @@ export default function Login({ status, canResetPassword }) {
                                 <InputError message={errors.password} className="mt-2" />
                             </div>
                             <div className="block mt-4">
-                                <label className="flex items-center">
+                                <div className="flex items-center">
                                     <Checkbox
                                         name="remember"
                                         checked={data.remember}
                                         onChange={(e) => setData('remember', e.target.checked)}
                                     />
                                     <span className="ml-2 text-sm text-gray-600">Remember me</span>
-                                </label>
+                                </div>
                             </div>
                             <button data-cy="login-submit-btn" type="submit" className="h-9 w-full bg-softblue mt-5 text-white font-bold text-xl">INGRESAR</button>
                             <a className='mt-4 hover:underline block  ' href="https://xn--mundodelcumpleao-lub.com/">← Ir al Catalogo</a>
