@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Head, Link, useForm } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { useEffect } from 'react';
-import Overlay from "@/assets/images/Watermark.png";
+import Overlay from "@/assets/images/watermark.png";
 
 export default function Pedido({ pedido, user, mensaje, galleryUrl }) {
 
