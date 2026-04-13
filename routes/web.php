@@ -7,6 +7,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Models\Pedido;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 
@@ -83,12 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/limpiar-cache', function () {
         try {
-            Cache::forget('app_settings');
-            Artisan::call('config:clear');
-            Artisan::call('view:clear');
-
-            Cache::forget('gallery_home_files');
-            Cache::forget('gallery_juegos_files');
+            Artisan::call('app:clean-cache');
 
             return back()->with('msj' ,[
                 'success'=> 'La caché de la configuración del diseño ha sido actualizada.',

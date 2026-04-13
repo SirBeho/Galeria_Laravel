@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('app:clean-cache')->monthly();
     }
+    //0 0 1 * * php artisan app:clean-app-cache
 
     /**
      * Register the commands for the application.
