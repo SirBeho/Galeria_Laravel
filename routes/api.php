@@ -26,7 +26,7 @@ Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
     if ($expectedToken === '' || !hash_equals($expectedToken, $providedToken)) {
         return response()->json([
             'status' => 'error',
-            'message' => 'Token inválido o DEPLOY_CLEAN_TOKEN no configurado.',
+            'message' => 'Token invalido o DEPLOY_CLEAN_TOKEN no configurado.',
         ], 403);
     }
 
