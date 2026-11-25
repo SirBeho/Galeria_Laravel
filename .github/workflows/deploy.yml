@@ -203,13 +203,15 @@ jobs:
 
       # 2. Camino A: Si SSH responde, ejecuta el script tradicional
       - name: 🔐 15A. Tareas Finales por SSH
-        if: steps.check-ssh.outputs.available == 'true'
+        id: ssh-deploy
+        continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           port: 65002
           key: ${{ secrets.PRIVATE_KEY_SSH }}
+          command_timeout: 20s
 
           script: |
             # --- CONFIGURACIÓN DE RUTAS ---
@@ -247,10 +249,10 @@ jobs:
 
             echo "🚀 ¡Despliegue completado con éxito!"
       # 3. Camino B: Si SSH falla o está deshabilitado, ejecuta vía Webhook HTTP
-      - name: 🌐 15B. Tareas Finales vía HTTP (Respaldo)
-        if: steps.check-ssh.outputs.available != 'true'
+      - name: 🌐 15b. Tareas Finales vía HTTP (Respaldo)
+        if: steps.ssh-deploy.outcome != 'success'
         run: |
-          echo "🚀 Ejecutando tareas post-despliegue mediante Webhook seguro..."
+          echo "⚠️ SSH falló o no está habilitado para este usuario. Ejecutando respaldo HTTP..."
           curl --fail --silent --show-error -X POST "https://${{ env.APP_URL_PROD }}/api/deploy-post-tasks" \
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_CLEAN_TOKEN }}" \
             -H "Accept: application/json"

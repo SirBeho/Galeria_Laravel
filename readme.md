@@ -351,3 +351,8 @@ Este proyecto es de código abierto y está disponible bajo la **[Licencia MIT](
   </tr>
   </tbody>
 </table>
+
+notasÑ
+
+Crear crom job
+crear cuenta ftp superior
