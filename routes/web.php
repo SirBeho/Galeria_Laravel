@@ -5,14 +5,12 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\SubscriptionController;
 use App\Models\Pedido;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File; // Add this line
-use Illuminate\Support\Facades\Storage;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -101,8 +99,6 @@ Route::post('/deploy-post-tasks', function (Request $request) {
 
     return response()->json(['status' => 'ok', 'tasks' => $log]);
 });
-
-
 Route::get('/pedido', [PedidoController::class, 'index'])->name('pedido.view');
 Route::post('/notificacion', [PedidoController::class, 'notificacion_whatsapp'])->name('notificacion');
 
