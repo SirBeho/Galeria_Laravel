@@ -5,21 +5,23 @@ on:
     branches: ["master"]
   workflow_dispatch:
 
-jobs:
-  deploy:
-    name: Build & Deploy
-    runs-on: ubuntu-latest
+# Variables de entorno globales
+env:
+  APP_URL_PROD: xn--mundodelcumpleao-lub.com
+  DEPLOY_CLEAN_TOKEN: ${{ secrets.DEPLOY_CLEAN_TOKEN }}
 
-    # Variables de entorno globales para el Job
-    env:
-      APP_URL_PROD: xn--mundodelcumpleao-lub.com
-      DEPLOY_CLEAN_TOKEN: ${{ secrets.DEPLOY_CLEAN_TOKEN }}
+jobs:
+  # ======================================================
+  # JOB 1: PRUEBAS DE CALIDAD (PHPUNIT + CYPRESS)
+  # ======================================================
+  quality-gates:
+    name: 🧪 1. Pruebas (Backend & E2E)
+    runs-on: ubuntu-latest
 
     steps:
       # ======================================================
       # FASE 1: CONFIGURACIÓN Y CONSTRUCCIÓN (BUILD)
       # ======================================================
-
       - name: 📥 1. Descargar Código Fuente
         uses: actions/checkout@v4
 
@@ -79,6 +81,23 @@ jobs:
           CYPRESS_VITE_API_URL: http://localhost:8000
           VITE_API_URL: http://localhost:8000
 
+  # ======================================================
+  # JOB 2: EMPAQUETADO DE PRODUCCIÓN (ARTIFACT)
+  # ======================================================
+  build-artifact:
+    name: 📦 2. Compilar y Empaquetar
+    needs: quality-gates # Solo corre si pasan las pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐘 Configurar PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo_mysql, dom, curl, mbstring, zip
+          tools: composer
+
       - name: 🧹 10. Limpiar Dependencias de Desarrollo
         run: composer install --prefer-dist --no-dev --optimize-autoloader
 
@@ -89,6 +108,11 @@ jobs:
         run: |
           echo "Comprimiendo vendor para acelerar subida FTP..."
           zip -r vendor.zip vendor/
+
+      - name: 🎨 Compilar Assets (Vite)
+        run: |
+          npm ci
+          npm run build
 
       # ======================================================
       # FASE 3: LIMPIEZA PRE-DESPLIEGUE Y DESPLIEGUE
@@ -104,10 +128,30 @@ jobs:
           # rm -rf resources/js # Opcional si solo necesitas el build
           # rm -rf resources/js
 
-      # ======================================================
-      # FASE 3: DESPLIEGUE (FTP)
-      # ======================================================
+      - name: 📤 Guardar Artifact listo para desplegar
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-package
+          path: |
+            .
+            !.git*
+            !.github
+            !.env*
+          retention-days: 1 # Se borra solo en 24h para no gastar espacio
 
+  # ======================================================
+  # JOB 3: DESPLIEGUE A HOSTINGER (REINTENTABLE SIN COMPILAR)
+  # ======================================================
+   deploy:
+    name: 🚀 3. Subir a Hostinger
+    needs: build-artifact # Espera el paquete compilado
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Descargar paquete compilado
+        uses: actions/download-artifact@v4
+        with:
+          name: release-package
+                 
       - name: 📤 13. Subir Backend (Core de Laravel)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
