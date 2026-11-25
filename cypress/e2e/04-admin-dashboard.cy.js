@@ -5,8 +5,8 @@ const { select } = require("@material-tailwind/react");
 
 describe('Verificación de Contenido y Datos del Panel de Administración', () => {
 
-    const USER_EMAIL = Cypress.env('adminUser').email;
-    const USER_PASSWORD = Cypress.env('adminUser').password;
+    const USER_EMAIL = Cypress.expose('adminUser').email;
+    const USER_PASSWORD = Cypress.expose('adminUser').password;
 
     // ----------------------------------------------------------------------
     // 1. ANTES DE CADA TEST: Autenticación Rápida
