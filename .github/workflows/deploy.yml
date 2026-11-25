@@ -144,7 +144,22 @@ jobs:
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH)
       # ======================================================
-      - name: 🔐 15. Tareas Finales por SSH
+
+      # 1. Sonda de disponibilidad del puerto SSH (máximo 5 segundos)
+      - name: 🔍 15 Verificar disponibilidad de SSH
+        id: check-ssh
+        run: |
+          if nc -z -w 5 "${{ secrets.SSH_HOST }}" 65002 2>/dev/null; then
+            echo "available=true" >> $GITHUB_OUTPUT
+            echo "✅ Puerto SSH 65002 abierto y disponible."
+          else
+            echo "available=false" >> $GITHUB_OUTPUT
+            echo "⚠️ SSH no disponible o bloqueado. Se usará el método HTTP de respaldo."
+          fi
+
+      # 2. Camino A: Si SSH responde, ejecuta el script tradicional
+      - name: 🔐 15A. Tareas Finales por SSH
+        if: steps.check-ssh.outputs.available == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -187,3 +202,13 @@ jobs:
             php artisan optimize 
 
             echo "🚀 ¡Despliegue completado con éxito!"
+      # 3. Camino B: Si SSH falla o está deshabilitado, ejecuta vía Webhook HTTP
+      - name: 🌐 15B. Tareas Finales vía HTTP (Respaldo)
+        if: steps.check-ssh.outputs.available != 'true'
+        run: |
+          echo "🚀 Ejecutando tareas post-despliegue mediante Webhook seguro..."
+          curl --fail --silent --show-error -X POST "https://${{ env.APP_URL_PROD }}/api/deploy-post-tasks" \
+            -H "X-Deploy-Token: ${{ secrets.DEPLOY_CLEAN_TOKEN }}" \
+            -H "Accept: application/json"
+          echo ""
+          echo "✅ Despliegue completado mediante respaldo HTTP."
