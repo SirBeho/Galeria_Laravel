@@ -253,7 +253,7 @@ jobs:
         if: steps.ssh-deploy.outcome != 'success'
         run: |
           echo "⚠️ SSH falló o no está habilitado para este usuario. Ejecutando respaldo HTTP..."
-          curl --fail --silent --show-error -X POST "https://${{ env.APP_URL_PROD }}/api/deploy-post-tasks" \
+          curl --fail --silent --show-error -X POST "https://${{ env.APP_URL_PROD }}/deploy-post-tasks" \
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_CLEAN_TOKEN }}" \
             -H "Accept: application/json"
           echo ""
