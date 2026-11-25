@@ -356,3 +356,4 @@ notasÑ
 
 Crear crom job
 crear cuenta ftp superior
+quitar el symlink, link, de disable functions

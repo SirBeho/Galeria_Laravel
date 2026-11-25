@@ -93,6 +93,7 @@ Route::post('/deploy-post-tasks', function (Request $request) {
     }
 
     // 3. Limpiar y optimizar caché
+    Artisan::call('app:clean-cache');
     Artisan::call('optimize:clear');
     Artisan::call('optimize');
     $log[] = 'Caché limpia y optimizada.';
