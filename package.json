@@ -4,10 +4,10 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "cy:run": "cypress run",
         "db:test:refresh": "php artisan migrate:fresh --env=testing --seed",
-        "serve:test": "php artisan serve --env=testing --quiet",
-        "test": "npm run build && npm run db:test:refresh && start-server-and-test serve:test http://localhost:8000 cy:run",
+        "serve:test": "php artisan serve --host=127.0.0.1 --port=8000 --env=testing",
+        "cy:run": "cypress run",
+        "test": "npm run build && npm run db:test:refresh && start-server-and-test serve:test http-get://127.0.0.1:8000 cy:run",
         "galeria": "php artisan serve --host=0.0.0.0 --port=8000 --env=local"
     },
     "devDependencies": {
