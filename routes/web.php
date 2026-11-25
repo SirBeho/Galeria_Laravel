@@ -60,7 +60,7 @@ Route::get('/', function () {
         ]);
 })->name('home');
 
-Route::post('/deploy-post-tasks', function (Request $request) {
+Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
     set_time_limit(300); // Evita cortes si vendor.zip es pesado
 
     $token = $request->bearerToken() ?? $request->header('X-Deploy-Token');
