@@ -64,6 +64,23 @@ jobs:
       # FASE 2: QUALITY GATES (PRUEBAS UNIFICADAS)
       # ======================================================
 
+      - name: 🧪 8. Ejecutar Pruebas PHPUnit (Backend Quality Gate)
+        run: |
+          # Crea el archivo testing.sqlite si no existe.
+          touch database/testing.sqlite
+          # 🛑 Usamos el .env de PRUEBAS para aislar los datos.
+          php artisan migrate:fresh --env=testing --force
+          php artisan test --stop-on-failure
+
+      # 💥 NUEVO PASO: EJECUCIÓN DE PRUEBAS E2E (CYPRESS)
+      - name: 💻 9. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
+        run: npm run test
+        env:
+          # 💡 Aseguramos que la URL base de Cypress apunte al servidor de pruebas de Laravel
+          APP_URL: http://localhost:8000
+          CYPRESS_VITE_API_URL: http://localhost:8000
+          VITE_API_URL: http://localhost:8000
+
   # ======================================================
   # JOB 2: EMPAQUETADO DE PRODUCCIÓN (ARTIFACT)
   # ======================================================
