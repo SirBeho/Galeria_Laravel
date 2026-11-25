@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +19,49 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
+    $expectedToken = (string) env('DEPLOY_CLEAN_TOKEN', '');
+    $providedToken = (string) $request->header('X-Deploy-Token', '');
+
+    if ($expectedToken === '' || !hash_equals($expectedToken, $providedToken)) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Token inválido o DEPLOY_CLEAN_TOKEN no configurado.',
+        ], 403);
+    }
+
+    try {
+        $steps = [];
+
+        // 1. Descomprimir vendor.zip si existe en la raíz del proyecto
+        $zipPath = base_path('vendor.zip');
+        if (is_file($zipPath)) {
+            $zip = new \ZipArchive();
+            if ($zip->open($zipPath) !== true) {
+                throw new \RuntimeException('No se pudo abrir vendor.zip');
+            }
+            $zip->extractTo(base_path());
+            $zip->close();
+            @unlink($zipPath);
+            $steps[] = 'vendor.zip descomprimido y eliminado';
+        }
+
+        // 2. Ejecutar limpieza de caché y enlaces simbólicos
+        foreach (['app:clean-cache', 'storage:link-html', 'optimize:clear'] as $command) {
+            Artisan::call($command);
+            $output = trim(Artisan::output());
+            $steps[] = $output !== '' ? "{$command}: {$output}" : "{$command}: OK";
+        }
+
+        return response()->json([
+            'status' => 'ok',
+            'steps' => $steps,
+        ], 200);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'file' => basename($e->getFile()) . ':' . $e->getLine(),
+        ], 500);
+    }
+})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);

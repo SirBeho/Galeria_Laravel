@@ -20,6 +20,25 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
     require $maintenance;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| Check If The Vendor Directory Exists
+|--------------------------------------------------------------------------
+|
+| If the vendor directory does not exist, it means that the application
+| dependencies have not been installed. In this case, we will return a
+| 503 Service Unavailable response with a JSON message indicating that
+| the vendor directory is missing and needs to be extracted.
+|
+*/
+
+if (!is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require __DIR__ . '/deploy-tasks.php';
+}
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

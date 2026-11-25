@@ -197,8 +197,8 @@ jobs:
       - name: 🌐 15B. Tareas Finales vía HTTP (Respaldo)
         if: steps.ssh-deploy.outcome != 'success'
         run: |
-          echo "⚠️ Ejecutando tareas post-despliegue vía HTTP..."
-          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "https://${{ env.APP_URL_PROD }}/deploy-tasks.php" \
+          echo "🚀 Ejecutando tareas post-despliegue en Laravel..."
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "https://${{ env.APP_URL_PROD }}/api/deploy-post-tasks" \
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_CLEAN_TOKEN }}" \
             -H "Accept: application/json")
           HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
