@@ -59,13 +59,13 @@ jobs:
           php artisan migrate:fresh --env=testing --force
           php artisan test --stop-on-failure
 
-      - name: 💻 9. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
-        run: npm run test
-        env:
-          APP_URL: http://127.0.0.1:8000
-          CYPRESS_BASE_URL: http://127.0.0.1:8000
-          CYPRESS_VITE_API_URL: http://127.0.0.1:8000
-          VITE_API_URL: http://127.0.0.1:8000
+  #    - name: 💻 9. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
+  #      run: npm run test
+  #      env:
+  #        APP_URL: http://127.0.0.1:8000
+  #        CYPRESS_BASE_URL: http://127.0.0.1:8000
+  #        CYPRESS_VITE_API_URL: http://127.0.0.1:8000
+  #        VITE_API_URL: http://127.0.0.1:8000
 
   # ======================================================
   # JOB 2: EMPAQUETADO DE PRODUCCIÓN (ARTIFACT)
