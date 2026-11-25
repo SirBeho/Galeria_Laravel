@@ -55,14 +55,10 @@ Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
             storage_path('framework/views'),
             storage_path('logs'),
         ];
-
-
+        
         foreach ($requiredDirs as $dir) {
             if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
                 throw new \RuntimeException("No se pudo crear el directorio: {$dir}");
-            }
-            if (!is_writable($dir)) {
-                @chmod($dir, 0775);
             }
         }
 
