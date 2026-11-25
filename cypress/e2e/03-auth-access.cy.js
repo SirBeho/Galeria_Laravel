@@ -2,8 +2,8 @@
 
 describe('Flujo de Autenticación y Acceso al Panel', () => {
 
-    const USER_EMAIL = Cypress.expose('adminUser').email;
-    const USER_PASSWORD = Cypress.expose('adminUser').password;
+    const USER_EMAIL = Cypress.env('adminUser').email;
+    const USER_PASSWORD = Cypress.env('adminUser').password;
 
     // ----------------------------------------------------------------------
     // 1. PREPARACIÓN ÚNICA (Antes de toda la suite)
