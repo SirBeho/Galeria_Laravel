@@ -197,9 +197,15 @@ jobs:
       - name: 🌐 15B. Tareas Finales vía HTTP (Respaldo)
         if: steps.ssh-deploy.outcome != 'success'
         run: |
-          echo "⚠️ SSH no disponible o falló autenticación. Ejecutando respaldo HTTP..."
-          curl --fail --silent --show-error -X POST "https://${{ env.APP_URL_PROD }}/deploy-post-tasks" \
+          echo "⚠️ Ejecutando tareas post-despliegue vía HTTP..."
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST "https://${{ env.APP_URL_PROD }}/deploy-tasks.php" \
             -H "X-Deploy-Token: ${{ secrets.DEPLOY_CLEAN_TOKEN }}" \
-            -H "Accept: application/json"
-          echo ""
-          echo "✅ Despliegue completado mediante respaldo HTTP."
+            -H "Accept: application/json")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          echo "Respuesta ($HTTP_CODE): $BODY"
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "❌ Error en tareas post-despliegue."
+            exit 1
+          fi
+          echo "✅ Despliegue completado con éxito."
