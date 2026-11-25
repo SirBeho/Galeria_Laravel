@@ -31,6 +31,7 @@ Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
     }
 
     try {
+        @set_time_limit(300);
         $steps = [];
 
         // 1. Descomprimir vendor.zip si existe en la raíz del proyecto
@@ -46,7 +47,28 @@ Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
             $steps[] = 'vendor.zip descomprimido y eliminado';
         }
 
-        // 2. Ejecutar limpieza de caché y enlaces simbólicos
+        // 2. Garantizar que existan las carpetas base de storage/ (Git las ignora si están vacías)
+        $requiredDirs = [
+            storage_path('app/public'),
+            storage_path('framework/cache/data'),
+            storage_path('framework/sessions'),
+            storage_path('framework/views'),
+            storage_path('logs'),
+        ];
+
+
+        foreach ($requiredDirs as $dir) {
+            if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+                throw new \RuntimeException("No se pudo crear el directorio: {$dir}");
+            }
+            if (!is_writable($dir)) {
+                @chmod($dir, 0775);
+            }
+        }
+
+        $steps[] = 'Directorios de storage verificados';
+
+        // 3. Ejecutar limpieza de caché y enlaces simbólicos
         foreach (['app:clean-cache', 'storage:link-html', 'optimize:clear'] as $command) {
             Artisan::call($command);
             $output = trim(Artisan::output());
