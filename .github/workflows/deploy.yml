@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: 📥 1. Descargar Código Fuente
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐘 2. Configurar PHP 8.2
         uses: shivammathur/setup-php@v2
@@ -30,7 +30,7 @@ jobs:
 
       - name: 💾 3. Restaurar Caché de Vendor
         id: cache-vendor
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           path: vendor
@@ -48,9 +48,9 @@ jobs:
           php artisan key:generate
 
       - name: 🟢 6. Configurar Node.js y Caché NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: 📦 7. Instalar Dependencias NPM (CI)
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: 📥 Descargar Código Fuente
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐘 Configurar PHP 8.2
         uses: shivammathur/setup-php@v2
@@ -106,9 +106,9 @@ jobs:
           zip -rq vendor.zip vendor/
 
       - name: 🟢 Configurar Node.js y Caché NPM
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
 
       - name: 🎨 13. Compilar Assets (Vite)
@@ -126,7 +126,7 @@ jobs:
           rm -rf storage/framework/cache/data
 
       - name: 📤 15. Guardar Artifact listo para desplegar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-package
           path: |
@@ -146,7 +146,7 @@ jobs:
 
     steps:
       - name: 📥 Descargar paquete compilado
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: release-package
 
@@ -180,7 +180,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           security: loose
-          local-dir: public/assets
+          local-dir: public/assets/
           server-dir: /public_html/assets/
           exclude: |
             storage
