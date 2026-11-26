@@ -81,6 +81,7 @@ export function ProductDetailModal({
                         >
                             <Dialog.Panel className={`w-full h-[95vh] ${maxWidthClass} transform overflow-auto bg-white rounded-2xl text-left align-middle shadow-2xl transition-all flex flex-col td:flex-row  td:min-h-[95vh]`}>
                                 {/* Botón Cerrar Flotante */}
+
                                 <button
                                     onClick={close} style={{ backgroundColor: secondaryColor }}
                                     className="absolute top-3 right-4  hidden td:block z-50  h-10 w-10  text-white font-bold items-center justify-center rounded-full shadow-md transition hover:scale-105 active:scale-95">
