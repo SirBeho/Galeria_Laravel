@@ -59,7 +59,8 @@ export function ProductDetailModal({
 
                     <div className="flex min-h-full items-center justify-center p-4 text-center ">
                         {/* Botón Cerrar Flotante (Visible en móvil) */}
-                        <button onClick={close} className="absolute top-8 right-8  td:hidden  z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
+                        <button onClick={close} className="absolute top-8 right-8  td:hidden  z-50 bg-white/80 p-4 rounded-full text-gray-800 shadow-md"
+                            style={{ backgroundColor: secondaryColor }}>
                             ✕
                         </button>
                         <Transition.Child
