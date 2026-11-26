@@ -180,7 +180,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           security: loose
-          local-dir: public/build/assets
+          local-dir: public/assets
           server-dir: /public_html/assets/
           exclude: |
             storage
