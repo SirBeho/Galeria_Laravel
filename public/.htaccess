@@ -18,18 +18,34 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
 
+# Evitar que LiteSpeed (Hostinger) cachee las páginas HTML dinámicas de Laravel
+<IfModule LiteSpeed>
+    CacheLookup off
+</IfModule>
+
+# Cabeceras explícitas de control de caché
+<IfModule mod_headers.c>
+    # Nunca cachear index.php (HTML), manifest.json ni sw.js
+    <FilesMatch "^(index\.php|manifest\.json|sw\.js)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+</IfModule>
+
+# Caché larga para recursos estáticos e imágenes
+<IfModule mod_expires.c>
     ExpiresActive On
 
-    # Imágenes WebP (el formato principal que estamos usando)
+    # Imágenes WebP y formatos tradicionales
     ExpiresByType image/webp "access plus 1 year"
-
-    # Otros formatos por si acaso
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
 
-    # Archivos estáticos
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
+    # Archivos compilados por Vite (ya incluyen hash único en su nombre)
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
 </IfModule>
