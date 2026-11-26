@@ -2,7 +2,7 @@ name: 🚀 Deploy Producción Optimizada (Hostinger)
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "dev"]
   workflow_dispatch:
 
 env:
@@ -11,10 +11,11 @@ env:
 
 jobs:
   # ======================================================
-  # JOB 1: PRUEBAS DE CALIDAD (PHPUNIT + CYPRESS)
+  # JOB 1: PRUEBAS DE CALIDAD (SOLO EN MASTER)
   # ======================================================
   quality-gates:
     name: 🧪 1. Pruebas (Backend & E2E)
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
 
     steps:
@@ -81,6 +82,7 @@ jobs:
   build-artifact:
     name: 📦 2. Compilar y Empaquetar
     needs: quality-gates
+    if: always() && (needs.quality-gates.result == 'success' || needs.quality-gates.result == 'skipped')
     runs-on: ubuntu-latest
 
     steps:
@@ -93,6 +95,12 @@ jobs:
           php-version: "8.2"
           extensions: pdo_mysql, dom, curl, mbstring, zip
           tools: composer
+
+      - name: 💾 Restaurar Caché de Composer
+        uses: actions/cache@v5
+        with:
+          key: ${{ runner.os }}-composer-prod-${{ hashFiles('**/composer.lock') }}
+          path: ~/.composer/cache/files
 
       - name: 🧹 11. Instalar Dependencias Solo Producción
         run: composer install --prefer-dist --no-dev --optimize-autoloader
@@ -185,6 +193,7 @@ jobs:
           exclude: |
             storage
             storage/**
+            assets/**
 
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH CON RESPALDO HTTP REAL)
