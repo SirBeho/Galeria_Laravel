@@ -74,7 +74,7 @@ Route::post('/deploy-post-tasks', function (\Illuminate\Http\Request $request) {
         return response()->json([
             'status' => 'ok',
             'steps' => $steps,
-        ], 200);
+        ], 200)->header('X-LiteSpeed-Purge', '*');
     } catch (\Throwable $e) {
         return response()->json([
             'status' => 'error',

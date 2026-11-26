@@ -42,24 +42,32 @@ jobs:
           COMPOSER_NO_INTERACTION: 1
           COMPOSER_NO_AUDIT: 1
 
-      - name: 📄 5. Generar archivo .env y Key (CI)
+      - name: 📄 5. Generar archivo .env y Key (Solo CI)
         run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
+          printf '%s\n' "${{ secrets.ENV_FILE }}" > .env
           php artisan key:generate
 
-      - name: 📦 6. Instalar Dependencias NPM (CI)
+      - name: 🟢 6. Configurar Node.js y Caché NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 📦 7. Instalar Dependencias NPM (CI)
         run: npm ci
 
-      - name: 🎨 7. Compilar Assets (Vite Build)
-        run: npm run build
+      - name: 🎨 8. Compilar Assets (Vite Build)
+        run: |
+          rm -f public/hot
+          npm run build
 
-      - name: 🧪 8. Ejecutar Pruebas PHPUnit (Backend Quality Gate)
+      - name: 🧪 9. Ejecutar Pruebas PHPUnit (Backend Quality Gate)
         run: |
           touch database/testing.sqlite
           php artisan migrate:fresh --env=testing --force
           php artisan test --stop-on-failure
 
-      - name: 💻 9. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
+      - name: 💻 10. Ejecutar Pruebas Cypress E2E (Frontend Quality Gate)
         run: npm run test
         env:
           APP_URL: http://127.0.0.1:8000
@@ -86,23 +94,30 @@ jobs:
           extensions: pdo_mysql, dom, curl, mbstring, zip
           tools: composer
 
-      - name: 🧹 10. Instalar Dependencias Solo Producción
+      - name: 🧹 11. Instalar Dependencias Solo Producción
         run: composer install --prefer-dist --no-dev --optimize-autoloader
         env:
           COMPOSER_NO_INTERACTION: 1
           COMPOSER_NO_AUDIT: 1
 
-      - name: 📦 11. Crear Vendor.zip
+      - name: 📦 12. Crear Vendor.zip
         run: |
           echo "Comprimiendo vendor para acelerar subida FTP..."
           zip -rq vendor.zip vendor/
 
-      - name: 🎨 Compilar Assets (Vite)
+      - name: 🟢 Configurar Node.js y Caché NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: 🎨 13. Compilar Assets (Vite)
         run: |
+          rm -f public/hot
           npm ci
           npm run build
 
-      - name: 🧹 12. Limpiar Workspace
+      - name: 🧹 14. Limpiar Workspace
         run: |
           echo "Eliminando archivos innecesarios para reducir tiempo de subida..."
           rm -rf node_modules
@@ -110,7 +125,7 @@ jobs:
           rm -rf vendor
           rm -rf storage/framework/cache/data
 
-      - name: 📤 Guardar Artifact listo para desplegar
+      - name: 📤 15. Guardar Artifact listo para desplegar
         uses: actions/upload-artifact@v4
         with:
           name: release-package
@@ -135,7 +150,7 @@ jobs:
         with:
           name: release-package
 
-      - name: 📤 13. Subir Backend (Core de Laravel)
+      - name: 📤 16. Subir Backend (Solo cambios, sin tocar .env ni fotos)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -157,7 +172,7 @@ jobs:
             public/**
             storage/**
 
-      - name: 📤 14. Subir Frontend (Archivos Públicos)
+      - name: 📤 17. Subir Frontend (Public + Build siempre actualizado)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.0
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -171,7 +186,7 @@ jobs:
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH CON RESPALDO HTTP REAL)
       # ======================================================
-      - name: 🔐 15A. Tareas Finales por SSH
+      - name: 🔐 18A. Tareas Finales por SSH
         id: ssh-deploy
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
@@ -188,13 +203,13 @@ jobs:
               unzip -o vendor.zip -d . > /dev/null
               rm vendor.zip
             fi
+            mkdir -p storage/app/public storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
             rm -f public_html/storage
             php artisan storage:link-html
             chmod -R 775 storage bootstrap/cache
             php artisan optimize:clear
-            php artisan optimize
 
-      - name: 🌐 15B. Tareas Finales vía HTTP (Respaldo)
+      - name: 🌐 18B. Tareas Finales vía HTTP (Respaldo)
         if: steps.ssh-deploy.outcome != 'success'
         run: |
           echo "🚀 Ejecutando tareas post-despliegue en Laravel..."
