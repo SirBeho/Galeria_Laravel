@@ -3,6 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class CleanCache extends Command
 {
@@ -18,24 +21,25 @@ class CleanCache extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Limpia la caché mensual de configuraciones, galerías y vistas';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
-        //
-        \Log::info("Iniciando limpieza de caché programada...");
-    
-        \Cache::forget('app_settings');
-        \Cache::forget('gallery_home_files');
-        \Cache::forget('gallery_juegos_files');
-        
-        \Artisan::call('config:clear');
-        \Artisan::call('view:clear');
+        Log::info('Iniciando limpieza de caché programada...');
+
+        Cache::forget('app_settings');
+        Cache::forget('gallery_home_files');
+        Cache::forget('gallery_juegos_files');
+
+        Artisan::call('config:clear');
+        Artisan::call('view:clear');
 
         $this->info('Caché del sistema actualizada correctamente.');
-        \Log::info("Caché del sistema actualizada correctamente. Fecha: " . now());
+        Log::info('Caché del sistema actualizada correctamente. Fecha: ' . now());
+
+        return Command::SUCCESS;
     }
 }
