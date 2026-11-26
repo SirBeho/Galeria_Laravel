@@ -150,6 +150,7 @@ jobs:
   deploy:
     name: 🚀 3. Subir a Hostinger
     needs: build-artifact
+    if: needs.build-artifact.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
