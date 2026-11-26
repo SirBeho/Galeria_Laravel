@@ -59,9 +59,16 @@ export function ProductDetailModal({
 
                     <div className="flex min-h-full items-center justify-center p-4 text-center ">
                         {/* Botón Cerrar Flotante (Visible en móvil) */}
-                        <button onClick={close} className="absolute top-8 right-8  td:hidden  z-50 bg-white/80 p-4 rounded-full text-gray-800 shadow-md"
-                            style={{ backgroundColor: secondaryColor }}>
-                            ✕
+                        <button
+                            type="button"
+                            onClick={close}
+                            aria-label="Cerrar"
+                            className="fixed top-8 right-8  td:hidden z-50 flex h-10 w-10 text-white font-bold items-center justify-center rounded-full shadow-md transition hover:scale-105 active:scale-95"
+                            style={{ backgroundColor: secondaryColor }}
+                        >
+                            <span className="flex h-full w-full items-center justify-center text-base leading-none">
+                                ✕
+                            </span>
                         </button>
                         <Transition.Child
                             as={Fragment}
@@ -74,9 +81,12 @@ export function ProductDetailModal({
                         >
                             <Dialog.Panel className={`w-full h-[95vh] ${maxWidthClass} transform overflow-auto bg-white rounded-2xl text-left align-middle shadow-2xl transition-all flex flex-col td:flex-row  td:min-h-[95vh]`}>
                                 {/* Botón Cerrar Flotante */}
-                                <button onClick={close} className="absolute top-3 right-4 hidden td:block z-50 bg-white/80 p-2 rounded-full text-gray-800 shadow-md">
-                                    ✕
+                                <button
+                                    onClick={close} style={{ backgroundColor: secondaryColor }}
+                                    className="absolute top-3 right-4  hidden td:block z-50  h-10 w-10  text-white font-bold items-center justify-center rounded-full shadow-md transition hover:scale-105 active:scale-95">
+                                    <span className="flex h-full w-full items-center justify-center text-base leading-none">✕</span>
                                 </button>
+
                                 {/* IZQUIERDA: CARRUSEL (65% del ancho en PC) */}
                                 <div className="relative w-full td:w-[65%] h-full min-h-[80vh] td:min-h-max td:h-auto bg-gray-50">
                                     <ImageCarousel
