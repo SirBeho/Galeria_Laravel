@@ -183,7 +183,7 @@ jobs:
           local-dir: public/
           server-dir: /public_html/
           exclude: |
-            public/assets/
+            assets/
             storage
             storage/**
 
