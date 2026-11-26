@@ -137,6 +137,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: release-package
+          include-hidden-files: true
           path: |
             .
             !.git*
