@@ -84,7 +84,7 @@ export function ProductDetailModal({
 
                                 <button
                                     onClick={close}
-                                    className="absolute top-3 right-4  hidden td:block z-50 bg-yellow-500 h-10 w-10  text-white font-bold items-center justify-center rounded-full shadow-md transition hover:scale-105 active:scale-95">
+                                    className="absolute top-3 right-4  hidden td:block z-50 bg-yellow-600  h-10 w-10  text-white font-bold items-center justify-center rounded-full shadow-md transition hover:scale-105 active:scale-95">
                                     <span className="flex h-full w-full items-center justify-center text-base leading-none">✕</span>
                                 </button>
 
