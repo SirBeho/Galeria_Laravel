@@ -187,20 +187,6 @@ jobs:
             storage
             storage/**
 
-      - name: 📤 17A. Subir Build de Vite
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          security: loose
-          local-dir: public/assets/
-          server-dir: /public_html/assets/
-          exclude: |
-            storage
-            storage/**
-
       # ======================================================
       # FASE 4: POST-DESPLIEGUE (SSH CON RESPALDO HTTP REAL)
       # ======================================================
